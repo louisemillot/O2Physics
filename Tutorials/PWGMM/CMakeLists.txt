@@ -14,3 +14,8 @@ o2physics_add_dpl_workflow(my-example-task
                   SOURCES myExampleTask.cxx
                   PUBLIC_LINK_LIBRARIES O2Physics::AnalysisCore
                   COMPONENT_NAME AnalysisTutorial)
+
+o2physics_add_dpl_workflow(task
+                  SOURCES Task.cxx
+                  PUBLIC_LINK_LIBRARIES O2Physics::AnalysisCore
+                  COMPONENT_NAME AnalysisTutorial)
