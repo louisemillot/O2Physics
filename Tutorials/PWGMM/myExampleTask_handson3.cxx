@@ -30,11 +30,13 @@ struct myExampleTask {
     histos.add("ptHistogramPion", "ptHistogramPion", kTH1F, {axisPt});
     histos.add("ptHistogramKaon", "ptHistogramKaon", kTH1F, {axisPt});
     histos.add("ptHistogramProton", "ptHistogramProton", kTH1F, {axisPt});
-    
+    // Adding generated pT histograms
+    histos.add("ptGeneratedPion", "ptGeneratedPion", kTH1F, {axisPt}); 
+    histos.add("ptGeneratedKaon", "ptGeneratedKaon", kTH1F, {axisPt}); 
+    histos.add("ptGeneratedProton", "ptGeneratedProton", kTH1F, {axisPt});
   }
 
-  void process(aod::Collision const& , myFilteredTracks const& tracks, aod::McParticles const& )
-  {
+  void processReconstructed(aod::Collision const& , myFilteredTracks const& tracks, aod::McParticles const& ){
     histos.fill(HIST("eventCounter"), 0.5);
     for (auto& track : tracks) {
         if (track.has_mcParticle()) {  // Vérifier si la piste a une particule MC associée
@@ -48,6 +50,17 @@ struct myExampleTask {
         }
     }
   }
+  PROCESS_SWITCH(myExampleTask, processReconstructed, "process reconstructed information", true);
+  void processSimulated(aod::McParticles const& mcParticles) {
+    for (const auto& mcParticle : mcParticles) {
+        if(mcParticle.isPhysicalPrimary() && fabs(mcParticle.y())<0.5){ // watch out for context!!!
+            if(abs(mcParticle.pdgCode())==211) histos.fill(HIST("ptGeneratedPion"), mcParticle.pt()); 
+            if(abs(mcParticle.pdgCode())==321) histos.fill(HIST("ptGeneratedKaon"), mcParticle.pt()); 
+            if(abs(mcParticle.pdgCode())==2212) histos.fill(HIST("ptGeneratedProton"), mcParticle.pt());    
+        } 
+    }
+  }
+  PROCESS_SWITCH(myExampleTask, processSimulated, "process pure simulation information", true);
 };
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
