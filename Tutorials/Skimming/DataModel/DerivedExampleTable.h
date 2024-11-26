@@ -27,6 +27,8 @@ DECLARE_SOA_INDEX_COLUMN(DrCollision, drCollision);
 DECLARE_SOA_COLUMN(Pt, pt, float);
 DECLARE_SOA_COLUMN(Eta, eta, float);
 DECLARE_SOA_COLUMN(Phi, phi, float);
+//DECLARE_SOA_COLUMN(PosZ, posZ, float);
+
 } // namespace exampleTrackSpace
 DECLARE_SOA_TABLE(DrTracks, "AOD", "DRTRACK", o2::soa::Index<>, exampleTrackSpace::DrCollisionId,
                   exampleTrackSpace::Pt, exampleTrackSpace::Eta, exampleTrackSpace::Phi);
