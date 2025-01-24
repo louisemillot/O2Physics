@@ -106,6 +106,9 @@ const char* eventSelectionSteps[knCollisionSelectionFlags] = {
   "ISVERTEXTOFMATCHED",
   "ISVERTEXTRDMATCHED",
   "OCCUPANCY",
+  "ISGOODITSLAYER3",
+  "ISGOODITSLAYER0123",
+  "ISGOODITSLAYERALL",
   "CENTRALITY",
   "ZVERTEX",
   "SELECTED"};
@@ -363,6 +366,10 @@ struct DptDptFilter {
   Configurable<std::string> cfgCentMultEstimator{"centmultestimator", "V0M", "Centrality/multiplicity estimator detector: V0M,CL0,CL1,FV0A,FT0M,FT0A,FT0C,NTPV,NOCM: none. Default V0M"};
   Configurable<std::string> cfgOccupancyEstimation{"occestimation", "None", "Occupancy estimation: None, Tracks, FT0C. Default None"};
   Configurable<float> cfgMaxOccupancy{"occmax", 1e6f, "Maximum allowed occupancy. Depends on the occupancy estimation"};
+  struct : ConfigurableGroup {
+    std::string prefix = "cfgEventSelection";
+    Configurable<std::string> itsDeadMaps{"itsDeadMaps", "", "Level of inactive chips: nocheck(empty), goodIts3, goodIts0123, goodItsAll. Default empty"};
+  } cfgEventSelection;
   Configurable<std::string> cfgSystem{"syst", "PbPb", "System: pp, PbPb, Pbp, pPb, XeXe, ppRun3, PbPbRun3. Default PbPb"};
   Configurable<std::string> cfgDataType{"datatype", "data", "Data type: data, datanoevsel, MC, FastMC, OnTheFlyMC. Default data"};
   Configurable<std::string> cfgTriggSel{"triggsel", "MB", "Trigger selection: MB,VTXTOFMATCHED,VTXTRDMATCHED,VTXTRDTOFMATCHED,None. Default MB"};
@@ -421,6 +428,8 @@ struct DptDptFilter {
     /* the occupancy selection */
     fOccupancyEstimation = getOccupancyEstimator(cfgOccupancyEstimation);
     fMaxOccupancy = cfgMaxOccupancy;
+    /* the ITS dead map check */
+    fItsDeadMapCheck = getItsDeadMapCheck(cfgEventSelection.itsDeadMaps);
 
     /* the trigger selection */
     fTriggerSelection = getTriggerSelection(cfgTriggSel);
@@ -770,7 +779,7 @@ struct DptDptFilterTracks {
   Configurable<o2::analysis::CheckRangeCfg> cfgTraceDCAOutliers{"trackdcaoutliers", {false, 0.0, 0.0}, "Track the generator level DCAxy outliers: false/true, low dcaxy, up dcaxy. Default {false,0.0,0.0}"};
   Configurable<float> cfgTraceOutOfSpeciesParticles{"trackoutparticles", false, "Track the particles which are not e,mu,pi,K,p: false/true. Default false"};
   Configurable<int> cfgRecoIdMethod{"recoidmethod", 0, "Method for identifying reconstructed tracks: 0 No PID, 1 PID, 2 mcparticle, 3 mcparticle only primaries, 4 mcparticle only sec, 5 mcparicle only sec from decays, 6 mcparticle only sec from material. Default 0"};
-  Configurable<o2::analysis::TrackSelectionTuneCfg> cfgTuneTrackSelection{"tunetracksel", {}, "Track selection: {useit: true/false, tpccls-useit, tpcxrws-useit, tpcxrfc-useit, dcaxy-useit, dcaz-useit}. Default {false,0.70,false,0.8,false,2.4,false,3.2,false}"};
+  Configurable<o2::analysis::TrackSelectionTuneCfg> cfgTuneTrackSelection{"tunetracksel", {}, "Track selection: {useit: true/false, tpccls-useit, tpcxrws-useit, tpcxrfc-useit, tpcshcls-useit, dcaxy-useit, dcaz-useit}. Default {false,0.70,false,0.8,false,0.4,false,2.4,false,3.2,false}"};
   Configurable<o2::analysis::TrackSelectionPIDCfg> cfgPionPIDSelection{"pipidsel",
                                                                        {},
                                                                        "PID criteria for pions"};
@@ -835,7 +844,7 @@ struct DptDptFilterTracks {
 
     /* the track types and combinations */
     tracktype = cfgTrackType.value;
-    initializeTrackSelection(cfgTuneTrackSelection);
+    initializeTrackSelection(cfgTuneTrackSelection.value);
     traceDCAOutliers = cfgTraceDCAOutliers;
     traceOutOfSpeciesParticles = cfgTraceOutOfSpeciesParticles;
     recoIdMethod = cfgRecoIdMethod;
