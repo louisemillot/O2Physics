@@ -62,11 +62,6 @@ o2physics_add_dpl_workflow(track-propagation
                     PUBLIC_LINK_LIBRARIES O2::DetectorsBase O2Physics::AnalysisCore
                     COMPONENT_NAME Analysis)
 
-o2physics_add_dpl_workflow(track-dca-filler-run2
-                    SOURCES trackDcaFillerRun2.cxx
-                    PUBLIC_LINK_LIBRARIES O2::DetectorsBase O2Physics::AnalysisCore
-                    COMPONENT_NAME Analysis)
-
 o2physics_add_dpl_workflow(track-propagation-tester
                     SOURCES trackPropagationTester.cxx
                     PUBLIC_LINK_LIBRARIES O2::DetectorsBase O2Physics::AnalysisCore O2Physics::trackSelectionRequest
@@ -149,8 +144,8 @@ o2physics_add_dpl_workflow(mftmch-matching-data-mc
                     SOURCES match-mft-mch-data-mc.cxx
                     PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore O2::DetectorsBase O2Physics::AnalysisCCDB O2Physics::PWGDQCore O2Physics::EventFilteringUtils
                     COMPONENT_NAME Analysis)
-
-o2physics_add_dpl_workflow(muon-realignment
-                    SOURCES muonRealignment.cxx
-                    PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore O2::DetectorsBase O2::DetectorsCommonDataFormats O2::MathUtils O2::MCHTracking O2::DataFormatsMCH O2::GlobalTracking O2::MCHBase O2::MCHGeometryTransformer O2::CommonUtils
-                    COMPONENT_NAME Analysis)
+               
+o2physics_add_dpl_workflow(track-dca-filler-run2
+                    SOURCES trackDcaFillerRun2.cxx
+                    PUBLIC_LINK_LIBRARIES O2::DetectorsBase O2Physics::AnalysisCore
+                    COMPONENT_NAME Analysis)                    
