@@ -108,7 +108,6 @@ struct JetDerivedDataProducerTask {
     Produces<aod::JDielectronIds> jDielectronIdsTable;
     Produces<aod::JDielectronMcCollisions> jDielectronMcCollisionsTable;
     Produces<aod::JDielectronMcCollisionIds> jDielectronMcCollisionIdsTable;
-    Produces<aod::JDielectronMcRCollDummys> JDielectronMcRCollDummysTable;
     Produces<aod::JDielectronMcs> jDielectronMcsTable;
     Produces<aod::JDielectronMcIds> jDielectronMcIdsTable;
   } products;
@@ -250,7 +249,7 @@ struct JetDerivedDataProducerTask {
     products.jMcCollisionsParentIndexTable(mcCollision.globalIndex());
   }
   PROCESS_SWITCH(JetDerivedDataProducerTask, processMcCollisionsWithXsection, "produces derived MC collision table with cross section information", false);
-
+  
   void processTracks(soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksCov, aod::TracksDCA, aod::TracksDCACov, aod::TrackSelection, aod::TrackSelectionExtension>::iterator const& track, aod::Collisions const&)
   {
     products.jTracksTable(track.collisionId(), track.pt(), track.eta(), track.phi(), jetderiveddatautilities::setTrackSelectionBit(track, track.dcaZ(), dcaZMax));
@@ -317,6 +316,21 @@ struct JetDerivedDataProducerTask {
     }
   }
   PROCESS_SWITCH(JetDerivedDataProducerTask, processTracksWithCollisionAssociator, "produces derived track table taking into account track-to-collision associations", false);
+
+  void processTracksRun2(soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksCov, aod::TracksDCA, aod::TrackSelection, aod::TrackSelectionExtension>::iterator const& track)
+  {
+    //TracksDCACov table is not yet available for Run 2 converted data. Remove this process function and use only processTracks when that becomes available. 
+    products.jTracksTable(track.collisionId(), track.pt(), track.eta(), track.phi(), jetderiveddatautilities::setTrackSelectionBit(track, track.dcaZ(), dcaZMax));
+    float sigmaDCAXYZ2 = 0.0;
+    float dcaXYZ = getDcaXYZ(track, &sigmaDCAXYZ2);
+    float dcaX = -99.0;
+    float dcaY = -99.0;
+
+    products.jTracksExtraTable(dcaX, dcaY, track.dcaZ(), track.dcaXY(), dcaXYZ, std::sqrt(1.), std::sqrt(1.), std::sqrt(sigmaDCAXYZ2), track.sigma1Pt()); // dummy values - will be fixed when TracksDCACov table is available for Run 2
+    products.jTracksParentIndexTable(track.globalIndex());
+    trackCollisionMapping[{track.globalIndex(), track.collisionId()}] = products.jTracksTable.lastIndex();
+  }
+  PROCESS_SWITCH(JetDerivedDataProducerTask, processTracksRun2, "produces derived track table for Run2 AO2Ds", false);
 
   void processMcTrackLabels(soa::Join<aod::Tracks, aod::McTrackLabels>::iterator const& track)
   {
@@ -647,7 +661,6 @@ struct JetDerivedDataProducerTask {
         auto pdgParticle = pdgDatabase->GetParticle(particle.pdgCode());
         products.jDielectronMcsTable(products.jDielectronMcCollisionsTable.lastIndex(), particle.pt(), particle.eta(), particle.phi(), particle.y(), particle.e(), pdgParticle->Mass(), particle.pdgCode(), particle.getGenStatusCode(), particle.getHepMCStatusCode(), particle.isPhysicalPrimary(), jetdqutilities::setDielectronParticleDecayBit(particles, particle), RecoDecay::getCharmHadronOrigin(particles, particle, false)); // Todo: should the last thing be false?
         products.jDielectronMcIdsTable(mcCollision.globalIndex(), particle.globalIndex(), mothersId, daughtersId);
-        products.JDielectronMcRCollDummysTable(false);
       }
     }
   }
