@@ -269,4 +269,8 @@ if(FastJet_FOUND)
                         SOURCES jetShape.cxx
                         PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::PWGJECore O2Physics::AnalysisCore
                         COMPONENT_NAME Analysis)
+    o2physics_add_dpl_workflow(mctracks-to-aod-softdrop
+                        SOURCES mctracks_to_aod_softdrop.cxx
+                        PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::PWGJECore O2Physics::AnalysisCore FastJet::FastJet FastJet::Contrib
+                        COMPONENT_NAME Analysis)
 endif()
