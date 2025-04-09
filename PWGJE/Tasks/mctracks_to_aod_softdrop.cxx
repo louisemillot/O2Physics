@@ -47,6 +47,7 @@ struct MyCustomTask {
     registry.add<TH1>("zg", "zg", HistType::kTH1F, {{100, 0, 0.5}}, false);
     registry.add<TH1>("thetag", "thetag", HistType::kTH1F, {{100, 0, 0.5}}, false);
     registry.add<TH1>("kT", "kT", HistType::kTH1F, {{100, 0, 10}}, false);
+    registry.add<TH2>("h2_lnkt_vs_lnthetag", "ln(kT) vs ln(1/#theta_{g}); ln(kT); ln(1/#theta_{g})", HistType::kTH2F, {{100, -5, 5}, {100, -5, 5}},false);
   }
 
   void process(aod::McCollision const&, aod::McParticles const& mcParticles)
@@ -84,7 +85,7 @@ struct MyCustomTask {
     rsd.set_verbose_structure(true);
     rsd.set_dynamical_R0();
 
-    // Affichage des informations comme dans l'exemple
+    // Print infos in Recursive SD
     LOGF(info, "RecursiveSoftDrop groomer is: %s", rsd.description().c_str());
     LOGF(info, "Processing event with %d particles", particles.size());
 
@@ -102,7 +103,7 @@ struct MyCustomTask {
       registry.fill(HIST("rsd_jet_pt"), rsd_jet.pt());
       registry.fill(HIST("rsd_jet_mass"), rsd_jet.m());
 
-      // Affichage des informations du jet
+      // Print of jet information 
       std::stringstream ss_jet;
       ss_jet << jet;
       LOGF(info, "\nOriginal jet: %s", ss_jet.str().c_str());
@@ -110,7 +111,7 @@ struct MyCustomTask {
       ss_rsd_jet << rsd_jet;
       LOGF(info, "RecursiveSoftDropped jet: %s", ss_rsd_jet.str().c_str());
       
-      // Affichage de la structure des prongs
+      // Print of prongs structure 
       LOGF(info, "\nProngs with clustering information\n----------------------------------");
       print_prongs_with_clustering_info(rsd_jet, " ");
       
@@ -119,7 +120,7 @@ struct MyCustomTask {
 
       // Get grooming information
       const auto& rsd_struct = rsd_jet.structure_of<contrib::RecursiveSoftDrop>();
-      vector<pair<double, double>> ztg = rsd_struct.sorted_zg_and_thetag();
+      vector<pair<double, double>> ztg = rsd_struct.sorted_zg_and_thetag(); //ztg is a vector with pair (zg, θg)
 
       LOGF(info, "Groomed prongs information:");
       LOGF(info, "index            zg        thetag         pT         kT");
@@ -128,9 +129,16 @@ struct MyCustomTask {
         double kT = ztg[i].first * ztg[i].second * rsd_jet.pt();
         LOGF(info, "%5d%14.4f%14.4f%14.4f%14.4f", 
           i+1, ztg[i].first, ztg[i].second, rsd_jet.pt(), kT);
-        registry.fill(HIST("zg"), ztg[i].first);
-        registry.fill(HIST("thetag"), ztg[i].second);
+        registry.fill(HIST("zg"), ztg[i].first); //first mean zg
+        registry.fill(HIST("thetag"), ztg[i].second); //second mean thetag
         registry.fill(HIST("kT"), kT);
+
+        if (ztg[i].second > 0 && kT > 0) { // Vérification to avoid ln(0) or ln(negatif)
+          double ln_kt = TMath::Ln(kT);
+          double ln_inv_thetag = TMath::Ln(1./ztg[i].second);
+          registry.fill(HIST("h2_lnkt_vs_lnthetag"), ln_kt, ln_inv_thetag);
+        }
+
       }
     }
   }
