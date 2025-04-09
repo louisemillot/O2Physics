@@ -134,8 +134,8 @@ struct MyCustomTask {
         registry.fill(HIST("kT"), kT);
 
         if (ztg[i].second > 0 && kT > 0) { // Vérification to avoid ln(0) or ln(negatif)
-          double ln_kt = TMath::Ln(kT);
-          double ln_inv_thetag = TMath::Ln(1./ztg[i].second);
+          double ln_kt = TMath::Log(kT);
+          double ln_inv_thetag = TMath::Log(1./ztg[i].second);
           registry.fill(HIST("h2_lnkt_vs_lnthetag"), ln_kt, ln_inv_thetag);
         }
 
