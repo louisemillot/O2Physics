@@ -47,7 +47,7 @@ struct MyCustomTask {
     registry.add<TH1>("zg", "zg", HistType::kTH1F, {{100, 0, 0.5}}, false);
     registry.add<TH1>("thetag", "thetag", HistType::kTH1F, {{100, 0, 0.5}}, false);
     registry.add<TH1>("kT", "kT", HistType::kTH1F, {{100, 0, 10}}, false);
-    registry.add<TH2>("h2_lnkt_vs_lnthetag", "ln(kT) vs ln(1/#theta_{g}); ln(kT); ln(1/#theta_{g})", HistType::kTH2F, {{100, -5, 5}, {100, -5, 5}},false);
+    registry.add<TH2>("h2_lnkt_vs_lnthetag", "ln(kT) vs ln(1/#theta_{g}); ln(1/#theta_{g}); ln(kT)", HistType::kTH2F, {{100, -0.5, 7}, {100, -5, 7}},false);
   }
 
   void process(aod::McCollision const&, aod::McParticles const& mcParticles)
