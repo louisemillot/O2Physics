@@ -224,9 +224,8 @@ struct RhoEstimatorTask {
     rhoChargedTable(rho, rhoM);
     LOGF(info, "test 17\n");
   }
-  LOGF(info, "test 18\n");
   PROCESS_SWITCH(RhoEstimatorTask, processChargedCollisions, "Fill rho tables for collisions using charged tracks", true);
-  LOGF(info, "test 19\n");
+  
 
   void processChargedMcCollisions(aod::JetMcCollision const& mcCollision, soa::Filtered<aod::JetParticles> const& particles)
   {
