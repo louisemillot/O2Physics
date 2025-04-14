@@ -35,59 +35,86 @@ JetBkgSubUtils::JetBkgSubUtils(float jetBkgR_out, float bkgEtaMin_out, float bkg
 
 void JetBkgSubUtils::initialise()
 {
+  LOGF(info, "test 1 jet_bkg_subutils \n");
   // Note: if you are using the PerpCone method you should jetBkgR to be the same as the anit_kt jets R, otherwise use R=0.2
   jetDefBkg = fastjet::JetDefinition(algorithmBkg, jetBkgR, recombSchemeBkg, fastjet::Best);
+  LOGF(info, "test 2 jet_bkg_subutils \n");
   areaDefBkg = fastjet::AreaDefinition(fastjet::active_area_explicit_ghosts, ghostAreaSpec);
+  LOGF(info, "test 3 jet_bkg_subutils \n");
   selRho = fastjet::SelectorRapRange(bkgEtaMin, bkgEtaMax) && fastjet::SelectorPhiRange(bkgPhiMin, bkgPhiMax) && !fastjet::SelectorNHardest(nHardReject); // here we have to put rap range, to be checked!
+  LOGF(info, "test 4 jet_bkg_subutils \n");
 }
 
 std::tuple<double, double> JetBkgSubUtils::estimateRhoAreaMedian(const std::vector<fastjet::PseudoJet>& inputParticles, bool doSparseSub)
 {
+  LOGF(info, "test 5 jet_bkg_subutils \n");
   JetBkgSubUtils::initialise();
+  LOGF(info, "test 6 jet_bkg_subutils \n");
 
   if (inputParticles.size() == 0) {
+    LOGF(info, "test 7 jet_bkg_subutils \n");
     return std::make_tuple(0.0, 0.0);
   }
 
   // cluster the kT jets
+  LOGF(info, "test 8 jet_bkg_subutils \n");
   fastjet::ClusterSequenceArea clusterSeq(inputParticles, jetDefBkg, areaDefBkg);
 
   // select jets in detector acceptance
+  LOGF(info, "test 9 jet_bkg_subutils \n");
   std::vector<fastjet::PseudoJet> alljets = selRho(clusterSeq.inclusive_jets());
 
+  LOGF(info, "test 10 jet_bkg_subutils \n");
   double totaljetAreaPhys(0), totalAreaCovered(0);
+  LOGF(info, "test 11 jet_bkg_subutils \n");
   std::vector<double> rhovector;
+  LOGF(info, "test 12 jet_bkg_subutils \n");
   std::vector<double> rhoMdvector;
-
+  LOGF(info, "test 13 jet_bkg_subutils \n");
   // Fill a vector for pT/area to be used for the median
   for (auto& ijet : alljets) {
+    LOGF(info, "test 14 jet_bkg_subutils \n");
 
     // Physical area/ Physical jets (no ghost)
     if (!clusterSeq.is_pure_ghost(ijet)) {
+      LOGF(info, "test 15 jet_bkg_subutils \n");
       rhovector.push_back(ijet.perp() / ijet.area());
+      LOGF(info, "test 16 jet_bkg_subutils \n");
       rhoMdvector.push_back(getMd(ijet) / ijet.area());
-
+      LOGF(info, "test 17 jet_bkg_subutils \n");
       totaljetAreaPhys += ijet.area();
     }
     // Full area
+    LOGF(info, "test 18 jet_bkg_subutils \n");
     totalAreaCovered += ijet.area();
   }
-  // calculate Rho as the median of the jet pT / jet area
 
+  // calculate Rho as the median of the jet pT / jet area
+  LOGF(info, "test 19 jet_bkg_subutils \n");
   double rho = 0.0;
+  LOGF(info, "test 20 jet_bkg_subutils \n");
   double rhoM = 0.0;
+  LOGF(info, "test 21 jet_bkg_subutils \n");
   if (rhovector.size() != 0) {
+    LOGF(info, "test 22 jet_bkg_subutils \n");
     rho = TMath::Median<double>(rhovector.size(), rhovector.data());
+    LOGF(info, "test 23 jet_bkg_subutils \n");
     rhoM = TMath::Median<double>(rhoMdvector.size(), rhoMdvector.data());
   }
+  LOGF(info, "test 24 jet_bkg_subutils \n");
 
   if (doSparseSub) {
+    LOGF(info, "test 25 jet_bkg_subutils \n");
     // calculate The ocupancy factor, which the ratio of covered area / total area
+    LOGF(info, "test 26 jet_bkg_subutils \n");
     double occupancyFactor = totalAreaCovered > 0 ? totaljetAreaPhys / totalAreaCovered : 1.;
+    LOGF(info, "test 27 jet_bkg_subutils \n");
     rho *= occupancyFactor;
+    LOGF(info, "test 28 jet_bkg_subutils \n");
     rhoM *= occupancyFactor;
+    LOGF(info, "test 29 jet_bkg_subutils \n");
   }
-
+  LOGF(info, "test 30 jet_bkg_subutils \n");
   return std::make_tuple(rho, rhoM);
 }
 
