@@ -42,8 +42,11 @@ void JetBkgSubUtils::initialise()
   areaDefBkg = fastjet::AreaDefinition(fastjet::active_area_explicit_ghosts, ghostAreaSpec);
   LOGF(info, "test 3 jet_bkg_subutils \n");
   fastjet::Selector selRho1 = fastjet::SelectorRapRange(bkgEtaMin, bkgEtaMax);
+  LOGF(info, "test 3.1 jet_bkg_subutils \n");
   fastjet::Selector selRho2 = fastjet::SelectorPhiRange(bkgPhiMin, bkgPhiMax);
+  LOGF(info, "test 3.2 jet_bkg_subutils \n");
   fastjet::Selector selRho3 = fastjet::SelectorNHardest(nHardReject);
+  LOGF(info, "test 3.3 jet_bkg_subutils \n");
   selRho = fastjet::SelectorRapRange(bkgEtaMin, bkgEtaMax) && fastjet::SelectorPhiRange(bkgPhiMin, bkgPhiMax) && !fastjet::SelectorNHardest(nHardReject); // here we have to put rap range, to be checked!
   LOGF(info, "test 4 jet_bkg_subutils \n");
 }
