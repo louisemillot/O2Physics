@@ -43,7 +43,7 @@ void JetBkgSubUtils::initialise()
   LOGF(info, "test 3 jet_bkg_subutils \n");
   fastjet::Selector selRho1 = fastjet::SelectorRapRange(bkgEtaMin, bkgEtaMax);
   LOGF(info, "test 3.1 jet_bkg_subutils \n");
-  fastjet::Selector selRho2 = fastjet::SelectorPhiRange(bkgPhiMin, bkgPhiMax);
+  fastjet::Selector selRho2 = fastjet::SelectorPhiRange(1.3, 1.5);
   LOGF(info, "test 3.2 jet_bkg_subutils \n");
   fastjet::Selector selRho3 = fastjet::SelectorNHardest(nHardReject);
   LOGF(info, "test 3.3 jet_bkg_subutils \n");
