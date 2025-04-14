@@ -190,24 +190,43 @@ struct RhoEstimatorTask {
 
   void processChargedCollisions(aod::JetCollision const& collision, soa::Filtered<aod::JetTracks> const& tracks)
   {
+    LOGF("test 1\n");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits) || collision.centrality() < config.centralityMin || collision.centrality() >= config.centralityMax || collision.trackOccupancyInTimeRange() > config.trackOccupancyInTimeRangeMax || std::abs(collision.posZ()) > config.vertexZCut) {
+      LOGF("test 2\n");
       rhoChargedTable(0.0, 0.0);
+      LOGF("test 3\n");
       return;
+      LOGF("test 4\n");
     }
+    LOGF("test 5\n");
     if (collisionFlag.size() != 0 && !collisionFlag[collision.globalIndex()]) {
+      LOGF("test 6\n");
       rhoChargedTable(0.0, 0.0);
+      LOGF("test 7\n");
       return;
+      LOGF("test 8\n");
     }
+    LOGF("test 9\n");
     if (config.skipMBGapEvents && collision.subGeneratorId() == jetderiveddatautilities::JCollisionSubGeneratorId::mbGap) {
+      LOGF("test 10\n");
       rhoChargedTable(-1., -1.);
+      LOGF("test 11\n");
       return;
+    LOGF("test 12\n");
     }
+    LOGF("test 13\n");
     inputParticles.clear();
+    LOGF("test 14\n");
     jetfindingutilities::analyseTracks<soa::Filtered<aod::JetTracks>, soa::Filtered<aod::JetTracks>::iterator>(inputParticles, tracks, trackSelection, config.trackingEfficiency);
+    LOGF("test 15\n");
     auto [rho, rhoM] = bkgSub.estimateRhoAreaMedian(inputParticles, config.doSparse);
+    LOGF("test 16\n");
     rhoChargedTable(rho, rhoM);
+    LOGF("test 17\n");
   }
+  LOGF("test 18\n");
   PROCESS_SWITCH(RhoEstimatorTask, processChargedCollisions, "Fill rho tables for collisions using charged tracks", true);
+  LOGF("test 19\n");
 
   void processChargedMcCollisions(aod::JetMcCollision const& mcCollision, soa::Filtered<aod::JetParticles> const& particles)
   {
