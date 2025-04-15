@@ -44,7 +44,7 @@ struct MyCustomTask {
   Configurable<double> xmax {"xmax", 10, " xmax "};
   Configurable<double> ymin {"ymin", -5, " ymin "};
   Configurable<double> ymax {"ymax", 10, " ymax "};
-  Configurable<double> nbins {"nbins", 100, " nbins "};
+  Configurable<int> nbins {"nbins", 100, " nbins "};
 
   void init(o2::framework::InitContext& /*ic*/)
   {
