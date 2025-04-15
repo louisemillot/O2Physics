@@ -32,8 +32,25 @@ struct MyCustomTask {
 
   HistogramRegistry registry{"registry", {}};
 
+  // Recursive Soft Drop parameters
+
+  Configurable<double> R {"R", 1, "Radius of jet"};
+  Configurable<double> ptmin {"ptmin", 100, "pt min"};
+  Configurable<double> z_cut {"z_cut", 0.4, "z_cut softdrop parameter cut"};
+  Configurable<double> beta {"beta", 0.2, "beta softdrop parameter"};
+  Configurable<int> n {"n", 4, "number of iterations"}; // infinite recursion
+
+  Configurable<int> xmin {"xmin", -1, " xmin "};
+  Configurable<int> xmax {"xmax", 10, " xmax "};
+  Configurable<int> ymin {"ymin", -5, " ymin "};
+  Configurable<int> ymax {"ymax", 10, " ymax "};
+  Configurable<int> nbins {"nbins", 100, " nbins "};
+
   void init(o2::framework::InitContext& /*ic*/)
   {
+    AxisSpec lninvthetag_axis  = {nbins, xmin, xmax, "ln(1/#theta_{g})"};
+    AxisSpec lnkt_axis  = {nbins, ymin, ymax, "ln{k}_{T}"};
+
     registry.add<TH1>("NEvents", "NEvents", HistType::kTH1F, {{1, 0, 1}}, false);
     registry.add<TH1>("pt", "pt", HistType::kTH1F, {{100, 0, 100}}, false);
     registry.add<TH1>("eta", "eta", HistType::kTH1F, {{100, -1, 1}}, false);
@@ -47,7 +64,7 @@ struct MyCustomTask {
     registry.add<TH1>("zg", "zg", HistType::kTH1F, {{100, 0, 0.5}}, false);
     registry.add<TH1>("thetag", "thetag", HistType::kTH1F, {{100, 0, 0.5}}, false);
     registry.add<TH1>("kT", "kT", HistType::kTH1F, {{100, 0, 10}}, false);
-    registry.add<TH2>("h2_lnkt_vs_lnthetag", "ln(kT) vs ln(1/#theta_{g}); ln(1/#theta_{g}); ln(kT)", HistType::kTH2F, {{100, -0.5, 7}, {100, -5, 10}},false);
+    registry.add<TH2>("h2_lnkt_vs_lnthetag", "ln(kT) vs ln(1/#theta_{g}); ln(1/#theta_{g}); ln(kT)", HistType::kTH2F, {{lninvthetag_axis}, {lnkt_axis}},false);
   }
 
   void process(aod::McCollision const&, aod::McParticles const& mcParticles)
@@ -70,16 +87,12 @@ struct MyCustomTask {
     if (particles.size() == 0) return; //Vérifie si le vecteur particles est vide après la conversion des mcParticles en PseudoJet
 
     // Jet definition
-    double R = 1.0;
-    double ptmin = 100.0;
+    
     JetDefinition jet_def(antikt_algorithm, R);
     ClusterSequence cs(particles, jet_def);
     vector<PseudoJet> jets = sorted_by_pt(cs.inclusive_jets(ptmin));
 
     // Recursive Soft Drop parameters
-    double z_cut = 0.4;
-    double beta = 0.2;
-    int n = 4; // infinite recursion
     
     contrib::RecursiveSoftDrop rsd(beta, z_cut, n, R);
     rsd.set_verbose_structure(true);
