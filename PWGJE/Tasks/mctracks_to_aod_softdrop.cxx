@@ -99,6 +99,8 @@ struct MyCustomTask {
     contrib::RecursiveSoftDrop rsd(beta, z_cut, n, R);
     rsd.set_verbose_structure(true);
     rsd.set_dynamical_R0();
+    rsd.set_verbose(true);  // <- Active les logs détaillés
+    
 
     // Print infos in Recursive SD
     LOGF(info, "RecursiveSoftDrop groomer is: %s", rsd.description().c_str());
@@ -112,12 +114,12 @@ struct MyCustomTask {
 
       // Apply Recursive Soft Drop
       PseudoJet rsd_jet = rsd(jet);
-      if (rsd_jet.has_associated_cluster_sequence()) {
-        const ClusterSequence* cs_rsd = rsd_jet.validated_cluster_sequence();
-        LOGF(info, "Algorithme de grooming utilisé : %s", cs_rsd->jet_def().description().c_str());
-      } else {
-        LOGF(info, "Aucune séquence de clustering associée (jet déjà reclusterisé ?)");
-      }
+      // if (rsd_jet.has_associated_cluster_sequence()) {
+      //   const ClusterSequence* cs_rsd = rsd_jet.validated_cluster_sequence();
+      //   LOGF(info, "Algorithme de grooming utilisé : %s", cs_rsd->jet_def().description().c_str());
+      // } else {
+      //   LOGF(info, "Aucune séquence de clustering associée (jet déjà reclusterisé ?)");
+      // }
       
       if (rsd_jet == 0) continue; // skip if grooming failed
       
