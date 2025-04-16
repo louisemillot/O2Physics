@@ -34,11 +34,11 @@ struct MyCustomTask {
 
   // Recursive Soft Drop parameters
 
-  Configurable<double> R {"R", 1, "Radius of jet"};
+  Configurable<double> R {"R", 1, "Radius of jet"}; //dans le code on a : z > _symmetry_cut * pow(deltaR_squared / _R0sqr, 0.5*_beta) pourquoi 0.5*_beta ? car dans le code on utilise squared_geometric_distance(p1,p2) retourne ΔR2 et ΔR^beta = sqrt(ΔR2)^beta=ΔR2^0,5*beta
   Configurable<double> ptmin {"ptmin", 100, "pt min"};
   Configurable<double> z_cut {"z_cut", 0.4, "z_cut softdrop parameter cut"};
   Configurable<double> beta {"beta", 0.2, "beta softdrop parameter"};
-  Configurable<int> n {"n", 4, "number of iterations"}; // infinite recursion
+  Configurable<int> n {"n", -1, "number of iterations"}; // n = -1 : Récurse indéfiniment jusqu’à ce qu’il n’y ait plus de sous-structure (ou que la condition SoftDrop ne soit plus satisfaite), n > 0 : S’arrête après n fractionnements réussis.
 
   Configurable<double> xmin {"xmin", -1, " xmin "};
   Configurable<double> xmax {"xmax", 10, " xmax "};
@@ -88,9 +88,11 @@ struct MyCustomTask {
 
     // Jet definition
     
-    JetDefinition jet_def(antikt_algorithm, R);
+    JetDefinition jet_def(antikt_algorithm, R); // kt_algorithm or cambridge_algorithm or antikt_algorithm
     ClusterSequence cs(particles, jet_def);
-    vector<PseudoJet> jets = sorted_by_pt(cs.inclusive_jets(ptmin));
+    vector<PseudoJet> jets = sorted_by_pt(cs.inclusive_jets(ptmin)); // jets est un vecteur de PseudoJet, trié par pT descendant, avec uniquement les jets vérifiant pT > ptmin. Typiquement utilisé pour : Sélectionner les jets les plus énergétiques. Étudier les jets "leading" (le jet le plus dur est jets[0]).
+
+
 
     // Recursive Soft Drop parameters
     
@@ -110,7 +112,8 @@ struct MyCustomTask {
 
       // Apply Recursive Soft Drop
       PseudoJet rsd_jet = rsd(jet);
-      
+      const ClusterSequence *cs_rsd = rsd_jet.validated_cluster_sequence();
+      LOGF(info, "Algorithme pour SoftDrop : %s", cs_rsd->jet_def().description().c_str());
       if (rsd_jet == 0) continue; // skip if grooming failed
       
       registry.fill(HIST("rsd_jet_pt"), rsd_jet.pt());
