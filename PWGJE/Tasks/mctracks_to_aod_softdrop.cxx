@@ -112,8 +112,7 @@ struct MyCustomTask {
 
       // Apply Recursive Soft Drop
       PseudoJet rsd_jet = rsd(jet);
-      const ClusterSequence *cs_rsd = rsd_jet.validated_cluster_sequence();
-      LOGF(info, "Algorithme pour SoftDrop : %s", cs_rsd->jet_def().description().c_str());
+      
       if (rsd_jet == 0) continue; // skip if grooming failed
       
       registry.fill(HIST("rsd_jet_pt"), rsd_jet.pt());
