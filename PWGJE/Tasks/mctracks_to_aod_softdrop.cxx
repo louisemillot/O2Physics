@@ -99,7 +99,7 @@ struct MyCustomTask {
     contrib::RecursiveSoftDrop rsd(beta, z_cut, n, R);
     rsd.set_verbose_structure(true);
     rsd.set_dynamical_R0();
-    rsd.set_verbose(true);  // <- Active les logs détaillés
+    
     
 
     // Print infos in Recursive SD
