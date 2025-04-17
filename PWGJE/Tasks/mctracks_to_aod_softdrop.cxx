@@ -17,8 +17,6 @@
 #include "fastjet/contrib/RecursiveSoftDrop.hh"
 #include <iomanip>
 
-#include "TTree.h"
-
 using namespace o2;
 using namespace o2::framework;
 using namespace o2::constants::math;
@@ -47,10 +45,7 @@ struct MyCustomTask {
   Configurable<double> ymin {"ymin", -5, " ymin "};
   Configurable<double> ymax {"ymax", 10, " ymax "};
   Configurable<int> nbins {"nbins", 100, " nbins "};
-
-  // Ajoutez ces membres pour stocker les données (pour gif)
-  std::vector<double> v_lnkt;
-  std::vector<double> v_lnthetag;
+  
 
   void init(o2::framework::InitContext& /*ic*/)
   {
@@ -71,11 +66,6 @@ struct MyCustomTask {
     registry.add<TH1>("thetag", "thetag", HistType::kTH1F, {{100, 0, 0.5}}, false);
     registry.add<TH1>("kT", "kT", HistType::kTH1F, {{100, 0, 10}}, false);
     registry.add<TH2>("h2_lnkt_vs_lnthetag", "ln(kT) vs ln(1/#theta_{g}); ln(1/#theta_{g}); ln(kT)", HistType::kTH2F, {{lninvthetag_axis}, {lnkt_axis}},false);
-
-    // Ajoutez un TTree pour sauvegarder les données (pour gif)
-    registry.add<TTree>("jetdata", "Jet Data Tree");
-    registry.get<TTree>(HIST("jetdata"))->Branch("lnkt", &v_lnkt);
-    registry.get<TTree>(HIST("jetdata"))->Branch("lnthetag", &v_lnthetag);
   }
 
   void process(aod::McCollision const&, aod::McParticles const& mcParticles)
@@ -170,18 +160,9 @@ struct MyCustomTask {
         if (ztg[i].second > 0 && kT > 0) { // Vérification to avoid ln(0) or ln(negatif)
           double ln_kt = TMath::Log(kT);
           double ln_inv_thetag = TMath::Log(1./ztg[i].second);
-          // Remplissez les vecteurs de données(pour gif)
-          v_lnkt.push_back(ln_kt);
-          v_lnthetag.push_back(ln_inv_thetag);
           registry.fill(HIST("h2_lnkt_vs_lnthetag"), ln_inv_thetag, ln_kt);
         }
 
-      }
-      // Sauvegardez les données dans le TTree
-      if (!v_lnkt.empty()) {
-        registry.get<TTree>(HIST("jetdata"))->Fill();
-        v_lnkt.clear();
-        v_lnthetag.clear();
       }
     }
   }
