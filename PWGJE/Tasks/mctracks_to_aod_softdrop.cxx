@@ -16,6 +16,10 @@
 #include "fastjet/ClusterSequence.hh"
 #include "fastjet/contrib/RecursiveSoftDrop.hh"
 #include <iomanip>
+//pour gif
+#include "TCanvas.h"
+#include "TASImage.h"
+#include "TSystem.h"
 
 using namespace o2;
 using namespace o2::framework;
@@ -100,11 +104,16 @@ struct MyCustomTask {
     rsd.set_verbose_structure(true);
     rsd.set_dynamical_R0();
     
-    
-
     // Print infos in Recursive SD
     LOGF(info, "RecursiveSoftDrop groomer is: %s", rsd.description().c_str());
     LOGF(info, "Processing event with %d particles", particles.size());
+
+    // Créer un canvas pour l'animation
+    TCanvas* c1 = new TCanvas("c1", "Animation h2_lnkt_vs_lnthetag", 800, 600);
+    // Liste pour stocker les noms des images temporaires
+    std::vector<std::string> imageNames;
+
+
 
     for (const auto& jet : jets) {
       registry.fill(HIST("jet_pt"), jet.pt());
@@ -160,11 +169,44 @@ struct MyCustomTask {
           double ln_kt = TMath::Log(kT);
           double ln_inv_thetag = TMath::Log(1./ztg[i].second);
           registry.fill(HIST("h2_lnkt_vs_lnthetag"), ln_inv_thetag, ln_kt);
+
+          // Dessiner l'histogramme après chaque point
+          auto h2 = registry.get<TH2>(HIST("h2_lnkt_vs_lnthetag"));
+          h2->Draw("COLZ");
+          c1->Update();
+        
+          // Sauvegarder l'image temporaire
+          std::string imgName = Form("frame_%03d.png", imageNames.size());
+          c1->SaveAs(imgName.c_str());
+          imageNames.push_back(imgName);
+        
+          // Petite pause pour l'animation
+          gSystem->Sleep(200); // 200 ms entre les points
         }
 
       }
     }
+    // Créer le GIF à partir des images temporaires
+    if (!imageNames.empty()) {
+      TASImage image;
+      std::string gifName = "animation.gif";
+      for (const auto& name : imageNames) {
+        image.ReadImage(name.c_str());
+        image.WriteImage(gifName.c_str(), TASImage::kGif, "+");
+      }
+    
+      // Nettoyer les fichiers temporaires
+      for (const auto& name : imageNames) {
+        gSystem->Unlink(name.c_str());
+      }
+    
+      LOGF(info, "Animation sauvegardée dans %s", gifName.c_str());
+    }
+  
+  delete c1;
+
   }
+
 };
 
 // print the prongs inside the jet, showing the clustering info
