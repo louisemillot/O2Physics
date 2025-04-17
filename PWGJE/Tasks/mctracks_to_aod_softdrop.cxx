@@ -51,6 +51,7 @@ struct MyCustomTask {
   {
     AxisSpec lninvthetag_axis  = {nbins, xmin, xmax, "ln(1/#theta_{g})"};
     AxisSpec lnkt_axis  = {nbins, ymin, ymax, "ln{k}_{T}"};
+    AxisSpec tf_axis = {nbins, 0, 10, "t_{f}"};
 
     registry.add<TH1>("NEvents", "NEvents", HistType::kTH1F, {{1, 0, 1}}, false);
     registry.add<TH1>("pt", "pt", HistType::kTH1F, {{100, 0, 100}}, false);
@@ -65,6 +66,7 @@ struct MyCustomTask {
     registry.add<TH1>("zg", "zg", HistType::kTH1F, {{100, 0, 0.5}}, false);
     registry.add<TH1>("thetag", "thetag", HistType::kTH1F, {{100, 0, 0.5}}, false);
     registry.add<TH1>("kT", "kT", HistType::kTH1F, {{100, 0, 10}}, false);
+    registry.add<TH1>("tf", "Formation time t_{f} = 2/(k_{T}*#theta_{g})", HistType::kTH1F, {tf_axis}, false);
     registry.add<TH2>("h2_lnkt_vs_lnthetag", "ln(kT) vs ln(1/#theta_{g}); ln(1/#theta_{g}); ln(kT)", HistType::kTH2F, {{lninvthetag_axis}, {lnkt_axis}},false);
   }
 
@@ -161,6 +163,8 @@ struct MyCustomTask {
           double ln_kt = TMath::Log(kT);
           double ln_inv_thetag = TMath::Log(1./ztg[i].second);
           registry.fill(HIST("h2_lnkt_vs_lnthetag"), ln_inv_thetag, ln_kt);
+          double tf = 2.0 / (kT * ztg[i].second);
+          registry.fill(HIST("tf"), tf);
         }
 
       }
