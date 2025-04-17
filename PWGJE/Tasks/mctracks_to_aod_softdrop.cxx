@@ -17,6 +17,8 @@
 #include "fastjet/contrib/RecursiveSoftDrop.hh"
 #include <iomanip>
 
+#include "TTree.h"
+
 using namespace o2;
 using namespace o2::framework;
 using namespace o2::constants::math;
