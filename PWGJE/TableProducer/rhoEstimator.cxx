@@ -190,39 +190,22 @@ struct RhoEstimatorTask {
 
   void processChargedCollisions(aod::JetCollision const& collision, soa::Filtered<aod::JetTracks> const& tracks)
   {
-    LOGF(info, "test 1 process_charged_collisions \n");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits) || collision.centrality() < config.centralityMin || collision.centrality() >= config.centralityMax || collision.trackOccupancyInTimeRange() > config.trackOccupancyInTimeRangeMax || std::abs(collision.posZ()) > config.vertexZCut) {
-      LOGF(info, "test 2 process_charged_collisions \n");
       rhoChargedTable(0.0, 0.0);
-      LOGF(info, "test 3 process_charged_collisions \n");
       return;
-      LOGF(info, "test 4 process_charged_collisions \n");
     }
-    LOGF(info, "test 5 process_charged_collisions \n");
     if (collisionFlag.size() != 0 && !collisionFlag[collision.globalIndex()]) {
-      LOGF(info, "test 6 process_charged_collisions \n");
       rhoChargedTable(0.0, 0.0);
-      LOGF(info, "test 7 process_charged_collisions \n");
       return;
-      LOGF(info, "test 8 process_charged_collisions \n");
     }
-    LOGF(info, "test 9 process_charged_collisions \n");
     if (config.skipMBGapEvents && collision.subGeneratorId() == jetderiveddatautilities::JCollisionSubGeneratorId::mbGap) {
-      LOGF(info, "test 10 process_charged_collisions \n");
       rhoChargedTable(-1., -1.);
-      LOGF(info, "test 11 process_charged_collisions \n");
       return;
-    LOGF(info, "test 12 process_charged_collisions \n");
     }
-    LOGF(info, "test 13 process_charged_collisions \n");
     inputParticles.clear();
-    LOGF(info, "test 14 process_charged_collisions \n");
     jetfindingutilities::analyseTracks<soa::Filtered<aod::JetTracks>, soa::Filtered<aod::JetTracks>::iterator>(inputParticles, tracks, trackSelection, config.trackingEfficiency);
-    LOGF(info, "test 15 process_charged_collisions \n");
     auto [rho, rhoM] = bkgSub.estimateRhoAreaMedian(inputParticles, config.doSparse);
-    LOGF(info, "test 16 process_charged_collisions \n");
     rhoChargedTable(rho, rhoM);
-    LOGF(info, "test 17 process_charged_collisions \n");
   }
   PROCESS_SWITCH(RhoEstimatorTask, processChargedCollisions, "Fill rho tables for collisions using charged tracks", true);
   
