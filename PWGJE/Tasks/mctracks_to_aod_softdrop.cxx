@@ -190,7 +190,7 @@ struct MyCustomTask {
         registry.fill(HIST("phi"), track.phi());
         
         // Create PseudoJet from track 
-        particles.emplace_back(track.px(), track.py(), track.pz(), track.energy(MassPionCharged));
+        particles.emplace_back(track.px(), track.py(), track.pz(), track.energy(o2::constants::physics::MassPionCharged));
         particles.back().set_user_index(track.globalIndex());
     }
 
