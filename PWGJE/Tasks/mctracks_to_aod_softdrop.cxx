@@ -9,6 +9,11 @@
 // granted to it by virtue of its status as an Intergovernmental Organization
 // or submit itself to any jurisdiction.
 
+
+//TO DO LIST
+
+//Use JE framework (for example : because it's useful for tracks)
+
 #include "Framework/AnalysisTask.h"
 #include "Framework/HistogramRegistry.h"
 #include "Framework/AnalysisDataModel.h"
@@ -185,7 +190,7 @@ struct MyCustomTask {
         registry.fill(HIST("phi"), track.phi());
         
         // Create PseudoJet from track 
-        particles.emplace_back(track.px(), track.py(), track.pz(), track.energy());
+        particles.emplace_back(track.px(), track.py(), track.pz(), track.energy(MassPionCharged));
         particles.back().set_user_index(track.globalIndex());
     }
 
