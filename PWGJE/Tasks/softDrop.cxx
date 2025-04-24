@@ -43,6 +43,7 @@ struct SoftDropTask {
     sd = new contrib::SoftDrop(beta, z_cut);
     cout << "SoftDrop groomer is: " << sd->description() << endl;
     // Initialize histograms
+    registry.add("hNEvents", "Number of Events", HistType::kTH1F, {{1, 0, 1}});
     registry.add("hPtOriginal", "Original Jet pT;pT (GeV/c);Counts", HistType::kTH1F, {{100, 0, 200}});
     registry.add("hPtSoftDropped", "SoftDropped Jet pT;pT (GeV/c);Counts", HistType::kTH1F, {{100, 0, 200}});
     registry.add("hMassOriginal", "Original Jet Mass;Mass (GeV/c^2);Counts", HistType::kTH1F, {{100, 0, 200}});
@@ -54,6 +55,9 @@ struct SoftDropTask {
 
   void processData(aod::Tracks const& tracks)
   {
+    // Increment the event counter
+    registry.fill(HIST("hNEvents"), 1);
+
     // Convert O2 tracks to FastJet PseudoJets
     vector<PseudoJet> event;
     for (auto& track : tracks) {
@@ -100,6 +104,9 @@ PROCESS_SWITCH(SoftDropTask, processData, "process task for data particles", tru
 void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles)
 
   {
+    // Increment the event counter
+    registry.fill(HIST("hNEvents"), 1);
+    
     // Convert O2 MC particles to FastJet PseudoJets
     vector<PseudoJet> event;
     for (auto& particle : mcParticles) {
