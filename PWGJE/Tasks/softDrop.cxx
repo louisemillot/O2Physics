@@ -14,6 +14,7 @@
 #include "Framework/runDataProcessing.h" // O2Physics header
 #include "Framework/AnalysisTask.h"      // O2Physics header
 #include "Framework/AnalysisDataModel.h" // O2Physics header
+#include "Framework/HistogramRegistry.h"  // O2Physics header
 
 
 using namespace o2;
