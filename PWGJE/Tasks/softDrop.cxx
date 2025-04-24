@@ -60,7 +60,7 @@ struct SoftDropTask {
       PseudoJet particle(track.px(), track.py(), track.pz(), track.energy(o2::constants::physics::MassPionCharged));
       event.push_back(particle);
     }
-    cout << "# read an event with " << event.size() << " particles" << endl;
+    LOG(info) << "Read an event with " << event.size() << " particles";
 
     // Define the jet definition and cluster the event
     JetDefinition jet_def(antikt_algorithm, R);
@@ -70,15 +70,25 @@ struct SoftDropTask {
     // Apply SoftDrop to each jet
     for (unsigned ijet = 0; ijet < jets.size(); ijet++) {
       PseudoJet sd_jet = (*sd)(jets[ijet]);
-      cout << endl;
-      cout << "original    jet: " << jets[ijet] << endl;
-      cout << "SoftDropped jet: " << sd_jet << endl;
+      
+      ss_jet << jets[ijet];
+      LOG(info) << "Original jet: " << ss_jet.str();
+
+      std::stringstream ss_sd_jet;
+      ss_sd_jet << sd_jet;
+      LOG(info) << "SoftDropped jet: " << ss_sd_jet.str();
 
       assert(sd_jet != 0); // because soft drop is a groomer (not a tagger), it should always return a soft-dropped jet
 
-      cout << "  delta_R between subjets: " << sd_jet.structure_of<contrib::SoftDrop>().delta_R() << endl;
-      cout << "  symmetry measure(z):     " << sd_jet.structure_of<contrib::SoftDrop>().symmetry() << endl;
-      cout << "  mass drop(mu):           " << sd_jet.structure_of<contrib::SoftDrop>().mu() << endl;
+      // Fill histograms
+      registry.fill(HIST("hPtOriginal"), jets[ijet].pt());
+      registry.fill(HIST("hMassOriginal"), jets[ijet].m());
+      registry.fill(HIST("hPtSoftDropped"), sd_jet.pt());
+      registry.fill(HIST("hMassSoftDropped"), sd_jet.m());
+      registry.fill(HIST("hDeltaR"), sd_jet.structure_of<contrib::SoftDrop>().delta_R());
+      registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
+      registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
+
     }
   }
 PROCESS_SWITCH(SoftDropTask, processData, "process task for data particles", true);
@@ -94,7 +104,7 @@ void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles
       PseudoJet pj(particle.px(), particle.py(), particle.pz(), particle.e());
       event.push_back(pj);
     }
-    cout << "# read an event with " << event.size() << " particles" << endl;
+    LOG(info) << "Read an event with " << event.size() << " particles";
 
     // Define the jet definition and cluster the event
     JetDefinition jet_def(antikt_algorithm, R);
@@ -104,15 +114,25 @@ void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles
     // Apply SoftDrop to each jet
     for (unsigned ijet = 0; ijet < jets.size(); ijet++) {
       PseudoJet sd_jet = (*sd)(jets[ijet]);
-      cout << endl;
-      cout << "original    jet: " << jets[ijet] << endl;
-      cout << "SoftDropped jet: " << sd_jet << endl;
+      // Convert PseudoJet to string for logging
+      std::stringstream ss_jet;
+      ss_jet << jets[ijet];
+      LOG(info) << "Original jet: " << ss_jet.str();
+
+      std::stringstream ss_sd_jet;
+      ss_sd_jet << sd_jet;
+      LOG(info) << "SoftDropped jet: " << ss_sd_jet.str();
 
       assert(sd_jet != 0); // because soft drop is a groomer (not a tagger), it should always return a soft-dropped jet
 
-      cout << "  delta_R between subjets: " << sd_jet.structure_of<contrib::SoftDrop>().delta_R() << endl;
-      cout << "  symmetry measure(z):     " << sd_jet.structure_of<contrib::SoftDrop>().symmetry() << endl;
-      cout << "  mass drop(mu):           " << sd_jet.structure_of<contrib::SoftDrop>().mu() << endl;
+      // Fill histograms
+      registry.fill(HIST("hPtOriginal"), jets[ijet].pt());
+      registry.fill(HIST("hMassOriginal"), jets[ijet].m());
+      registry.fill(HIST("hPtSoftDropped"), sd_jet.pt());
+      registry.fill(HIST("hMassSoftDropped"), sd_jet.m());
+      registry.fill(HIST("hDeltaR"), sd_jet.structure_of<contrib::SoftDrop>().delta_R());
+      registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
+      registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
     }
   }
 
