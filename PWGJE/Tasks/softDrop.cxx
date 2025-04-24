@@ -29,7 +29,7 @@ ostream & operator<<(ostream &, const PseudoJet &);
 //----------------------------------------------------------------------
 struct SoftDropTask {
   // Define the input and output data
-  
+  HistogramRegistry registry{"registry", {}};
 
   // Define the parameters for SoftDrop
   Configurable<double> z_cut{"z_cut", 0.10, "Symmetry cut parameter for SoftDrop"};
