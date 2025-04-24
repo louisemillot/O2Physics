@@ -14,11 +14,12 @@
 #include "Framework/runDataProcessing.h" // O2Physics header
 #include "Framework/AnalysisTask.h"      // O2Physics header
 #include "Framework/AnalysisDataModel.h" // O2Physics header
+#include "Framework/HistogramRegistry.h"  // O2Physics header
 
 using namespace o2;
 using namespace o2::framework;
 using namespace o2::constants::math;
-using namespace fastjet; 
+using namespace fastjet;
 using namespace std;
 
 // Forward declaration to make things clearer
@@ -26,10 +27,9 @@ ostream & operator<<(ostream &, const PseudoJet &);
 
 //----------------------------------------------------------------------
 struct SoftDropTask {
-  // Define the input and output data
-  
+  HistogramRegistry registry{"registry", {}};
 
-  // Define the parameters for SoftDrop
+  // Define the input and output data
   Configurable<double> z_cut{"z_cut", 0.10, "Symmetry cut parameter for SoftDrop"};
   Configurable<double> beta{"beta", 2.0, "Beta parameter for SoftDrop"};
   Configurable<double> R{"R", 1.0, "Jet radius parameter"};
@@ -40,6 +40,15 @@ struct SoftDropTask {
     // Initialize the SoftDrop groomer
     sd = new contrib::SoftDrop(beta, z_cut);
     cout << "SoftDrop groomer is: " << sd->description() << endl;
+
+    // Initialize histograms
+    registry.add("hPtOriginal", "Original Jet pT;pT (GeV/c);Counts", HistType::kTH1F, {{100, 0, 200}});
+    registry.add("hPtSoftDropped", "SoftDropped Jet pT;pT (GeV/c);Counts", HistType::kTH1F, {{100, 0, 200}});
+    registry.add("hMassOriginal", "Original Jet Mass;Mass (GeV/c^2);Counts", HistType::kTH1F, {{100, 0, 200}});
+    registry.add("hMassSoftDropped", "SoftDropped Jet Mass;Mass (GeV/c^2);Counts", HistType::kTH1F, {{100, 0, 200}});
+    registry.add("hDeltaR", "Delta R between subjets;Delta R;Counts", HistType::kTH1F, {{100, 0, 1}});
+    registry.add("hSymmetry", "Symmetry measure (z);z;Counts", HistType::kTH1F, {{100, 0, 1}});
+    registry.add("hMu", "Mass drop (mu);mu;Counts", HistType::kTH1F, {{100, 0, 1}});
   }
 
   void processData(aod::Tracks const& tracks)
@@ -50,7 +59,7 @@ struct SoftDropTask {
       PseudoJet particle(track.px(), track.py(), track.pz(), track.energy(o2::constants::physics::MassPionCharged));
       event.push_back(particle);
     }
-    cout << "# read an event with " << event.size() << " particles" << endl;
+    LOG(info) << "Read an event with " << event.size() << " particles";
 
     // Define the jet definition and cluster the event
     JetDefinition jet_def(antikt_algorithm, R);
@@ -60,23 +69,24 @@ struct SoftDropTask {
     // Apply SoftDrop to each jet
     for (unsigned ijet = 0; ijet < jets.size(); ijet++) {
       PseudoJet sd_jet = (*sd)(jets[ijet]);
-      cout << endl;
-      cout << "original    jet: " << jets[ijet] << endl;
-      cout << "SoftDropped jet: " << sd_jet << endl;
+      LOG(info) << "Original jet: " << jets[ijet];
+      LOG(info) << "SoftDropped jet: " << sd_jet;
 
       assert(sd_jet != 0); // because soft drop is a groomer (not a tagger), it should always return a soft-dropped jet
 
-      cout << "  delta_R between subjets: " << sd_jet.structure_of<contrib::SoftDrop>().delta_R() << endl;
-      cout << "  symmetry measure(z):     " << sd_jet.structure_of<contrib::SoftDrop>().symmetry() << endl;
-      cout << "  mass drop(mu):           " << sd_jet.structure_of<contrib::SoftDrop>().mu() << endl;
+      // Fill histograms
+      registry.fill(HIST("hPtOriginal"), jets[ijet].pt());
+      registry.fill(HIST("hMassOriginal"), jets[ijet].m());
+      registry.fill(HIST("hPtSoftDropped"), sd_jet.pt());
+      registry.fill(HIST("hMassSoftDropped"), sd_jet.m());
+      registry.fill(HIST("hDeltaR"), sd_jet.structure_of<contrib::SoftDrop>().delta_R());
+      registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
+      registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
     }
   }
-PROCESS_SWITCH(SoftDropTask, processData, "process task for data particles", true);
+  PROCESS_SWITCH(SoftDropTask, processData, "process task for data particles", true);
 
-
-
-void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles)
-
+  void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles)
   {
     // Convert O2 MC particles to FastJet PseudoJets
     vector<PseudoJet> event;
@@ -84,7 +94,7 @@ void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles
       PseudoJet pj(particle.px(), particle.py(), particle.pz(), particle.e());
       event.push_back(pj);
     }
-    cout << "# read an event with " << event.size() << " particles" << endl;
+    LOG(info) << "Read an event with " << event.size() << " particles";
 
     // Define the jet definition and cluster the event
     JetDefinition jet_def(antikt_algorithm, R);
@@ -94,24 +104,25 @@ void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles
     // Apply SoftDrop to each jet
     for (unsigned ijet = 0; ijet < jets.size(); ijet++) {
       PseudoJet sd_jet = (*sd)(jets[ijet]);
-      cout << endl;
-      cout << "original    jet: " << jets[ijet] << endl;
-      cout << "SoftDropped jet: " << sd_jet << endl;
+      LOG(info) << "Original jet: " << jets[ijet];
+      LOG(info) << "SoftDropped jet: " << sd_jet;
 
       assert(sd_jet != 0); // because soft drop is a groomer (not a tagger), it should always return a soft-dropped jet
 
-      cout << "  delta_R between subjets: " << sd_jet.structure_of<contrib::SoftDrop>().delta_R() << endl;
-      cout << "  symmetry measure(z):     " << sd_jet.structure_of<contrib::SoftDrop>().symmetry() << endl;
-      cout << "  mass drop(mu):           " << sd_jet.structure_of<contrib::SoftDrop>().mu() << endl;
+      // Fill histograms
+      registry.fill(HIST("hPtOriginal"), jets[ijet].pt());
+      registry.fill(HIST("hMassOriginal"), jets[ijet].m());
+      registry.fill(HIST("hPtSoftDropped"), sd_jet.pt());
+      registry.fill(HIST("hMassSoftDropped"), sd_jet.m());
+      registry.fill(HIST("hDeltaR"), sd_jet.structure_of<contrib::SoftDrop>().delta_R());
+      registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
+      registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
     }
   }
+  PROCESS_SWITCH(SoftDropTask, processMC, "process task for MC particles", false);
 
-PROCESS_SWITCH(SoftDropTask, processMC, "process task for MC particles", false);
-
-contrib::SoftDrop* sd;
-
+  contrib::SoftDrop* sd;
 };
-
 
 //----------------------------------------------------------------------
 /// Overloaded jet info output
