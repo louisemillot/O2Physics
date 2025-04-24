@@ -71,7 +71,9 @@ struct SoftDropTask {
     for (unsigned ijet = 0; ijet < jets.size(); ijet++) {
       PseudoJet sd_jet = (*sd)(jets[ijet]);
       
-      sd_jet << jets[ijet];
+      // Convert PseudoJet to string for logging
+      std::stringstream ss_jet;
+      ss_jet << jets[ijet];
       LOG(info) << "Original jet: " << ss_jet.str();
 
       std::stringstream ss_sd_jet;
