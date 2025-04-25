@@ -36,6 +36,7 @@ struct SoftDropTask {
   Configurable<double> beta{"beta", 2.0, "Beta parameter for SoftDrop"};
   Configurable<double> R{"R", 1.0, "Jet radius parameter"};
   Configurable<double> ptmin{"ptmin", 20.0, "Minimum jet pT"};
+  Configurable<double> ptmax{"ptmin", 60.0, "Maximum jet pT"};
 
   void init(InitContext&)
   {
@@ -88,19 +89,21 @@ struct SoftDropTask {
 
       assert(sd_jet != 0); // because soft drop is a groomer (not a tagger), it should always return a soft-dropped jet
 
-      // Fill histograms
-      double DeltaR = sd_jet.structure_of<contrib::SoftDrop>().delta_R();
-      double rg = DeltaR / R; // Normalisation 
-      registry.fill(HIST("jet_pt"), jets[ijet].pt());
-      registry.fill(HIST("jet_mass"), jets[ijet].m());
-      registry.fill(HIST("sd_jet_pt"), sd_jet.pt());
-      registry.fill(HIST("sd_jet_mass"), sd_jet.m());
-      registry.fill(HIST("DeltaR"), DeltaR);
-      registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
-      registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
-      registry.fill(HIST("rg"), rg);  
-      registry.fill(HIST("hJetPtRg"), jets[ijet].pt(), rg);
-
+      // Check if the jet pT is within the interval
+      if (jets[ijet].pt() >= ptmin && jets[ijet].pt() < ptmax) {
+        // Fill histograms
+        double DeltaR = sd_jet.structure_of<contrib::SoftDrop>().delta_R();
+        double rg = DeltaR / R; // Normalisation
+        registry.fill(HIST("jet_pt"), jets[ijet].pt());
+        registry.fill(HIST("jet_mass"), jets[ijet].m());
+        registry.fill(HIST("sd_jet_pt"), sd_jet.pt());
+        registry.fill(HIST("sd_jet_mass"), sd_jet.m());
+        registry.fill(HIST("DeltaR"), DeltaR);
+        registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
+        registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
+        registry.fill(HIST("rg"), rg);
+        registry.fill(HIST("hJetPtRg"), jets[ijet].pt(), rg);
+      }
     }
   }
 PROCESS_SWITCH(SoftDropTask, processData, "process task for data particles", true);
@@ -140,18 +143,21 @@ void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles
 
       assert(sd_jet != 0); // because soft drop is a groomer (not a tagger), it should always return a soft-dropped jet
 
-      // Fill histograms
-      double DeltaR = sd_jet.structure_of<contrib::SoftDrop>().delta_R();
-      double rg = DeltaR / R; // Normalisation 
-      registry.fill(HIST("jet_pt"), jets[ijet].pt());
-      registry.fill(HIST("jet_mass"), jets[ijet].m());
-      registry.fill(HIST("sd_jet_pt"), sd_jet.pt());
-      registry.fill(HIST("sd_jet_mass"), sd_jet.m());
-      registry.fill(HIST("DeltaR"), DeltaR);
-      registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
-      registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
-      registry.fill(HIST("rg"), rg);  
-      registry.fill(HIST("hJetPtRg"), jets[ijet].pt(), rg);
+      // Check if the jet pT is within the interval
+      if (jets[ijet].pt() >= ptmin && jets[ijet].pt() < ptmax) {
+        // Fill histograms
+        double DeltaR = sd_jet.structure_of<contrib::SoftDrop>().delta_R();
+        double rg = DeltaR / R; // Normalisation
+        registry.fill(HIST("jet_pt"), jets[ijet].pt());
+        registry.fill(HIST("jet_mass"), jets[ijet].m());
+        registry.fill(HIST("sd_jet_pt"), sd_jet.pt());
+        registry.fill(HIST("sd_jet_mass"), sd_jet.m());
+        registry.fill(HIST("DeltaR"), DeltaR);
+        registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
+        registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
+        registry.fill(HIST("rg"), rg);
+        registry.fill(HIST("hJetPtRg"), jets[ijet].pt(), rg);
+      }
     }
   }
 
