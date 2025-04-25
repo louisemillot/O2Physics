@@ -172,7 +172,7 @@ ostream & operator<<(ostream & ostr, const PseudoJet & jet) {
          << " m = " << jet.m()
          << " y = " << jet.rap()
          << " phi = " << jet.phi();
-  })
+  }
   return ostr;
 }
 
