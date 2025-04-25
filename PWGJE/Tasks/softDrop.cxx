@@ -36,7 +36,7 @@ struct SoftDropTask {
   Configurable<double> beta{"beta", 2.0, "Beta parameter for SoftDrop"};
   Configurable<double> R{"R", 1.0, "Jet radius parameter"};
   Configurable<double> ptmin{"ptmin", 20.0, "Minimum jet pT"};
-  Configurable<double> ptmax{"ptmin", 60.0, "Maximum jet pT"};
+  Configurable<double> ptmax{"ptmax", 60.0, "Maximum jet pT"};
 
   void init(InitContext&)
   {
