@@ -43,20 +43,22 @@ struct SoftDropTask {
     sd = new contrib::SoftDrop(beta, z_cut);
     cout << "SoftDrop groomer is: " << sd->description() << endl;
     // Initialize histograms
-    registry.add("hNEvents", "Number of Events", HistType::kTH1F, {{1, 0, 1}});
-    registry.add("hPtOriginal", "Original Jet pT;pT (GeV/c);Counts", HistType::kTH1F, {{100, 0, 200}});
-    registry.add("hPtSoftDropped", "SoftDropped Jet pT;pT (GeV/c);Counts", HistType::kTH1F, {{100, 0, 200}});
-    registry.add("hMassOriginal", "Original Jet Mass;Mass (GeV/c^2);Counts", HistType::kTH1F, {{100, 0, 200}});
-    registry.add("hMassSoftDropped", "SoftDropped Jet Mass;Mass (GeV/c^2);Counts", HistType::kTH1F, {{100, 0, 200}});
-    registry.add("hDeltaR", "Delta R between subjets;Delta R;Counts", HistType::kTH1F, {{100, 0, 1}});
+    registry.add("NEvents", "Number of Events", HistType::kTH1F, {{1, 0, 1}});
+    registry.add("jet_pt", "Original Jet pT;pT (GeV/c);Counts", HistType::kTH1F, {{100, 0, 200}});
+    registry.add("sd_jet_pt", "SoftDropped Jet pT;pT (GeV/c);Counts", HistType::kTH1F, {{100, 0, 200}});
+    registry.add("jet_mass", "Original Jet Mass;Mass (GeV/c^2);Counts", HistType::kTH1F, {{100, 0, 200}});
+    registry.add("sd_jet_mass", "SoftDropped Jet Mass;Mass (GeV/c^2);Counts", HistType::kTH1F, {{100, 0, 200}});
+    registry.add("DeltaR", "Delta R between subjets;Delta R;Counts", HistType::kTH1F, {{100, 0, 1}});
     registry.add("hSymmetry", "Symmetry measure (z);z;Counts", HistType::kTH1F, {{100, 0, 1}});
     registry.add("hMu", "Mass drop (mu);mu;Counts", HistType::kTH1F, {{100, 0, 1}});
+    registry.add("hJetPtDeltaR", "Jet pT vs rg ;pT (GeV/c);rg", HistType::kTH2F, {{100, 0, 200}, {100, 0, 1}});
+    registry.add("rg", "rg", HistType::kTH1F, {{100, 0, 0.5}});
   }
 
   void processData(aod::Tracks const& tracks)
   {
     // Increment the event counter
-    registry.fill(HIST("hNEvents"), 1);
+    registry.fill(HIST("NEvents"), 1);
 
     // Convert O2 tracks to FastJet PseudoJets
     vector<PseudoJet> event;
@@ -87,13 +89,17 @@ struct SoftDropTask {
       assert(sd_jet != 0); // because soft drop is a groomer (not a tagger), it should always return a soft-dropped jet
 
       // Fill histograms
-      registry.fill(HIST("hPtOriginal"), jets[ijet].pt());
-      registry.fill(HIST("hMassOriginal"), jets[ijet].m());
-      registry.fill(HIST("hPtSoftDropped"), sd_jet.pt());
-      registry.fill(HIST("hMassSoftDropped"), sd_jet.m());
-      registry.fill(HIST("hDeltaR"), sd_jet.structure_of<contrib::SoftDrop>().delta_R());
+      double DeltaR = sd_jet.structure_of<contrib::SoftDrop>().delta_R();
+      double rg = DeltaR / R; // Normalisation 
+      registry.fill(HIST("jet_pt"), jets[ijet].pt());
+      registry.fill(HIST("jet_mass"), jets[ijet].m());
+      registry.fill(HIST("sd_jet_pt"), sd_jet.pt());
+      registry.fill(HIST("sd_jet_mass"), sd_jet.m());
+      registry.fill(HIST("DeltaR"), DeltaR);
       registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
       registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
+      registry.fill(HIST("rg"), rg);  
+      registry.fill(HIST("hJetPtRg"), jets[ijet].pt(), rg);
 
     }
   }
@@ -105,7 +111,7 @@ void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles
 
   {
     // Increment the event counter
-    registry.fill(HIST("hNEvents"), 1);
+    registry.fill(HIST("NEvents"), 1);
     
     // Convert O2 MC particles to FastJet PseudoJets
     vector<PseudoJet> event;
@@ -135,13 +141,17 @@ void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles
       assert(sd_jet != 0); // because soft drop is a groomer (not a tagger), it should always return a soft-dropped jet
 
       // Fill histograms
-      registry.fill(HIST("hPtOriginal"), jets[ijet].pt());
-      registry.fill(HIST("hMassOriginal"), jets[ijet].m());
-      registry.fill(HIST("hPtSoftDropped"), sd_jet.pt());
-      registry.fill(HIST("hMassSoftDropped"), sd_jet.m());
-      registry.fill(HIST("hDeltaR"), sd_jet.structure_of<contrib::SoftDrop>().delta_R());
+      double DeltaR = sd_jet.structure_of<contrib::SoftDrop>().delta_R();
+      double rg = DeltaR / R; // Normalisation 
+      registry.fill(HIST("jet_pt"), jets[ijet].pt());
+      registry.fill(HIST("jet_mass"), jets[ijet].m());
+      registry.fill(HIST("sd_jet_pt"), sd_jet.pt());
+      registry.fill(HIST("sd_jet_mass"), sd_jet.m());
+      registry.fill(HIST("DeltaR"), DeltaR);
       registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
       registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
+      registry.fill(HIST("rg"), rg);  
+      registry.fill(HIST("hJetPtRg"), jets[ijet].pt(), rg);
     }
   }
 
@@ -162,7 +172,7 @@ ostream & operator<<(ostream & ostr, const PseudoJet & jet) {
          << " m = " << jet.m()
          << " y = " << jet.rap()
          << " phi = " << jet.phi();
-  }
+  })
   return ostr;
 }
 
