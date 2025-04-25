@@ -37,23 +37,33 @@ struct SoftDropTask {
   Configurable<double> R{"R", 1.0, "Jet radius parameter"};
   Configurable<double> ptmin{"ptmin", 20.0, "Minimum jet pT"};
   Configurable<double> ptmax{"ptmax", 60.0, "Maximum jet pT"};
+  Configurable<int> nbins_rg {"nbins_rg", 100, " nbins "};
+  Configurable<int> nbins_sd_pt {"nbins_sd_pt", 5, " nbins "};
+  Configurable<double> xmin {"xmin", 0, " xmin "};
+  Configurable<double> xmax {"xmax", 1, " xmax "};
+  
 
   void init(InitContext&)
   {
     // Initialize the SoftDrop groomer
     sd = new contrib::SoftDrop(beta, z_cut);
     cout << "SoftDrop groomer is: " << sd->description() << endl;
+
+    AxisSpec rg_axis  = {nbins_rg, xmin, xmax, "rg"};
+    AxisSpec sd_jet_pt_axis  = {nbins_sd_pt, ptmin, ptmax, "sd_pt"};
+    
+
     // Initialize histograms
     registry.add("NEvents", "Number of Events", HistType::kTH1F, {{1, 0, 1}});
     registry.add("jet_pt", "Original Jet pT;pT (GeV/c);Counts", HistType::kTH1F, {{100, 0, 200}});
-    registry.add("sd_jet_pt", "SoftDropped Jet pT;pT (GeV/c);Counts", HistType::kTH1F, {{100, 0, 200}});
+    registry.add("sd_jet_pt", "SoftDropped Jet pT;pT (GeV/c);Counts", HistType::kTH1F, {sd_jet_pt_axis});
     registry.add("jet_mass", "Original Jet Mass;Mass (GeV/c^2);Counts", HistType::kTH1F, {{100, 0, 200}});
     registry.add("sd_jet_mass", "SoftDropped Jet Mass;Mass (GeV/c^2);Counts", HistType::kTH1F, {{100, 0, 200}});
     registry.add("DeltaR", "Delta R between subjets;Delta R;Counts", HistType::kTH1F, {{100, 0, 1}});
     registry.add("hSymmetry", "Symmetry measure (z);z;Counts", HistType::kTH1F, {{100, 0, 1}});
     registry.add("hMu", "Mass drop (mu);mu;Counts", HistType::kTH1F, {{100, 0, 1}});
-    registry.add("hJetPtRg", "Jet pT vs rg ;pT (GeV/c);rg", HistType::kTH2F, {{100, 0, 200}, {100, 0, 1}});
-    registry.add("rg", "rg", HistType::kTH1F, {{100, 0, 0.5}});
+    registry.add("hJetPtRg", "Jet pT vs rg ;rg ;pT (GeV/c)", HistType::kTH2F, {{rg_axis}, {sd_jet_pt_axis}});
+    registry.add("rg", "rg", HistType::kTH1F, {rg_axis});
   }
 
   void processData(aod::Tracks const& tracks)
@@ -102,7 +112,7 @@ struct SoftDropTask {
         registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
         registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
         registry.fill(HIST("rg"), rg);
-        registry.fill(HIST("hJetPtRg"), jets[ijet].pt(), rg);
+        registry.fill(HIST("hJetPtRg"), sd_jet.pt(), rg);
       }
     }
   }
@@ -127,7 +137,7 @@ void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles
     // Define the jet definition and cluster the event
     JetDefinition jet_def(antikt_algorithm, R);
     ClusterSequence cs(event, jet_def);
-    vector<PseudoJet> jets = sorted_by_pt(cs.inclusive_jets(ptmin));
+    vector<PseudoJet> jets = sorted_by_pt(cs.inclusive_jets(ptmin)); //all jets above ptmin
 
     // Apply SoftDrop to each jet
     for (unsigned ijet = 0; ijet < jets.size(); ijet++) {
@@ -156,7 +166,7 @@ void processMC(soa::Join<aod::McParticles, aod::McCollisions> const& mcParticles
         registry.fill(HIST("hSymmetry"), sd_jet.structure_of<contrib::SoftDrop>().symmetry());
         registry.fill(HIST("hMu"), sd_jet.structure_of<contrib::SoftDrop>().mu());
         registry.fill(HIST("rg"), rg);
-        registry.fill(HIST("hJetPtRg"), jets[ijet].pt(), rg);
+        registry.fill(HIST("hJetPtRg"), sd_jet.pt(), rg);
       }
     }
   }
