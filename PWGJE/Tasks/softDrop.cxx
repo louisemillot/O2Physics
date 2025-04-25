@@ -51,7 +51,7 @@ struct SoftDropTask {
     registry.add("DeltaR", "Delta R between subjets;Delta R;Counts", HistType::kTH1F, {{100, 0, 1}});
     registry.add("hSymmetry", "Symmetry measure (z);z;Counts", HistType::kTH1F, {{100, 0, 1}});
     registry.add("hMu", "Mass drop (mu);mu;Counts", HistType::kTH1F, {{100, 0, 1}});
-    registry.add("hJetPtDeltaR", "Jet pT vs rg ;pT (GeV/c);rg", HistType::kTH2F, {{100, 0, 200}, {100, 0, 1}});
+    registry.add("hJetPtRg", "Jet pT vs rg ;pT (GeV/c);rg", HistType::kTH2F, {{100, 0, 200}, {100, 0, 1}});
     registry.add("rg", "rg", HistType::kTH1F, {{100, 0, 0.5}});
   }
 
