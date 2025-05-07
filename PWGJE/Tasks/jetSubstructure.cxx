@@ -344,24 +344,25 @@ struct JetSubstructureTask {
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               aod::JetTracks const& tracks)
   {
-    std::vector<int32_t> selectedJets;
-    
-      bool hasHighPtConstituent = false;
+    /////////////// leading track cut try : (because filter doesnt work)
 
-    // Boucle sur les constituants du jet
-      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-        if (jetConstituent.pt() >= 5.0f) {
-            hasHighPtConstituent = true;
-            break; // Sortir de la boucle dès qu'un constituant valide est trouvé
-        }
-      }
+    // std::vector<int32_t> selectedJets;
+    //   bool hasHighPtConstituent = false;
+    // // Boucle sur les constituants du jet
+    //   for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+    //     if (jetConstituent.pt() >= 5.0f) {
+    //         hasHighPtConstituent = true;
+    //         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+    //     }
+    //   }
 
-      // Si le jet a au moins un constituant avec pT >= 5 GeV, on le conserve
-      if (hasHighPtConstituent) {
-        // Ajouter le jet à la liste des jets sélectionnés
-        selectedJets.push_back(jet);
-      } 
+    //   // Si le jet a au moins un constituant avec pT >= 5 GeV, on le conserve
+    //   if (hasHighPtConstituent) {
+    //     // Ajouter le jet à la liste des jets sélectionnés
+    //     selectedJets.push_back(jet);
+    //   } 
     
+    /////////////// track selection try: (because filter doesnt work)
 
     // std::vector<int32_t> filteredTracks;
     // for (const auto& track : tracks) {
@@ -373,7 +374,7 @@ struct JetSubstructureTask {
     // if (filteredTracks.empty()) {
     //   return;
     // } //au lieu de mettre tracks dans analyseCharged on met filteredTracks 
-    analyseCharged<false>(selectedJets, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
+    analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
