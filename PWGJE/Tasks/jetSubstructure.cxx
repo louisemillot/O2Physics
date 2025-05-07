@@ -141,8 +141,8 @@ struct JetSubstructureTask {
   template <bool isMCP, bool isSubtracted, typename T, typename U>
   void jetReclustering(T const& jet, U& splittingTable)
   {
-    energyMotherVec.clear();
-    ptLeadingVec.clear();
+    energyMotherVec.clear(); //be sure that the vector are empty 
+    ptLeadingVec.clear(); 
     ptSubLeadingVec.clear();
     thetaVec.clear();
     jetReclustered.clear();
@@ -349,8 +349,8 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
-  void processChargedJetsData(soa::Filtered<soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>>::iterator const& jet,
-                              soa::Filtered<aod::JetTracks> const& tracks)
+  void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
+                              aod::JetTracks> const& tracks)
 
   {
     analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
