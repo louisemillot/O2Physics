@@ -349,7 +349,7 @@ struct JetSubstructureTask {
       bool hasHighPtConstituent = false;
 
     // Boucle sur les constituants du jet
-      for (auto& jetConstituent : jet.tracks_as<JetTracks>()) {
+      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
         if (jetConstituent.pt() >= 5.0f) {
             hasHighPtConstituent = true;
             break; // Sortir de la boucle dès qu'un constituant valide est trouvé
