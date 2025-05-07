@@ -344,7 +344,7 @@ struct JetSubstructureTask {
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
-                              aod::JetTracks const& tracks)
+                              soa::Filtered<aod::JetTracks> const& tracks)
   {
     // bool hasAcceptedTrack = false;
     // for (const auto& track : tracks) {
