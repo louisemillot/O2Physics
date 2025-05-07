@@ -344,7 +344,8 @@ struct JetSubstructureTask {
   {
     bool hasAcceptedTrack = false;
     for (const auto& track : tracks) {
-      if (track.pt() >= trackQAPtMin && std::abs(track.eta()) <= trackQAEtaMax) {
+      if (track.pt() >= trackQAPtMin && track.pt() < trackQAPtMax &&
+        track.eta() >= trackQAEtaMin && track.eta() < trackQAEtaMax) {
         hasAcceptedTrack = true;
         break;
       }
