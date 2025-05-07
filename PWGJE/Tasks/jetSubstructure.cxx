@@ -347,20 +347,21 @@ struct JetSubstructureTask {
     /////////////// leading track cut try : (because filter doesnt work)
 
     // std::vector<int32_t> selectedJets;
-    //   bool hasHighPtConstituent = false;
-    // // Boucle sur les constituants du jet
-    //   for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-    //     if (jetConstituent.pt() >= 5.0f) {
-    //         hasHighPtConstituent = true;
-    //         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
-    //     }
-    //   }
+      // bool hasHighPtConstituent = false;
+    // Boucle sur les constituants du jet
+      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+        if (jetConstituent.pt() >= 5.0f) {
+            hasHighPtConstituent = true;
+            // break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+        }
+        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
+      }
 
-    //   // Si le jet a au moins un constituant avec pT >= 5 GeV, on le conserve
-    //   if (hasHighPtConstituent) {
-    //     // Ajouter le jet à la liste des jets sélectionnés
-    //     selectedJets.push_back(jet);
-    //   } 
+      // // Si le jet a au moins un constituant avec pT >= 5 GeV, on le conserve
+      // if (hasHighPtConstituent) {
+      //   // Ajouter le jet à la liste des jets sélectionnés
+      //   selectedJets.push_back(jet);
+      // } //au lieu de mettre jet dans analyseCharged on met selectedJets
     
     /////////////// track selection try: (because filter doesnt work)
 
