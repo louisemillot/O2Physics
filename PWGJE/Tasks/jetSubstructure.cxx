@@ -339,12 +339,20 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
-  void processChargedJetsData(aod::JetCollisions::iterator const& collision, 
-                              soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
+  void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               aod::JetTracks const& tracks)
-
-
   {
+    bool hasAcceptedTrack = false;
+    for (const auto& track : tracks) {
+      if (track.pt() >= trackQAPtMin && std::abs(track.eta()) <= trackQAEtaMax) {
+        hasAcceptedTrack = true;
+        break;
+      }
+    }
+
+    if (!hasAcceptedTrack) {
+      return;
+    }
     analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
