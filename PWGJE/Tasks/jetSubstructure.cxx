@@ -38,6 +38,8 @@
 #include "PWGJE/Core/JetUtilities.h"
 #include "PWGJE/Core/JetSubstructureUtilities.h"
 
+#include "PWGJE/Core/JetDerivedDataUtilities.h"
+
 using namespace o2;
 using namespace o2::framework;
 using namespace o2::framework::expressions;
@@ -73,7 +75,7 @@ struct JetSubstructureTask {
   Configurable<float> vertexZCut{"vertexZCut", 10.0, "Cut on the vertex Z position"};
   Configurable<float> centralityMin{"centralityMin", 0.0, "Minimum centrality"};
   Configurable<float> centralityMax{"centralityMax", 100.0, "Maximum centrality"};
-  
+
   Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
   Configurable<std::string> trackSelections{"trackSelections", "globalTracks", "set track selections; other option: uniformTracks"};
 
