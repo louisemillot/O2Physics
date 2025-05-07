@@ -353,8 +353,8 @@ struct JetSubstructureTask {
         // if (jetConstituent.pt() >= 5.0f) {
             // hasHighPtConstituent = true;
             // break; // Sortir de la boucle dès qu'un constituant valide est trouvé
-        }
-      }
+        // }
+      // }
       // analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
       // // Si le jet a au moins un constituant avec pT >= 5 GeV, on le conserve
       // if (hasHighPtConstituent) {
