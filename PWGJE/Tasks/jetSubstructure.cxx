@@ -362,7 +362,7 @@ struct JetSubstructureTask {
       //   selectedJets.push_back(jet);
       // } //au lieu de mettre jet dans analyseCharged on met selectedJets
 
-
+      bool hasHighPtConstituent = false;
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
         if (jetConstituent.pt() >= 5.0f) {
           hasHighPtConstituent = true;
