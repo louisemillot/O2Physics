@@ -345,19 +345,17 @@ struct JetSubstructureTask {
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               aod::JetTracks const& tracks)
   {
-    // bool hasAcceptedTrack = false;
-    // for (const auto& track : tracks) {
-    //   if (track.pt() >= trackQAPtMin && track.pt() < trackQAPtMax &&
-    //     track.eta() >= trackQAEtaMin && track.eta() < trackQAEtaMax) {
-    //     hasAcceptedTrack = true;
-    //     break;
-    //   }
-    // }
-
-    // if (!hasAcceptedTrack) {
-    //   return;
-    // }
-    analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
+    std::vector<decltype(tracks)::value_type> filteredTracks;
+    for (const auto& track : tracks) {
+       if (track.pt() >= trackQAPtMin && track.pt() < trackQAPtMax &&
+         track.eta() >= trackQAEtaMin && track.eta() < trackQAEtaMax) {
+         filteredTracks.push_back(track);
+       }
+     }
+    if (filteredTracks.empty()) {
+      return;
+    }
+    analyseCharged<false>(jet, filteredTracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
