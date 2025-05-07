@@ -344,7 +344,7 @@ struct JetSubstructureTask {
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               aod::JetTracks const& tracks)
   {
-    std::vector<fastjet::PseudoJet> selectedJets;
+    std::vector<int32_t> selectedJets;
     
       bool hasHighPtConstituent = false;
 
