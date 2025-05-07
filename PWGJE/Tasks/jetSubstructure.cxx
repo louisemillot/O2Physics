@@ -38,8 +38,6 @@
 #include "PWGJE/Core/JetUtilities.h"
 #include "PWGJE/Core/JetSubstructureUtilities.h"
 
-#include "PWGJE/Core/JetDerivedDataUtilities.h"
-
 using namespace o2;
 using namespace o2::framework;
 using namespace o2::framework::expressions;
@@ -68,22 +66,6 @@ struct JetSubstructureTask {
   Configurable<float> alpha{"alpha", 1.0, "angularity alpha"};
   Configurable<bool> doPairBkg{"doPairBkg", true, "save bkg pairs"};
   Configurable<float> pairConstituentPtMin{"pairConstituentPtMin", 1.0, "pt cut off for constituents going into pairs"};
-  Configurable<float> trackQAPtMin{"trackQAPtMin", 0.15, "Minimum track pT for QA"};
-  Configurable<float> trackQAPtMax{"trackQAPtMax", 100.0, "Maximum track pT for QA"};
-  Configurable<float> trackQAEtaMin{"trackQAEtaMin", -0.8, "Minimum track eta for QA"};
-  Configurable<float> trackQAEtaMax{"trackQAEtaMax", 0.8, "Maximum track eta for QA"};
-  Configurable<float> vertexZCut{"vertexZCut", 10.0, "Cut on the vertex Z position"};
-  Configurable<float> centralityMin{"centralityMin", 0.0, "Minimum centrality"};
-  Configurable<float> centralityMax{"centralityMax", 100.0, "Maximum centrality"};
-
-  Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
-  Configurable<std::string> trackSelections{"trackSelections", "globalTracks", "set track selections; other option: uniformTracks"};
-
-  std::vector<int> eventSelectionBits;
-
-  Filter trackCuts = (aod::jtrack::pt >= trackQAPtMin && aod::jtrack::pt < trackQAPtMax && aod::jtrack::eta > trackQAEtaMin && aod::jtrack::eta < trackQAEtaMax);
-  // Filter particleCuts = (aod::jmcparticle::pt >= trackQAPtMin && aod::jmcparticle::pt < trackQAPtMax && aod::jmcparticle::eta > trackQAEtaMin && aod::jmcparticle::eta < trackQAEtaMax);
-  Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
 
   Service<o2::framework::O2DatabasePDG> pdg;
   std::vector<fastjet::PseudoJet> jetConstituents;
@@ -114,10 +96,7 @@ struct JetSubstructureTask {
   HistogramRegistry registry;
 
   void init(InitContext const&)
-  { 
-    eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
-
-    LOG(info) << " ::: Test initial ::: ";
+  {
     registry.add("h2_jet_pt_jet_zg", ";#it{p}_{T,jet} (GeV/#it{c});#it{z}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_rg", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_nsd", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
@@ -141,8 +120,8 @@ struct JetSubstructureTask {
   template <bool isMCP, bool isSubtracted, typename T, typename U>
   void jetReclustering(T const& jet, U& splittingTable)
   {
-    energyMotherVec.clear(); //be sure that the vector are empty 
-    ptLeadingVec.clear(); 
+    energyMotherVec.clear();
+    ptLeadingVec.clear();
     ptSubLeadingVec.clear();
     thetaVec.clear();
     jetReclustered.clear();
@@ -350,8 +329,7 @@ struct JetSubstructureTask {
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
-                              aod::JetTracks> const& tracks)
-
+                              aod::JetTracks const& tracks)
   {
     analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
   }
