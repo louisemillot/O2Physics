@@ -345,7 +345,7 @@ struct JetSubstructureTask {
                               aod::JetTracks const& tracks)
   {
     std::vector<fastjet::PseudoJet> selectedJets;
-    for (auto& jet : jets) {
+    
       bool hasHighPtConstituent = false;
 
     // Boucle sur les constituants du jet
@@ -361,9 +361,7 @@ struct JetSubstructureTask {
         // Ajouter le jet à la liste des jets sélectionnés
         selectedJets.push_back(jet);
       } 
-    }
-
-
+    
 
     // std::vector<int32_t> filteredTracks;
     // for (const auto& track : tracks) {
