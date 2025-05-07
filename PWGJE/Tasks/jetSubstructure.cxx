@@ -66,6 +66,17 @@ struct JetSubstructureTask {
   Configurable<float> alpha{"alpha", 1.0, "angularity alpha"};
   Configurable<bool> doPairBkg{"doPairBkg", true, "save bkg pairs"};
   Configurable<float> pairConstituentPtMin{"pairConstituentPtMin", 1.0, "pt cut off for constituents going into pairs"};
+  Configurable<float> trackQAPtMin{"trackQAPtMin", 0.15, "Minimum track pT for QA"};
+  Configurable<float> trackQAPtMax{"trackQAPtMax", 100.0, "Maximum track pT for QA"};
+  Configurable<float> trackQAEtaMin{"trackQAEtaMin", -0.8, "Minimum track eta for QA"};
+  Configurable<float> trackQAEtaMax{"trackQAEtaMax", 0.8, "Maximum track eta for QA"};
+  Configurable<float> vertexZCut{"vertexZCut", 10.0, "Cut on the vertex Z position"};
+  Configurable<float> centralityMin{"centralityMin", 0.0, "Minimum centrality"};
+  Configurable<float> centralityMax{"centralityMax", 100.0, "Maximum centrality"};
+
+  Filter trackCuts = (aod::jtrack::pt >= trackQAPtMin && aod::jtrack::pt < trackQAPtMax && aod::jtrack::eta > trackQAEtaMin && aod::jtrack::eta < trackQAEtaMax);
+  // Filter particleCuts = (aod::jmcparticle::pt >= trackQAPtMin && aod::jmcparticle::pt < trackQAPtMax && aod::jmcparticle::eta > trackQAEtaMin && aod::jmcparticle::eta < trackQAEtaMax);
+  Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
 
   Service<o2::framework::O2DatabasePDG> pdg;
   std::vector<fastjet::PseudoJet> jetConstituents;
@@ -329,9 +340,14 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
-  void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
-                              aod::JetTracks const& tracks)
+  void processChargedJetsData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
+                              soa::Filtered<soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>>::iterator const& jet,
+                              soa::Filtered<aod::JetTracks> const& tracks)
+
   {
+    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
+      return;
+    }
     analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
