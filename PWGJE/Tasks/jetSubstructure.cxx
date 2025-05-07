@@ -339,7 +339,7 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
-  void processChargedJetsData(aod::JetCollisions::iterator const& collision,
+  void processChargedJetsData(aod::JetCollisions::iterator const& collision, 
                               soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               aod::JetTracks const& tracks)
 
