@@ -326,7 +326,6 @@ struct JetSubstructureTask {
   void analyseCharged(T const& jet, U const& tracks, V const& trackSlicer, M& outputTable, N& splittingTable, O& pairTable)
   {
     jetConstituents.clear();
-    
     for (auto& jetConstituent : jet.template tracks_as<U>()) {
       fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex());
     }
@@ -345,6 +344,27 @@ struct JetSubstructureTask {
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               aod::JetTracks const& tracks)
   {
+    std::vector<fastjet::PseudoJet> selectedJets;
+    for (auto& jet : jets) {
+      bool hasHighPtConstituent = false;
+
+    // Boucle sur les constituants du jet
+      for (auto& jetConstituent : jet.tracks_as<JetTracks>()) {
+        if (jetConstituent.pt() >= 5.0f) {
+            hasHighPtConstituent = true;
+            break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+        }
+      }
+
+      // Si le jet a au moins un constituant avec pT >= 5 GeV, on le conserve
+      if (hasHighPtConstituent) {
+        // Ajouter le jet à la liste des jets sélectionnés
+        selectedJets.push_back(jet);
+      } 
+    }
+
+
+
     // std::vector<int32_t> filteredTracks;
     // for (const auto& track : tracks) {
     //    if (track.pt() >= trackQAPtMin && track.pt() < trackQAPtMax &&
@@ -354,8 +374,8 @@ struct JetSubstructureTask {
     //  }
     // if (filteredTracks.empty()) {
     //   return;
-    // }
-    analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
+    // } //au lieu de mettre tracks dans analyseCharged on met filteredTracks 
+    analyseCharged<false>(selectedJets, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
