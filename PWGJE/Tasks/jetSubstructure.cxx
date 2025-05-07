@@ -125,8 +125,7 @@ struct JetSubstructureTask {
   Preslice<aod::JetParticles> ParticlesPerMcCollision = aod::jmcparticle::mcCollisionId;
 
 
-  Filter trackPtFilter = aod::track::pt >= trackQAPtMin && aod::track::pt < trackQAPtMax;
-  Filter trackEtaFilter = aod::track::eta >= trackQAEtaMin && aod::track::eta < trackQAEtaMax;
+
   // Filter trackCuts = (aod::jtrack::pt >= trackQAPtMin && aod::jtrack::pt < trackQAPtMax && aod::jtrack::eta > trackQAEtaMin && aod::jtrack::eta < trackQAEtaMax);
   // Filter particleCuts = (aod::jmcparticle::pt >= trackQAPtMin && aod::jmcparticle::pt < trackQAPtMax && aod::jmcparticle::eta > trackQAEtaMin && aod::jmcparticle::eta < trackQAEtaMax);
   // Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
@@ -327,7 +326,7 @@ struct JetSubstructureTask {
   void analyseCharged(T const& jet, U const& tracks, V const& trackSlicer, M& outputTable, N& splittingTable, O& pairTable)
   {
     jetConstituents.clear();
-    float maxPt = 0.f;
+    
     for (auto& jetConstituent : jet.template tracks_as<U>()) {
       fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex());
     }
@@ -344,7 +343,7 @@ struct JetSubstructureTask {
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
-                              soa::Filtered<aod::JetTracks> const& tracks)
+                              aod::JetTracks const& tracks)
   {
     // bool hasAcceptedTrack = false;
     // for (const auto& track : tracks) {
