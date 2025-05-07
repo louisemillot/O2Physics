@@ -387,7 +387,7 @@ struct JetSubstructureTask {
     // if (filteredTracks.empty()) {
     //   return;
     // } //au lieu de mettre tracks dans analyseCharged on met filteredTracks 
-    analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
+    // analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
