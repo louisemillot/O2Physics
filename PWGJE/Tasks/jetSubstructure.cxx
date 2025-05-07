@@ -324,6 +324,7 @@ struct JetSubstructureTask {
   void analyseCharged(T const& jet, U const& tracks, V const& trackSlicer, M& outputTable, N& splittingTable, O& pairTable)
   {
     jetConstituents.clear();
+    float maxPt = 0.f;
     for (auto& jetConstituent : jet.template tracks_as<U>()) {
       fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex());
     }
@@ -342,18 +343,18 @@ struct JetSubstructureTask {
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               aod::JetTracks const& tracks)
   {
-    bool hasAcceptedTrack = false;
-    for (const auto& track : tracks) {
-      if (track.pt() >= trackQAPtMin && track.pt() < trackQAPtMax &&
-        track.eta() >= trackQAEtaMin && track.eta() < trackQAEtaMax) {
-        hasAcceptedTrack = true;
-        break;
-      }
-    }
+    // bool hasAcceptedTrack = false;
+    // for (const auto& track : tracks) {
+    //   if (track.pt() >= trackQAPtMin && track.pt() < trackQAPtMax &&
+    //     track.eta() >= trackQAEtaMin && track.eta() < trackQAEtaMax) {
+    //     hasAcceptedTrack = true;
+    //     break;
+    //   }
+    // }
 
-    if (!hasAcceptedTrack) {
-      return;
-    }
+    // if (!hasAcceptedTrack) {
+    //   return;
+    // }
     analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
