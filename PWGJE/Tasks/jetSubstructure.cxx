@@ -66,6 +66,13 @@ struct JetSubstructureTask {
   Configurable<float> alpha{"alpha", 1.0, "angularity alpha"};
   Configurable<bool> doPairBkg{"doPairBkg", true, "save bkg pairs"};
   Configurable<float> pairConstituentPtMin{"pairConstituentPtMin", 1.0, "pt cut off for constituents going into pairs"};
+  Configurable<float> centralityMin{"centralityMin", -999, ""};
+  Configurable<float> centralityMax{"centralityMax", 999, ""};
+  Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
+  Configurable<float> trackQAEtaMin{"trackQAEtaMin", -0.9, "minimum eta acceptance for tracks in the processTracks QA"};
+  Configurable<float> trackQAEtaMax{"trackQAEtaMax", 0.9, "maximum eta acceptance for tracks in the processTracks QA"};
+  Configurable<float> trackQAPtMin{"trackQAPtMin", 0.15, "minimum pT acceptance for tracks in the processTracks QA"};
+  Configurable<float> trackQAPtMax{"trackQAPtMax", 100.0, "maximum pT acceptance for tracks in the processTracks QA"};
 
   Service<o2::framework::O2DatabasePDG> pdg;
   std::vector<fastjet::PseudoJet> jetConstituents;
@@ -117,37 +124,41 @@ struct JetSubstructureTask {
   Preslice<aod::JetTracksSub> TracksPerCollisionDataSub = aod::bkgcharged::collisionId;
   Preslice<aod::JetParticles> ParticlesPerMcCollision = aod::jmcparticle::mcCollisionId;
 
+  Filter trackCuts = (aod::jtrack::pt >= trackQAPtMin && aod::jtrack::pt < trackQAPtMax && aod::jtrack::eta > trackQAEtaMin && aod::jtrack::eta < trackQAEtaMax);
+  // Filter particleCuts = (aod::jmcparticle::pt >= trackQAPtMin && aod::jmcparticle::pt < trackQAPtMax && aod::jmcparticle::eta > trackQAEtaMin && aod::jmcparticle::eta < trackQAEtaMax);
+  Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
+
   template <bool isMCP, bool isSubtracted, typename T, typename U>
   void jetReclustering(T const& jet, U& splittingTable)
   {
-    energyMotherVec.clear();
+    energyMotherVec.clear(); //to be sure its empty before filling
     ptLeadingVec.clear();
     ptSubLeadingVec.clear();
     thetaVec.clear();
     jetReclustered.clear();
-    fastjet::ClusterSequenceArea clusterSeq(jetReclusterer.findJets(jetConstituents, jetReclustered));
-    jetReclustered = sorted_by_pt(jetReclustered);
-    fastjet::PseudoJet daughterSubJet = jetReclustered[0];
-    fastjet::PseudoJet parentSubJet1;
-    fastjet::PseudoJet parentSubJet2;
+    fastjet::ClusterSequenceArea clusterSeq(jetReclusterer.findJets(jetConstituents, jetReclustered)); // jetConstituents is a vector of fastjet::PseudoJet containing (tracks/constituants)
+    jetReclustered = sorted_by_pt(jetReclustered); //sort jets by pt decreasing order 
+    fastjet::PseudoJet daughterSubJet = jetReclustered[0]; //order 0 of reclustering 
+    fastjet::PseudoJet parentSubJet1; //parent1 of daughter
+    fastjet::PseudoJet parentSubJet2; //parent2 of daughter
     bool softDropped = false;
     auto nsd = 0.0;
     auto zg = -1.0;
     auto rg = -1.0;
 
-    while (daughterSubJet.has_parents(parentSubJet1, parentSubJet2)) {
+    while (daughterSubJet.has_parents(parentSubJet1, parentSubJet2)) {//while daughter has parents, until we reach the end of reclustering
       if (parentSubJet1.perp() < parentSubJet2.perp()) {
-        std::swap(parentSubJet1, parentSubJet2);
+        std::swap(parentSubJet1, parentSubJet2);//for 1 to be greather in pt than 2
       }
       std::vector<int32_t> tracks;
       std::vector<int32_t> candidates;
       std::vector<int32_t> clusters;
-      for (const auto& constituent : sorted_by_pt(parentSubJet2.constituents())) {
-        if (constituent.template user_info<fastjetutilities::fastjet_user_info>().getStatus() == static_cast<int>(JetConstituentStatus::track)) {
-          tracks.push_back(constituent.template user_info<fastjetutilities::fastjet_user_info>().getIndex());
+      for (const auto& constituent : sorted_by_pt(parentSubJet2.constituents())) {//for boucle over all constituent in parent2
+        if (constituent.template user_info<fastjetutilities::fastjet_user_info>().getStatus() == static_cast<int>(JetConstituentStatus::track)) {//if constituent is a track of the subjet,
+          tracks.push_back(constituent.template user_info<fastjetutilities::fastjet_user_info>().getIndex());//then the index is stored in tracks vector
         }
       }
-      splittingTable(jet.globalIndex(), tracks, clusters, candidates, parentSubJet2.perp(), parentSubJet2.eta(), parentSubJet2.phi(), 0);
+      splittingTable(jet.globalIndex(), tracks, clusters, candidates, parentSubJet2.perp(), parentSubJet2.eta(), parentSubJet2.phi(), 0);// fill a table with jet devision information : index, tracks, etc
       auto z = parentSubJet2.perp() / (parentSubJet1.perp() + parentSubJet2.perp());
       auto theta = parentSubJet1.delta_R(parentSubJet2);
       energyMotherVec.push_back(daughterSubJet.e());
@@ -156,7 +167,7 @@ struct JetSubstructureTask {
       thetaVec.push_back(theta);
 
       if (z >= zCut * TMath::Power(theta / (jet.r() / 100.f), beta)) {
-        if (!softDropped) {
+        if (!softDropped) {//if the splitting hasent been already softdropped softdrop=false
           zg = z;
           rg = theta;
           if constexpr (!isSubtracted && !isMCP) {
@@ -171,11 +182,11 @@ struct JetSubstructureTask {
             registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"), jet.pt(), zg);
             registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"), jet.pt(), rg);
           }
-          softDropped = true;
+          softDropped = true;//mark the splitting as true to avoid filling it again
         }
-        nsd++;
+        nsd++;//step up the number of iterations
       }
-      daughterSubJet = parentSubJet1;
+      daughterSubJet = parentSubJet1; //following with the hardest branch
     }
     if constexpr (!isSubtracted && !isMCP) {
       registry.fill(HIST("h2_jet_pt_jet_nsd"), jet.pt(), nsd);
