@@ -345,7 +345,7 @@ struct JetSubstructureTask {
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               aod::JetTracks const& tracks)
   {
-    std::vector<decltype(tracks)::value_type> filteredTracks;
+    std::vector<int32_t> filteredTracks;
     for (const auto& track : tracks) {
        if (track.pt() >= trackQAPtMin && track.pt() < trackQAPtMax &&
          track.eta() >= trackQAEtaMin && track.eta() < trackQAEtaMax) {
