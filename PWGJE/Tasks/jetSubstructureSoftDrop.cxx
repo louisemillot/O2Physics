@@ -216,8 +216,8 @@ struct JetSubstructureTask {
     angularity /= (jet.pt() * (jet.r() / 100.f));
   }
 
-  template <bool isSubtracted, typename T, typename U, typename V, typename M, typename N>
-  void analyseCharged(T const& jet, U const& tracks, V const& trackSlicer, M& outputTable, N& splittingTable)
+  template <bool isSubtracted, typename T, typename U, typename V, typename M, typename N,typename O>
+  void analyseCharged(T const& jet, U const& tracks, V const& trackSlicer, M& outputTable, N& splittingTable,O& pairTable)
   {
     LOGF(info, " Entering analyseCharged " );
     jetConstituents.clear();
