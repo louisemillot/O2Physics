@@ -83,7 +83,18 @@ struct JetSubstructureTask {
   std::vector<float> ptSubLeadingVec;
   std::vector<float> thetaVec;
   std::vector<float> nSub;
-
+  std::vector<float> pairJetPtVec;
+  std::vector<float> pairJetEnergyVec;
+  std::vector<float> pairJetThetaVec;
+  std::vector<float> pairJetPerpCone1PtVec;
+  std::vector<float> pairJetPerpCone1EnergyVec;
+  std::vector<float> pairJetPerpCone1ThetaVec;
+  std::vector<float> pairPerpCone1PerpCone1PtVec;
+  std::vector<float> pairPerpCone1PerpCone1EnergyVec;
+  std::vector<float> pairPerpCone1PerpCone1ThetaVec;
+  std::vector<float> pairPerpCone1PerpCone2PtVec;
+  std::vector<float> pairPerpCone1PerpCone2EnergyVec;
+  std::vector<float> pairPerpCone1PerpCone2ThetaVec;
   float angularity;
   float leadingConstituentPt;
   float perpConeRho;
