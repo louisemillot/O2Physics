@@ -83,18 +83,7 @@ struct JetSubstructureTask {
   std::vector<float> ptSubLeadingVec;
   std::vector<float> thetaVec;
   std::vector<float> nSub;
-  std::vector<float> pairJetPtVec;
-  std::vector<float> pairJetEnergyVec;
-  std::vector<float> pairJetThetaVec;
-  std::vector<float> pairJetPerpCone1PtVec;
-  std::vector<float> pairJetPerpCone1EnergyVec;
-  std::vector<float> pairJetPerpCone1ThetaVec;
-  std::vector<float> pairPerpCone1PerpCone1PtVec;
-  std::vector<float> pairPerpCone1PerpCone1EnergyVec;
-  std::vector<float> pairPerpCone1PerpCone1ThetaVec;
-  std::vector<float> pairPerpCone1PerpCone2PtVec;
-  std::vector<float> pairPerpCone1PerpCone2EnergyVec;
-  std::vector<float> pairPerpCone1PerpCone2ThetaVec;
+
   float angularity;
   float leadingConstituentPt;
   float perpConeRho;
@@ -227,8 +216,7 @@ struct JetSubstructureTask {
     nSub = jetsubstructureutilities::getNSubjettiness(jet, tracks, tracks, tracks, 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
     jetReclustering<false, isSubtracted>(jet, splittingTable);
     jetSubstructureSimple(jet, tracks);
-    outputTable(energyMotherVec, ptLeadingVec, ptSubLeadingVec, thetaVec, nSub[0], nSub[1], nSub[2], pairJetPtVec, pairJetEnergyVec, pairJetThetaVec, pairJetPerpCone1PtVec, pairJetPerpCone1EnergyVec, pairJetPerpCone1ThetaVec, pairPerpCone1PerpCone1PtVec, pairPerpCone1PerpCone1EnergyVec, pairPerpCone1PerpCone1ThetaVec, pairPerpCone1PerpCone2PtVec, pairPerpCone1PerpCone2EnergyVec, pairPerpCone1PerpCone2ThetaVec, angularity, leadingConstituentPt, perpConeRho);
-  }
+    outputTable(energyMotherVec, ptLeadingVec, ptSubLeadingVec, thetaVec, nSub[0], nSub[1], nSub[2] );
 
   void processDummy(aod::JetTracks const&)
   {
@@ -296,7 +284,7 @@ struct JetSubstructureTask {
     jetReclustering<true, false>(jet, jetSplittingsMCPTable);
     
     jetSubstructureSimple(jet, particles);
-    jetSubstructureMCPTable(energyMotherVec, ptLeadingVec, ptSubLeadingVec, thetaVec, nSub[0], nSub[1], nSub[2], pairJetPtVec, pairJetEnergyVec, pairJetThetaVec, pairJetPerpCone1PtVec, pairJetPerpCone1EnergyVec, pairJetPerpCone1ThetaVec, pairPerpCone1PerpCone1PtVec, pairPerpCone1PerpCone1EnergyVec, pairPerpCone1PerpCone1ThetaVec, pairPerpCone1PerpCone2PtVec, pairPerpCone1PerpCone2EnergyVec, pairPerpCone1PerpCone2ThetaVec, angularity, leadingConstituentPt, perpConeRho);
+    jetSubstructureMCPTable(energyMotherVec, ptLeadingVec, ptSubLeadingVec, thetaVec, nSub[0], nSub[1], nSub[2]);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCP, "charged jet substructure on MC particle level", false);
 };
