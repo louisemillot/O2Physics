@@ -217,7 +217,7 @@ struct JetSubstructureTask {
     jetReclustering<false, isSubtracted>(jet, splittingTable);
     jetSubstructureSimple(jet, tracks);
     outputTable(energyMotherVec, ptLeadingVec, ptSubLeadingVec, thetaVec, nSub[0], nSub[1], nSub[2] );
-
+  }
   void processDummy(aod::JetTracks const&)
   {
   }
@@ -291,7 +291,6 @@ struct JetSubstructureTask {
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
-
   return WorkflowSpec{adaptAnalysisTask<JetSubstructureTask>(
     cfgc, TaskName{"jet-substructure-softdrop"})};
 }
