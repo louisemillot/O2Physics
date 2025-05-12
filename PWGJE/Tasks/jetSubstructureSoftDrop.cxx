@@ -132,6 +132,7 @@ struct JetSubstructureTask {
   template <bool isMCP, bool isSubtracted, typename T, typename U>
   void jetReclustering(T const& jet, U& splittingTable)
   {
+    LOGF(info, " Entering jetReclustering " );
     energyMotherVec.clear(); //to be sure its empty before filling
     ptLeadingVec.clear();
     ptSubLeadingVec.clear();
@@ -172,6 +173,7 @@ struct JetSubstructureTask {
           zg = z;
           rg = theta;
           if constexpr (!isSubtracted && !isMCP) {
+            LOGF(info, " Entering if statement for processChargedJetsData " );
             registry.fill(HIST("h2_jet_pt_jet_zg"), jet.pt(), zg);
             registry.fill(HIST("h2_jet_pt_jet_rg"), jet.pt(), rg);
           }
@@ -217,13 +219,13 @@ struct JetSubstructureTask {
   template <bool isSubtracted, typename T, typename U, typename V, typename M, typename N>
   void analyseCharged(T const& jet, U const& tracks, V const& trackSlicer, M& outputTable, N& splittingTable)
   {
+    LOGF(info, " Entering analyseCharged " );
     jetConstituents.clear();
     for (auto& jetConstituent : jet.template tracks_as<U>()) {
       fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex());
     }
     nSub = jetsubstructureutilities::getNSubjettiness(jet, tracks, tracks, tracks, 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
     jetReclustering<false, isSubtracted>(jet, splittingTable);
-    
     jetSubstructureSimple(jet, tracks);
     outputTable(energyMotherVec, ptLeadingVec, ptSubLeadingVec, thetaVec, nSub[0], nSub[1], nSub[2], pairJetPtVec, pairJetEnergyVec, pairJetThetaVec, pairJetPerpCone1PtVec, pairJetPerpCone1EnergyVec, pairJetPerpCone1ThetaVec, pairPerpCone1PerpCone1PtVec, pairPerpCone1PerpCone1EnergyVec, pairPerpCone1PerpCone1ThetaVec, pairPerpCone1PerpCone2PtVec, pairPerpCone1PerpCone2EnergyVec, pairPerpCone1PerpCone2ThetaVec, angularity, leadingConstituentPt, perpConeRho);
   }
@@ -233,11 +235,11 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
-  void processChargedJetsData(
-                              soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
+  void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               aod::JetCollisions const& collisions,
                               soa::Filtered<aod::JetTracks> const& tracks)
   {
+    LOGF(info, " Entering processChargedJetsData " );
     /////////////// leading track cut try : (because filter doesnt work)
 
       bool hasHighPtConstituent = false;
