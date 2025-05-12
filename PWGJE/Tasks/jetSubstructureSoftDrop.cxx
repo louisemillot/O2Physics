@@ -252,7 +252,7 @@ struct JetSubstructureTask {
 
       // Si un jet contient un constituant avec un pt élevé, on l'analyse
       if (hasHighPtConstituent) {
-        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
+        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable,jetPairsDataTable);
       }
     
     /////////////// track selection try: (because filter doesnt work)
@@ -274,14 +274,14 @@ struct JetSubstructureTask {
   void processChargedJetsEventWiseSubData(soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents>::iterator const& jet,
                                           aod::JetTracksSub const& tracks)
   {
-    analyseCharged<true>(jet, tracks, TracksPerCollisionDataSub, jetSubstructureDataSubTable, jetSplittingsDataSubTable);
+    analyseCharged<true>(jet, tracks, TracksPerCollisionDataSub, jetSubstructureDataSubTable, jetSplittingsDataSubTable,jetPairsDataSubTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
 
   void processChargedJetsMCD(typename soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents>::iterator const& jet,
                              aod::JetTracks const& tracks)
   {
-    analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureMCDTable, jetSplittingsMCDTable);
+    analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureMCDTable, jetSplittingsMCDTable,jetPairsMCDTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet substructure", false);
 
