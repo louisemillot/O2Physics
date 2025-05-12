@@ -68,7 +68,7 @@ struct JetSubstructureTask {
   Configurable<float> pairConstituentPtMin{"pairConstituentPtMin", 1.0, "pt cut off for constituents going into pairs"};
   Configurable<float> centralityMin{"centralityMin", -999, ""};
   Configurable<float> centralityMax{"centralityMax", 999, ""};
-  // Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
+  Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
   Configurable<float> trackQAEtaMin{"trackQAEtaMin", -0.9, "minimum eta acceptance for tracks in the processTracks QA"};
   Configurable<float> trackQAEtaMax{"trackQAEtaMax", 0.9, "maximum eta acceptance for tracks in the processTracks QA"};
   Configurable<float> trackQAPtMin{"trackQAPtMin", 0.15, "minimum pT acceptance for tracks in the processTracks QA"};
@@ -128,7 +128,7 @@ struct JetSubstructureTask {
 
   // Filter trackCuts = (aod::jtrack::pt >= trackQAPtMin && aod::jtrack::pt < trackQAPtMax && aod::jtrack::eta > trackQAEtaMin && aod::jtrack::eta < trackQAEtaMax);
   // Filter particleCuts = (aod::jmcparticle::pt >= trackQAPtMin && aod::jmcparticle::pt < trackQAPtMax && aod::jmcparticle::eta > trackQAEtaMin && aod::jmcparticle::eta < trackQAEtaMax);
-  // Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
+  Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
   void jetReclustering(T const& jet, U& splittingTable)
@@ -341,26 +341,11 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
-  void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
+  void processChargedJetsData(soa::Filtered<aod::JetCollision> const& collision,
+                              soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               aod::JetTracks const& tracks)
   {
     /////////////// leading track cut try : (because filter doesnt work)
-
-    // std::vector<int32_t> selectedJets;
-      // bool hasHighPtConstituent = false;
-    // Boucle sur les constituants du jet
-      // for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-        // if (jetConstituent.pt() >= 5.0f) {
-            // hasHighPtConstituent = true;
-            // break; // Sortir de la boucle dès qu'un constituant valide est trouvé
-        // }
-      // }
-      // analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
-      // // Si le jet a au moins un constituant avec pT >= 5 GeV, on le conserve
-      // if (hasHighPtConstituent) {
-      //   // Ajouter le jet à la liste des jets sélectionnés
-      //   selectedJets.push_back(jet);
-      // } //au lieu de mettre jet dans analyseCharged on met selectedJets
 
       bool hasHighPtConstituent = false;
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
