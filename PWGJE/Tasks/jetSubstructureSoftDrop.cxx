@@ -249,6 +249,7 @@ struct JetSubstructureTask {
       bool hasHighPtConstituent = false;
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
         if (jetConstituent.pt() >= 5.0f) {
+          LOGF(info, " Entering boucle of processChargedJetsData " );
           hasHighPtConstituent = true;
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
@@ -256,6 +257,7 @@ struct JetSubstructureTask {
 
       // Si un jet contient un constituant avec un pt élevé, on l'analyse
       if (hasHighPtConstituent) {
+        LOGF(info, " Entering if statement processChargedJetsData " );
         analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
       }
     
