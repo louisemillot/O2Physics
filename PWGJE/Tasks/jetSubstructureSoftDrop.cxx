@@ -246,22 +246,22 @@ struct JetSubstructureTask {
     LOGF(info, " Entering processChargedJetsData 1 " );
     /////////////// leading track cut try : (because filter doesnt work)
 
-      // bool hasHighPtConstituent = false;
-      // LOGF(info, " Entering processChargedJetsData 2 " );
-      // for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-      //   // LOGF(info, " Entering processChargedJetsData 3" );
-      //   if (jetConstituent.pt() >= 5.0f) {
-      //     // LOGF(info, " Entering processChargedJetsData 4" );
-      //     hasHighPtConstituent = true;
-      //     break; // Sortir de la boucle dès qu'un constituant valide est trouvé
-      //   }
-      // }
-      // LOGF(info, " Entering processChargedJetsData 3 " );
-      // // Si un jet contient un constituant avec un pt élevé, on l'analyse
-      // if (hasHighPtConstituent) {
-      //   LOGF(info, " Entering if statement processChargedJetsData " );
+      bool hasHighPtConstituent = false;
+      LOGF(info, " Entering processChargedJetsData 2 " );
+      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+        // LOGF(info, " Entering processChargedJetsData 3" );
+        if (jetConstituent.pt() >= 5.0f) {
+          // LOGF(info, " Entering processChargedJetsData 4" );
+          hasHighPtConstituent = true;
+          break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+        }
+      }
+      LOGF(info, " Entering processChargedJetsData 3 " );
+      // Si un jet contient un constituant avec un pt élevé, on l'analyse
+      if (hasHighPtConstituent) {
+        LOGF(info, " Entering if statement processChargedJetsData " );
         analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
-      // }
+      }
     
     /////////////// track selection try: (because filter doesnt work)
 
