@@ -249,14 +249,14 @@ struct JetSubstructureTask {
       bool hasHighPtConstituent = false;
       LOGF(info, " Entering processChargedJetsData 2 " );
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-        LOGF(info, " Entering processChargedJetsData 3" );
+        // LOGF(info, " Entering processChargedJetsData 3" );
         if (jetConstituent.pt() >= 5.0f) {
-          LOGF(info, " Entering processChargedJetsData 4" );
+          // LOGF(info, " Entering processChargedJetsData 4" );
           hasHighPtConstituent = true;
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
-
+      LOGF(info, " Entering processChargedJetsData 3 " );
       // Si un jet contient un constituant avec un pt élevé, on l'analyse
       if (hasHighPtConstituent) {
         LOGF(info, " Entering if statement processChargedJetsData " );
