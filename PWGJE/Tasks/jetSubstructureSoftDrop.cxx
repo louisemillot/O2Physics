@@ -243,13 +243,14 @@ struct JetSubstructureTask {
                               aod::JetCollisions const& collisions,
                               aod::JetTracks const& tracks)
   {
-      bool hasHighPtConstituent = false;
-      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-        if (jetConstituent.pt() >= 5.0f) {
-          hasHighPtConstituent = true;
-          break; 
-        }
+    LOGF(info, " Entering processChargedJetsData 1 " );
+    bool hasHighPtConstituent = false;
+    for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+      if (jetConstituent.pt() >= 5.0f) {
+        hasHighPtConstituent = true;
+        break; 
       }
+    }
    }
   // void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
   //                             soa::Filtered<aod::JetCollisions> const& collisions,
