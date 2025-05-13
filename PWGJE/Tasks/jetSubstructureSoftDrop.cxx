@@ -253,8 +253,8 @@ struct JetSubstructureTask {
   //   }
   //  }
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
-                              aod::JetCollisions const& collisions,
-                              aod::JetTracks const& tracks)
+                              soa::Filtered<aod::JetCollisions> const& collisions,
+                              soa::Filtered<aod::JetTracks> const& tracks)
   {
     
     LOGF(info, " Entering processChargedJetsData 1 " );
