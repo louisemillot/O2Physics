@@ -176,7 +176,7 @@ struct JetSubstructureTask {
           zg = z;
           rg = theta;
           if constexpr (!isSubtracted && !isMCP) {
-            LOGF(info, " Entering if statement for: " );
+            LOGF(info, " Entering if statement for histograms :" );
             registry.fill(HIST("h2_jet_pt_jet_zg"), jet.pt(), zg);
             registry.fill(HIST("h2_jet_pt_jet_rg"), jet.pt(), rg);
           }
@@ -195,6 +195,7 @@ struct JetSubstructureTask {
       daughterSubJet = parentSubJet1; //following with the hardest branch
     }
     if constexpr (!isSubtracted && !isMCP) {
+      LOGF(info, " Entering if statement for histograms: " );
       registry.fill(HIST("h2_jet_pt_jet_nsd"), jet.pt(), nsd);
     }
     if constexpr (!isSubtracted && isMCP) {
