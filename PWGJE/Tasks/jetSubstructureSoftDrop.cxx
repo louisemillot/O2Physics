@@ -241,7 +241,7 @@ struct JetSubstructureTask {
 
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               aod::JetCollisions const& collisions,
-                              soa::Filtered<aod::JetTracks> const& tracks)
+                              aod::JetTracks const& tracks)
   {
     LOGF(info, " Entering processChargedJetsData 1 " );
     /////////////// leading track cut try : (because filter doesnt work)
