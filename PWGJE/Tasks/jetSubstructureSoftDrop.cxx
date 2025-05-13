@@ -130,7 +130,7 @@ struct JetSubstructureTask {
 
   Filter trackCuts = (aod::jtrack::pt >= trackQAPtMin && aod::jtrack::pt < trackQAPtMax && aod::jtrack::eta > trackQAEtaMin && aod::jtrack::eta < trackQAEtaMax);
   // Filter particleCuts = (aod::jmcparticle::pt >= trackQAPtMin && aod::jmcparticle::pt < trackQAPtMax && aod::jmcparticle::eta > trackQAEtaMin && aod::jmcparticle::eta < trackQAEtaMax);
-  // Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
+  Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
   void jetReclustering(T const& jet, U& splittingTable)
@@ -240,28 +240,28 @@ struct JetSubstructureTask {
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
-                              aod::JetCollisions const& collisions,
-                              aod::JetTracks const& tracks)
+                              soa::Filtered<aod::JetCollisions> const& collisions,
+                              soa::Filtered<aod::JetTracks> const& tracks)
   {
-    LOGF(info, " Entering processChargedJetsData 1 " );
+    // LOGF(info, " Entering processChargedJetsData 1 " );
     /////////////// leading track cut try : (because filter doesnt work)
 
-      bool hasHighPtConstituent = false;
-      LOGF(info, " Entering processChargedJetsData 2 " );
-      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-        // LOGF(info, " Entering processChargedJetsData 3" );
-        if (jetConstituent.pt() >= 5.0f) {
-          // LOGF(info, " Entering processChargedJetsData 4" );
-          hasHighPtConstituent = true;
-          break; // Sortir de la boucle dès qu'un constituant valide est trouvé
-        }
-      }
-      LOGF(info, " Entering processChargedJetsData 3 " );
-      // Si un jet contient un constituant avec un pt élevé, on l'analyse
-      if (hasHighPtConstituent) {
-        LOGF(info, " Entering if statement processChargedJetsData " );
+      // bool hasHighPtConstituent = false;
+      // LOGF(info, " Entering processChargedJetsData 2 " );
+      // for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+      //   // LOGF(info, " Entering processChargedJetsData 3" );
+      //   if (jetConstituent.pt() >= 5.0f) {
+      //     // LOGF(info, " Entering processChargedJetsData 4" );
+      //     hasHighPtConstituent = true;
+      //     break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+      //   }
+      // }
+      // LOGF(info, " Entering processChargedJetsData 3 " );
+      // // Si un jet contient un constituant avec un pt élevé, on l'analyse
+      // if (hasHighPtConstituent) {
+      //   LOGF(info, " Entering if statement processChargedJetsData " );
         analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
-      }
+      // }
     
     /////////////// track selection try: (because filter doesnt work)
 
