@@ -241,15 +241,18 @@ struct JetSubstructureTask {
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               soa::Filtered<aod::JetCollisions> const& collisions,
                               soa::Filtered<aod::JetTracks> const& tracks)
-  {
+  {   
+      LOGF(info, " Entering processChargedJetsData 1 " );
       bool hasHighPtConstituent = false;
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+        LOGF(info, " Entering processChargedJetsData 2 " );
         if (jetConstituent.pt() >= 5.0f) {
           hasHighPtConstituent = true;
           break; 
         }
       }
       if (hasHighPtConstituent) {
+        LOGF(info, " Entering processChargedJetsData 3 " );
         analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
       }
   }
