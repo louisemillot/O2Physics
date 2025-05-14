@@ -181,7 +181,7 @@ struct JetSubstructureTask {
       thetaVec.push_back(theta);
 
       if (z >= zCut * TMath::Power(theta / (jet.r() / 100.f), beta)) {
-         LOGF(info, " JetRadius :",jet.r()  );
+         LOGF(info, " JetRadius :", jet.r()/ 100.f  );
         if (!softDropped) {//if the splitting hasent been already softdropped softdrop=false
           zg = z;
           rg = theta;
