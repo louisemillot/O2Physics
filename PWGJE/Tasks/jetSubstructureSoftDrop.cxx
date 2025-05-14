@@ -138,7 +138,7 @@ struct JetSubstructureTask {
   template <bool isMCP, bool isSubtracted, typename T, typename U>
   void jetReclustering(T const& jet, U& splittingTable)
   {
-    LOGF(info, " Entering jetReclustering " );
+    // LOGF(info, " Entering jetReclustering " );
     energyMotherVec.clear(); //to be sure its empty before filling
     ptLeadingVec.clear();
     ptSubLeadingVec.clear();
@@ -179,7 +179,7 @@ struct JetSubstructureTask {
           zg = z;
           rg = theta;
           if constexpr (!isSubtracted && !isMCP) {
-            LOGF(info, " Entering if statement for histograms :" );
+            // LOGF(info, " Entering if statement for histograms :" );
             registry.fill(HIST("h2_jet_pt_jet_zg"), jet.pt(), zg);
             registry.fill(HIST("h2_jet_pt_jet_rg"), jet.pt(), rg);
           }
@@ -198,7 +198,7 @@ struct JetSubstructureTask {
       daughterSubJet = parentSubJet1; //following with the hardest branch
     }
     if constexpr (!isSubtracted && !isMCP) {
-      LOGF(info, " Entering if statement for histograms: " );
+      // LOGF(info, " Entering if statement for histograms: " );
       registry.fill(HIST("h2_jet_pt_jet_nsd"), jet.pt(), nsd);
     }
     if constexpr (!isSubtracted && isMCP) {
@@ -226,7 +226,7 @@ struct JetSubstructureTask {
   template <bool isSubtracted, typename T, typename U, typename V, typename M, typename N>
   void analyseCharged(T const& jet, U const& tracks, V const& trackSlicer, M& outputTable, N& splittingTable)
   {
-    LOGF(info, " Entering analyseCharged " );
+    // LOGF(info, " Entering analyseCharged " );
     jetConstituents.clear();
     for (auto& jetConstituent : jet.template tracks_as<U>()) {
       fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex());
@@ -278,7 +278,7 @@ struct JetSubstructureTask {
       // LOGF(info, " Entering processChargedJetsData 5 " );
       // Si un jet contient un constituant avec un pt élevé, on l'analyse
       if (hasHighPtConstituent) {
-        LOGF(info, " Entering if statement processChargedJetsData " );
+        // LOGF(info, " Entering if statement processChargedJetsData " );
         analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
       }
     
