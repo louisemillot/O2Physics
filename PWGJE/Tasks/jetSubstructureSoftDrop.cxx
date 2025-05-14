@@ -250,7 +250,7 @@ struct JetSubstructureTask {
 
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               soa::Filtered<aod::JetCollisions> const& collisions,
-                              soa::Filtered<aod::JetTrack> const& tracks)
+                              soa::Filtered<aod::JetTracks> const& tracks)
   {
     registry.fill(HIST("h_jets"), 0.5);
     for (auto& collision : collisions) {
@@ -270,7 +270,7 @@ struct JetSubstructureTask {
 
       bool hasHighPtConstituent = false;
       // LOGF(info, " Entering processChargedJetsData 2 " );
-      for (auto& jetConstituent : jet.tracks_as<soa::Filtered<aod::JetTrack>>()) {
+      for (auto& jetConstituent : jet.tracks_as<soa::Filtered<aod::JetTracks>>()) {
         // LOGF(info, " Entering processChargedJetsData 3" );
         if (jetConstituent.pt() >= 5.0f) {
           // LOGF(info, " Entering processChargedJetsData 4" );
