@@ -251,10 +251,10 @@ struct JetSubstructureTask {
           break; 
         }
       }
-      if (hasHighPtConstituent) {
-        LOGF(info, " Entering processChargedJetsData 3 " );
-        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
-      }
+      // if (hasHighPtConstituent) {
+      //   LOGF(info, " Entering processChargedJetsData 3 " );
+      //   analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
+      // }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
