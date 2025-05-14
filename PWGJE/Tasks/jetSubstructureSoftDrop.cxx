@@ -181,6 +181,7 @@ struct JetSubstructureTask {
       thetaVec.push_back(theta);
 
       if (z >= zCut * TMath::Power(theta / (jet.r() / 100.f), beta)) {
+         LOGF(info, " JetRadius :",jet.r()  );
         if (!softDropped) {//if the splitting hasent been already softdropped softdrop=false
           zg = z;
           rg = theta;
@@ -255,7 +256,7 @@ struct JetSubstructureTask {
     registry.fill(HIST("h_jets"), 0.5);
     for (auto& collision : collisions) {
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
-        return;
+        return; //ne lit pas la suite du code si le if statement n'est pas accepté
       }
     registry.fill(HIST("h_collisions"), 0.5);
     }
@@ -263,41 +264,20 @@ struct JetSubstructureTask {
   //                             soa::Filtered<aod::JetCollisions> const& collisions,
   //                             soa::Filtered<aod::JetTracks> const& tracks)
   // {
-  
-    // LOGF(info, " Entering processChargedJetsData 1 " );
 
     ///////////// leading track cut try : (because filter doesnt work)
 
       bool hasHighPtConstituent = false;
-      // LOGF(info, " Entering processChargedJetsData 2 " );
       for (auto& jetConstituent : jet.tracks_as<soa::Filtered<aod::JetTracks>>()) {
-        // LOGF(info, " Entering processChargedJetsData 3" );
         if (jetConstituent.pt() >= 5.0f) {
-          // LOGF(info, " Entering processChargedJetsData 4" );
           hasHighPtConstituent = true;
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
-      // LOGF(info, " Entering processChargedJetsData 5 " );
-      // Si un jet contient un constituant avec un pt élevé, on l'analyse
+      // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
-        // LOGF(info, " Entering if statement processChargedJetsData " );
         analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
       }
-    
-    /////////////// track selection try: (because filter doesnt work)
-
-    // std::vector<int32_t> filteredTracks;
-    // for (const auto& track : tracks) {
-    //    if (track.pt() >= trackQAPtMin && track.pt() < trackQAPtMax &&
-    //      track.eta() >= trackQAEtaMin && track.eta() < trackQAEtaMax) {
-    //      filteredTracks.push_back(track);
-    //    }
-    //  }
-    // if (filteredTracks.empty()) {
-    //   return;
-    // } //au lieu de mettre tracks dans analyseCharged on met filteredTracks 
-    // analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
