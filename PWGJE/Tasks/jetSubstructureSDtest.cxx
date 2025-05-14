@@ -129,6 +129,7 @@ struct JetSubstructureTask {
 
 
   Filter trackCuts = (aod::jtrack::pt >= trackQAPtMin && aod::jtrack::pt < trackQAPtMax && aod::jtrack::eta > trackQAEtaMin && aod::jtrack::eta < trackQAEtaMax);
+  // Filter particleCuts = (aod::jmcparticle::pt >= trackQAPtMin && aod::jmcparticle::pt < trackQAPtMax && aod::jmcparticle::eta > trackQAEtaMin && aod::jmcparticle::eta < trackQAEtaMax);
   Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
@@ -238,23 +239,20 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
+
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
                               soa::Filtered<aod::JetCollisions> const& collisions,
                               soa::Filtered<aod::JetTracks> const& tracks)
-  {   
-      LOGF(info, " Entering processChargedJetsData 1 " );
+  {
+
+
       bool hasHighPtConstituent = false;
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-        LOGF(info, " Entering processChargedJetsData 2 " );
         if (jetConstituent.pt() >= 5.0f) {
           hasHighPtConstituent = true;
           break; 
         }
       }
-      // if (hasHighPtConstituent) {
-      //   LOGF(info, " Entering processChargedJetsData 3 " );
-      //   analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
-      // }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
@@ -292,5 +290,5 @@ WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
 
   return WorkflowSpec{adaptAnalysisTask<JetSubstructureTask>(
-    cfgc, TaskName{"jet-substructure-test"})};
+    cfgc, TaskName{"jet-substructure-softdrop"})};
 }
