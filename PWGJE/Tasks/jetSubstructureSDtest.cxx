@@ -249,6 +249,9 @@ struct JetSubstructureTask {
           break; 
         }
       }
+      if (hasHighPtConstituent) {
+        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
+      }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
