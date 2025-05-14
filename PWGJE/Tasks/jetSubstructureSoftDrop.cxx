@@ -255,7 +255,7 @@ struct JetSubstructureTask {
   {
     registry.fill(HIST("h_jets"), 0.5);
 
-    for (auto& collision : collisions()) {
+    for (auto& collision : collisions) {
       
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
         return; //ne lit pas la suite du code si le if statement n'est pas accepté
