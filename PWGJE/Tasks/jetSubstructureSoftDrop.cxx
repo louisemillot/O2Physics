@@ -121,8 +121,10 @@ struct JetSubstructureTask {
     registry.add("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
 
-    registry.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
- 
+    registry.add("h_collisions", ";Number of Collisions;Count", {HistType::kTH1F, {{1, 0.5, 1.5}}});
+
+    registry.add("h_jets", ";Number of jets;Count", {HistType::kTH1F, {{1, 0.5, 1.5}}});
+
   
 
     jetReclusterer.isReclustering = true;
@@ -250,12 +252,13 @@ struct JetSubstructureTask {
                               aod::JetCollisions const& collisions,
                               aod::JetTracks const& tracks)
   {
+    registry.fill(HIST("h_jets"), 0.5);
+    for (auto& collision : collisions) {
+      if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
+        return;
+      }
     registry.fill(HIST("h_collisions"), 0.5);
-    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
-      return;
     }
-    registry.fill(HIST("h_collisions"), 1.5);
-
   // void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
   //                             soa::Filtered<aod::JetCollisions> const& collisions,
   //                             soa::Filtered<aod::JetTracks> const& tracks)
