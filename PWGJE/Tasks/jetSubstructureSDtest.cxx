@@ -129,8 +129,7 @@ struct JetSubstructureTask {
 
 
   Filter trackCuts = (aod::jtrack::pt >= trackQAPtMin && aod::jtrack::pt < trackQAPtMax && aod::jtrack::eta > trackQAEtaMin && aod::jtrack::eta < trackQAEtaMax);
-  // Filter particleCuts = (aod::jmcparticle::pt >= trackQAPtMin && aod::jmcparticle::pt < trackQAPtMax && aod::jmcparticle::eta > trackQAEtaMin && aod::jmcparticle::eta < trackQAEtaMax);
-  // Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
+  Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
   void jetReclustering(T const& jet, U& splittingTable)
@@ -176,7 +175,7 @@ struct JetSubstructureTask {
           zg = z;
           rg = theta;
           if constexpr (!isSubtracted && !isMCP) {
-            LOGF(info, " Entering if statement for: " );
+            LOGF(info, " Entering if statement for histograms :" );
             registry.fill(HIST("h2_jet_pt_jet_zg"), jet.pt(), zg);
             registry.fill(HIST("h2_jet_pt_jet_rg"), jet.pt(), rg);
           }
@@ -195,6 +194,7 @@ struct JetSubstructureTask {
       daughterSubJet = parentSubJet1; //following with the hardest branch
     }
     if constexpr (!isSubtracted && !isMCP) {
+      LOGF(info, " Entering if statement for histograms: " );
       registry.fill(HIST("h2_jet_pt_jet_nsd"), jet.pt(), nsd);
     }
     if constexpr (!isSubtracted && isMCP) {
@@ -202,113 +202,6 @@ struct JetSubstructureTask {
     }
     if constexpr (isSubtracted && !isMCP) {
       registry.fill(HIST("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted"), jet.pt(), nsd);
-    }
-  }
-
-  template <bool isMC, typename T, typename U, typename V, typename M>
-  void jetPairing(T const& jet, U const& tracks, V const& slicer, M& pairTable)
-  {
-    pairJetPtVec.clear();
-    pairJetEnergyVec.clear();
-    pairJetThetaVec.clear();
-    std::vector<typename U::iterator> tracksVec;
-    std::vector<int32_t> tracksVecIds;
-    for (auto const& constituent : jet.template tracks_as<U>()) {
-      if (constituent.pt() >= pairConstituentPtMin) {
-        tracksVec.push_back(constituent);
-        tracksVecIds.push_back(constituent.globalIndex());
-      }
-    }
-    if (tracksVec.size() >= 1) {
-      for (typename std::vector<typename U::iterator>::size_type track1Index = 0; track1Index < tracksVec.size(); track1Index++) {
-        for (typename std::vector<typename U::iterator>::size_type track2Index = track1Index + 1; track2Index < tracksVec.size(); track2Index++) {
-          pairJetPtVec.push_back(tracksVec.at(track1Index).pt() * tracksVec.at(track2Index).pt());
-          pairJetEnergyVec.push_back(2.0 * tracksVec.at(track1Index).energy() * tracksVec.at(track2Index).energy());
-          pairJetThetaVec.push_back(jetutilities::deltaR(tracksVec.at(track1Index), tracksVec.at(track2Index)));
-          pairTable(jet.globalIndex(), tracksVecIds.at(track1Index), tracksVecIds.at(track2Index), -1, -1);
-        }
-      }
-    }
-
-    pairJetPerpCone1PtVec.clear();
-    pairJetPerpCone1EnergyVec.clear();
-    pairJetPerpCone1ThetaVec.clear();
-    pairPerpCone1PerpCone1PtVec.clear();
-    pairPerpCone1PerpCone1EnergyVec.clear();
-    pairPerpCone1PerpCone1ThetaVec.clear();
-    pairPerpCone1PerpCone2PtVec.clear();
-    pairPerpCone1PerpCone2EnergyVec.clear();
-    pairPerpCone1PerpCone2ThetaVec.clear();
-
-    int32_t collisionId = -1;
-    if constexpr (!isMC) {
-      collisionId = jet.collisionId();
-    } else {
-      collisionId = jet.mcCollisionId();
-    }
-    auto tracksPerCollision = tracks.sliceBy(slicer, collisionId);
-
-    float perpCone1Phi = RecoDecay::constrainAngle<float, float>(jet.phi() + (M_PI / 2.));
-    float perpCone2Phi = RecoDecay::constrainAngle<float, float>(jet.phi() - (M_PI / 2.));
-    float perpCone1Pt = 0.0;
-    float perpCone2Pt = 0.0;
-    std::vector<typename U::iterator> tracksPerpCone1Vec;
-    std::vector<typename U::iterator> tracksPerpCone2Vec;
-    for (auto const& track : tracksPerCollision) {
-      float deltaPhi1 = track.phi() - perpCone1Phi;
-      deltaPhi1 = RecoDecay::constrainAngle<float, float>(deltaPhi1, -M_PI);
-      float deltaPhi2 = track.phi() - perpCone2Phi;
-      deltaPhi2 = RecoDecay::constrainAngle<float, float>(deltaPhi2, -M_PI);
-      float deltaEta = jet.eta() - track.eta();
-
-      if (TMath::Sqrt((deltaPhi1 * deltaPhi1) + (deltaEta * deltaEta)) <= jet.r() / 100.0) {
-        if (track.pt() >= pairConstituentPtMin) {
-          tracksPerpCone1Vec.push_back(track);
-        }
-        perpCone1Pt += track.pt();
-      }
-      if (TMath::Sqrt((deltaPhi2 * deltaPhi2) + (deltaEta * deltaEta)) <= jet.r() / 100.0) {
-        if (track.pt() >= pairConstituentPtMin) {
-          tracksPerpCone2Vec.push_back(track);
-        }
-        perpCone2Pt += track.pt();
-      }
-    }
-    perpConeRho = (perpCone1Pt + perpCone2Pt) / (2 * M_PI * (jet.r() / 100.0) * (jet.r() / 100.0)); // currently done per jet - could be better to do for leading jet if pushing to very low pT
-    if (doPairBkg) {
-      if (tracksVec.size() >= 1 && tracksPerpCone1Vec.size() >= 1) {
-        for (typename std::vector<typename U::iterator>::size_type track1Index = 0; track1Index < tracksVec.size(); track1Index++) {
-          for (typename std::vector<typename U::iterator>::size_type track2Index = 0; track2Index < tracksPerpCone1Vec.size(); track2Index++) {
-            pairJetPerpCone1PtVec.push_back(tracksVec.at(track1Index).pt() * tracksPerpCone1Vec.at(track2Index).pt());
-            pairJetPerpCone1EnergyVec.push_back(2.0 * tracksVec.at(track1Index).energy() * tracksPerpCone1Vec.at(track2Index).energy());
-            float dPhi = RecoDecay::constrainAngle(tracksVec.at(track1Index).phi() - (tracksPerpCone1Vec.at(track2Index).phi() - (M_PI / 2.)), -M_PI);
-            float dEta = tracksVec.at(track1Index).eta() - tracksPerpCone1Vec.at(track2Index).eta();
-            pairJetPerpCone1ThetaVec.push_back(std::sqrt(dEta * dEta + dPhi * dPhi));
-          }
-        }
-      }
-
-      if (tracksPerpCone1Vec.size() >= 1) {
-        for (typename std::vector<typename U::iterator>::size_type track1Index = 0; track1Index < tracksPerpCone1Vec.size(); track1Index++) {
-          for (typename std::vector<typename U::iterator>::size_type track2Index = track1Index + 1; track2Index < tracksPerpCone1Vec.size(); track2Index++) {
-            pairPerpCone1PerpCone1PtVec.push_back(tracksPerpCone1Vec.at(track1Index).pt() * tracksPerpCone1Vec.at(track2Index).pt());
-            pairPerpCone1PerpCone1EnergyVec.push_back(2.0 * tracksPerpCone1Vec.at(track1Index).energy() * tracksPerpCone1Vec.at(track2Index).energy());
-            pairPerpCone1PerpCone1ThetaVec.push_back(jetutilities::deltaR(tracksPerpCone1Vec.at(track1Index), tracksPerpCone1Vec.at(track2Index)));
-          }
-        }
-      }
-
-      if (tracksPerpCone1Vec.size() >= 1 && tracksPerpCone2Vec.size() >= 1) {
-        for (typename std::vector<typename U::iterator>::size_type track1Index = 0; track1Index < tracksPerpCone1Vec.size(); track1Index++) {
-          for (typename std::vector<typename U::iterator>::size_type track2Index = 0; track2Index < tracksPerpCone2Vec.size(); track2Index++) {
-            pairPerpCone1PerpCone2PtVec.push_back(tracksPerpCone1Vec.at(track1Index).pt() * tracksPerpCone2Vec.at(track2Index).pt());
-            pairPerpCone1PerpCone2EnergyVec.push_back(2.0 * tracksPerpCone1Vec.at(track1Index).energy() * tracksPerpCone2Vec.at(track2Index).energy());
-            float dPhi = RecoDecay::constrainAngle((tracksPerpCone1Vec.at(track1Index).phi() - (M_PI / 2.)) - (tracksPerpCone2Vec.at(track2Index).phi() + (M_PI / 2.)), -M_PI);
-            float dEta = tracksPerpCone1Vec.at(track1Index).eta() - tracksPerpCone2Vec.at(track2Index).eta();
-            pairPerpCone1PerpCone2ThetaVec.push_back(std::sqrt(dEta * dEta + dPhi * dPhi));
-          }
-        }
-      }
     }
   }
 
@@ -326,8 +219,8 @@ struct JetSubstructureTask {
     angularity /= (jet.pt() * (jet.r() / 100.f));
   }
 
-  template <bool isSubtracted, typename T, typename U, typename V, typename M, typename N, typename O>
-  void analyseCharged(T const& jet, U const& tracks, V const& trackSlicer, M& outputTable, N& splittingTable, O& pairTable)
+  template <bool isSubtracted, typename T, typename U, typename V, typename M, typename N>
+  void analyseCharged(T const& jet, U const& tracks, V const& trackSlicer, M& outputTable, N& splittingTable)
   {
     LOGF(info, " Entering analyseCharged " );
     jetConstituents.clear();
@@ -336,7 +229,6 @@ struct JetSubstructureTask {
     }
     nSub = jetsubstructureutilities::getNSubjettiness(jet, tracks, tracks, tracks, 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
     jetReclustering<false, isSubtracted>(jet, splittingTable);
-    jetPairing<false>(jet, tracks, trackSlicer, pairTable);
     jetSubstructureSimple(jet, tracks);
     outputTable(energyMotherVec, ptLeadingVec, ptSubLeadingVec, thetaVec, nSub[0], nSub[1], nSub[2], pairJetPtVec, pairJetEnergyVec, pairJetThetaVec, pairJetPerpCone1PtVec, pairJetPerpCone1EnergyVec, pairJetPerpCone1ThetaVec, pairPerpCone1PerpCone1PtVec, pairPerpCone1PerpCone1EnergyVec, pairPerpCone1PerpCone1ThetaVec, pairPerpCone1PerpCone2PtVec, pairPerpCone1PerpCone2EnergyVec, pairPerpCone1PerpCone2ThetaVec, angularity, leadingConstituentPt, perpConeRho);
   }
@@ -347,52 +239,30 @@ struct JetSubstructureTask {
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
   void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
-                              aod::JetCollisions const& collisions,
-                              aod::JetTracks const& tracks)
+                              soa::Filtered<aod::JetCollisions> const& collisions,
+                              soa::Filtered<aod::JetTracks> const& tracks)
   {
-    LOGF(info, " Entering processChargedJetsData " );
-    /////////////// leading track cut try : (because filter doesnt work)
-
       bool hasHighPtConstituent = false;
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
         if (jetConstituent.pt() >= 5.0f) {
           hasHighPtConstituent = true;
-          break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+          break; 
         }
       }
-
-      // Si un jet contient un constituant avec un pt élevé, on l'analyse
-      if (hasHighPtConstituent) {
-        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
-      }
-    
-    /////////////// track selection try: (because filter doesnt work)
-
-    // std::vector<int32_t> filteredTracks;
-    // for (const auto& track : tracks) {
-    //    if (track.pt() >= trackQAPtMin && track.pt() < trackQAPtMax &&
-    //      track.eta() >= trackQAEtaMin && track.eta() < trackQAEtaMax) {
-    //      filteredTracks.push_back(track);
-    //    }
-    //  }
-    // if (filteredTracks.empty()) {
-    //   return;
-    // } //au lieu de mettre tracks dans analyseCharged on met filteredTracks 
-    // analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable, jetPairsDataTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
   void processChargedJetsEventWiseSubData(soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents>::iterator const& jet,
                                           aod::JetTracksSub const& tracks)
   {
-    analyseCharged<true>(jet, tracks, TracksPerCollisionDataSub, jetSubstructureDataSubTable, jetSplittingsDataSubTable, jetPairsDataSubTable);
+    analyseCharged<true>(jet, tracks, TracksPerCollisionDataSub, jetSubstructureDataSubTable, jetSplittingsDataSubTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
 
   void processChargedJetsMCD(typename soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents>::iterator const& jet,
                              aod::JetTracks const& tracks)
   {
-    analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureMCDTable, jetSplittingsMCDTable, jetPairsMCDTable);
+    analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureMCDTable, jetSplittingsMCDTable);
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet substructure", false);
 
@@ -405,7 +275,7 @@ struct JetSubstructureTask {
     }
     nSub = jetsubstructureutilities::getNSubjettiness(jet, particles, particles, particles, 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
     jetReclustering<true, false>(jet, jetSplittingsMCPTable);
-    jetPairing<true>(jet, particles, ParticlesPerMcCollision, jetPairsMCPTable);
+    
     jetSubstructureSimple(jet, particles);
     jetSubstructureMCPTable(energyMotherVec, ptLeadingVec, ptSubLeadingVec, thetaVec, nSub[0], nSub[1], nSub[2], pairJetPtVec, pairJetEnergyVec, pairJetThetaVec, pairJetPerpCone1PtVec, pairJetPerpCone1EnergyVec, pairJetPerpCone1ThetaVec, pairPerpCone1PerpCone1PtVec, pairPerpCone1PerpCone1EnergyVec, pairPerpCone1PerpCone1ThetaVec, pairPerpCone1PerpCone2PtVec, pairPerpCone1PerpCone2EnergyVec, pairPerpCone1PerpCone2ThetaVec, angularity, leadingConstituentPt, perpConeRho);
   }
@@ -416,5 +286,5 @@ WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
 
   return WorkflowSpec{adaptAnalysisTask<JetSubstructureTask>(
-    cfgc, TaskName{"jet-substructure-test"})};
+    cfgc, TaskName{"jet-substructure-softdrop"})};
 }
