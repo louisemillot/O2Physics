@@ -261,7 +261,7 @@ struct JetSubstructureTask {
   //                             soa::Filtered<aod::JetTracks> const& tracks)
   // {
     registry.fill(HIST("hEventCount"), 1);
-    LOGF(info, " Entering processChargedJetsData 1 " );
+    // LOGF(info, " Entering processChargedJetsData 1 " );
 
     ///////////// leading track cut try : (because filter doesnt work)
 
