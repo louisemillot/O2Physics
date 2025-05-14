@@ -270,7 +270,7 @@ struct JetSubstructureTask {
 
       bool hasHighPtConstituent = false;
       // LOGF(info, " Entering processChargedJetsData 2 " );
-      for (auto& jetConstituent : jet.tracks_as<soa::Filtered<aod::JetTracks>>()) {
+      for (auto& jetConstituent : jet.tracks_as<soa::Filtered<aod::JetTrack>>()) {
         // LOGF(info, " Entering processChargedJetsData 3" );
         if (jetConstituent.pt() >= 5.0f) {
           // LOGF(info, " Entering processChargedJetsData 4" );
