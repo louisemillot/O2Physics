@@ -286,5 +286,5 @@ WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
 
   return WorkflowSpec{adaptAnalysisTask<JetSubstructureTask>(
-    cfgc, TaskName{"jet-substructure-softdrop"})};
+    cfgc, TaskName{"jet-substructure-test"})};
 }
