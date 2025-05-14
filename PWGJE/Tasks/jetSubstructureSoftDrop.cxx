@@ -181,7 +181,7 @@ struct JetSubstructureTask {
       thetaVec.push_back(theta);
 
       if (z >= zCut * TMath::Power(theta / (jet.r() / 100.f), beta)) {
-         LOGF(info, " JetRadius :", jet.r()/ 100.f  );
+         LOGF(info, " JetRadius : %f", jet.r()/ 100.f  );
         if (!softDropped) {//if the splitting hasent been already softdropped softdrop=false
           zg = z;
           rg = theta;
@@ -254,6 +254,9 @@ struct JetSubstructureTask {
                               soa::Filtered<aod::JetTracks> const& tracks)
   {
     registry.fill(HIST("h_jets"), 0.5);
+
+    LOGF(info, "Number of collisions: %d", collisions.size());
+    
     for (auto& collision : collisions) {
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
         return; //ne lit pas la suite du code si le if statement n'est pas accepté
