@@ -273,10 +273,10 @@ struct JetSubstructureTask {
       }
       LOGF(info, " Entering processChargedJetsData 5 " );
       // Si un jet contient un constituant avec un pt élevé, on l'analyse
-      if (hasHighPtConstituent) {
-        LOGF(info, " Entering if statement processChargedJetsData " );
-        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
-      }
+      // if (hasHighPtConstituent) {
+      //   LOGF(info, " Entering if statement processChargedJetsData " );
+      //   analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
+      // }
     
     /////////////// track selection try: (because filter doesnt work)
 
