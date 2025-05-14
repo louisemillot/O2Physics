@@ -75,6 +75,7 @@ struct JetSubstructureTask {
   Configurable<float> trackQAEtaMax{"trackQAEtaMax", 0.9, "maximum eta acceptance for tracks in the processTracks QA"};
   Configurable<float> trackQAPtMin{"trackQAPtMin", 0.15, "minimum pT acceptance for tracks in the processTracks QA"};
   Configurable<float> trackQAPtMax{"trackQAPtMax", 100.0, "maximum pT acceptance for tracks in the processTracks QA"};
+  Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
 
   Service<o2::framework::O2DatabasePDG> pdg;
   std::vector<fastjet::PseudoJet> jetConstituents;
@@ -104,6 +105,8 @@ struct JetSubstructureTask {
 
   HistogramRegistry registry;
 
+  std::vector<int> eventSelectionBits;
+
   void init(InitContext const&)
   {
     registry.add("h2_jet_pt_jet_zg", ";#it{p}_{T,jet} (GeV/#it{c});#it{z}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
@@ -118,7 +121,8 @@ struct JetSubstructureTask {
     registry.add("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
 
-    registry.add("hEventCount", ";Number of Events;Count", {HistType::kTH1F, {{1, 0.5, 1.5}}});
+    registry.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+ 
   
 
     jetReclusterer.isReclustering = true;
@@ -246,21 +250,17 @@ struct JetSubstructureTask {
                               aod::JetCollisions const& collisions,
                               aod::JetTracks const& tracks)
   {
-  //   LOGF(info, " Entering processChargedJetsData 1 " );
-  //   bool hasHighPtConstituent = false;
-  //   for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-  //     if (jetConstituent.pt() >= 5.0f) {
-  //       hasHighPtConstituent = true;
-  //       break; 
-  //     }
-  //   }
-  //  }
+    registry.fill(HIST("h_collisions"), 0.5);
+    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
+      return;
+    }
+    registry.fill(HIST("h_collisions"), 1.5);
 
   // void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
   //                             soa::Filtered<aod::JetCollisions> const& collisions,
   //                             soa::Filtered<aod::JetTracks> const& tracks)
   // {
-    registry.fill(HIST("hEventCount"), 1);
+  
     // LOGF(info, " Entering processChargedJetsData 1 " );
 
     ///////////// leading track cut try : (because filter doesnt work)
