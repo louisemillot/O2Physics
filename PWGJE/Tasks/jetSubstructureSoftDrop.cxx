@@ -118,6 +118,9 @@ struct JetSubstructureTask {
     registry.add("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
 
+    registry.add("hEventCount", ";Number of Events;Count", {HistType::kTH1F, {{1, 0.5, 1.5}}});
+}
+
     jetReclusterer.isReclustering = true;
     jetReclusterer.algorithm = fastjet::JetAlgorithm::cambridge_algorithm;
   }
@@ -256,7 +259,7 @@ struct JetSubstructureTask {
                               soa::Filtered<aod::JetCollisions> const& collisions,
                               soa::Filtered<aod::JetTracks> const& tracks)
   {
-    
+    registry.fill(HIST("hEventCount"), 1);
     LOGF(info, " Entering processChargedJetsData 1 " );
 
     ///////////// leading track cut try : (because filter doesnt work)
