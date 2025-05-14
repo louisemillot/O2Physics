@@ -257,7 +257,7 @@ struct JetSubstructureTask {
 
     LOGF(info, "Number of collisions: %d", collisions.size());
 
-    for (auto& collision : collisions) {
+    for (auto& collision : jet.collisions()) {
       
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
         return; //ne lit pas la suite du code si le if statement n'est pas accepté
