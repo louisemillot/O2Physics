@@ -277,10 +277,11 @@ struct JetSubstructureTask {
             break; // Sortir de la boucle dès qu'un constituant valide est trouvé
           }
         }
-      }
-      // Si un jet contient un constituant avec un pt > au critère, on l'analyse
-      if (hasHighPtConstituent) {
-        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
+      
+        // Si un jet contient un constituant avec un pt > au critère, on l'analyse
+        if (hasHighPtConstituent) {
+          analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
+        }
       }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
