@@ -270,15 +270,15 @@ struct JetSubstructureTask {
     //                             soa::Filtered<aod::JetCollisions> const& collisions,
     //                             soa::Filtered<aod::JetTracks> const& tracks)
     // {
-    int count = 0; 
-    for (const auto& track : tracks) {
-      // LOGF(info, "track collion Id = %d", track.collisionId());
-      registry.fill(HIST("h_tracks_per_collision"), track.collisionId());
-        if (track.collisionId() != collision.globalIndex()) {
-          ++count;
-        }
-    }
-    LOGF(info, "Nombre de tracks non associées à la collision : %d", count);
+    // int count = 0; 
+    // for (const auto& track : tracks) {
+    //   // LOGF(info, "track collion Id = %d", track.collisionId());
+    //   registry.fill(HIST("h_tracks_per_collision"), track.collisionId());
+    //     if (track.collisionId() != collision.globalIndex()) {
+    //       ++count;
+    //     }
+    // }
+    // LOGF(info, "Nombre de tracks non associées à la collision : %d", count);
     
 
 
