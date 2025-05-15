@@ -256,16 +256,23 @@ struct JetSubstructureTask {
   {
     // registry.fill(HIST("h_jets"), 0.5);
 
+    LOGF(info, "Collision Index ", collision.globalIndex());
+
     registry.fill(HIST("h_collisions"), 0.5);
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
       return;
     }
     registry.fill(HIST("h_collisions"), 1.5);
 
-  // void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
-  //                             soa::Filtered<aod::JetCollisions> const& collisions,
-  //                             soa::Filtered<aod::JetTracks> const& tracks)
-  // {
+    // void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
+    //                             soa::Filtered<aod::JetCollisions> const& collisions,
+    //                             soa::Filtered<aod::JetTracks> const& tracks)
+    // {
+
+    for (const auto& track : tracks) {
+      LOGF(info, "track collion Id ", track.collisionId());
+    }
+
 
     ///////////// leading track cut try : (because filter doesnt work)
 
