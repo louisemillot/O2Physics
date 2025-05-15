@@ -76,6 +76,7 @@ struct JetSubstructureTask {
   Configurable<float> trackQAPtMin{"trackQAPtMin", 0.15, "minimum pT acceptance for tracks in the processTracks QA"};
   Configurable<float> trackQAPtMax{"trackQAPtMax", 100.0, "maximum pT acceptance for tracks in the processTracks QA"};
   Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
+  Configurable<float> ptLeadingTrackCut{"ptLeadingTrackCut", 5.0f, "Leading track cut"};
 
   Service<o2::framework::O2DatabasePDG> pdg;
   std::vector<fastjet::PseudoJet> jetConstituents;
@@ -122,11 +123,8 @@ struct JetSubstructureTask {
     registry.add("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
 
     registry.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{1, 0.5, 1.5}}});
-
     registry.add("h_jets", ";Number of jets;Count", {HistType::kTH1F, {{1, 0.5, 1.5}}});
-
     registry.add("h_tracks_per_collision", "Tracks per Collision;Collision Index;Counts", {HistType::kTH1F, {{1, 0.5, 1.5}}});
-
     registry.add("h_collisionidex", "Collision Index;Collision Index;Counts", {HistType::kTH1F, {{1, 0.5, 1.5}}});
 
       
@@ -272,11 +270,16 @@ struct JetSubstructureTask {
     //                             soa::Filtered<aod::JetCollisions> const& collisions,
     //                             soa::Filtered<aod::JetTracks> const& tracks)
     // {
-
+    int count = 0; 
     for (const auto& track : tracks) {
       // LOGF(info, "track collion Id = %d", track.collisionId());
       registry.fill(HIST("h_tracks_per_collision"), track.collisionId());
+        if (track.collisionId() != collision.globalIndex()) {
+          ++count;
+        }
     }
+    LOGF(info, "Nombre de tracks non associées à la collision : %d", count);
+    
 
 
     ///////////// leading track cut try : (because filter doesnt work)
@@ -284,7 +287,7 @@ struct JetSubstructureTask {
       bool hasHighPtConstituent = false;
       for (auto& jet : jets){
         for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-          if (jetConstituent.pt() >= 5.0f) {
+          if (jetConstituent.pt() >= ptLeadingTrackCut) {
             hasHighPtConstituent = true;
             break; // Sortir de la boucle dès qu'un constituant valide est trouvé
           }
