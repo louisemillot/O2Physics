@@ -270,10 +270,12 @@ struct JetSubstructureTask {
     ///////////// leading track cut try : (because filter doesnt work)
 
       bool hasHighPtConstituent = false;
-      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-        if (jetConstituent.pt() >= 5.0f) {
-          hasHighPtConstituent = true;
-          break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+      for (auto& jet : jets){
+        for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+          if (jetConstituent.pt() >= 5.0f) {
+            hasHighPtConstituent = true;
+            break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+          }
         }
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
