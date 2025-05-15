@@ -256,7 +256,7 @@ struct JetSubstructureTask {
   {
     // registry.fill(HIST("h_jets"), 0.5);
 
-    LOGF(info, "Collision Index ", collision.globalIndex());
+    LOGF(info, "Collision Index = %.2f", collision.globalIndex());
 
     registry.fill(HIST("h_collisions"), 0.5);
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
@@ -270,7 +270,7 @@ struct JetSubstructureTask {
     // {
 
     for (const auto& track : tracks) {
-      LOGF(info, "track collion Id ", track.collisionId());
+      LOGF(info, "track collion Id = %.2f", track.collisionId());
     }
 
 
