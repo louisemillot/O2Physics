@@ -239,11 +239,12 @@ struct JetSubstructureTask {
     // LOGF(info, " Entering analyseCharged " );
     jetConstituents.clear();
     for (auto& jetConstituent : jet.template tracks_as<U>()) {
+      
       fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex());
     }
-    nSub = jetsubstructureutilities::getNSubjettiness(jet, tracks, tracks, tracks, 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
+    nSub = jetsubstructureutilities::getNSubjettiness(jet, jet.template tracks_as<U>(), jet.template tracks_as<U>(), jet.template tracks_as<U>(), 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
     jetReclustering<false, isSubtracted>(jet, splittingTable);
-    jetSubstructureSimple(jet, tracks);
+    jetSubstructureSimple(jet, jet.template tracks_as<U>());
     outputTable(energyMotherVec, ptLeadingVec, ptSubLeadingVec, thetaVec, nSub[0], nSub[1], nSub[2], pairJetPtVec, pairJetEnergyVec, pairJetThetaVec, pairJetPerpCone1PtVec, pairJetPerpCone1EnergyVec, pairJetPerpCone1ThetaVec, pairPerpCone1PerpCone1PtVec, pairPerpCone1PerpCone1EnergyVec, pairPerpCone1PerpCone1ThetaVec, pairPerpCone1PerpCone2PtVec, pairPerpCone1PerpCone2EnergyVec, pairPerpCone1PerpCone2ThetaVec, angularity, leadingConstituentPt, perpConeRho);
   }
 
@@ -280,8 +281,8 @@ struct JetSubstructureTask {
     // //on ne peut pas mettre return car si jamais je trouve ne serais ce que 1 seul track non selectionne j'abandonne la collision entiere, 
     // //je ne peux pas mettre continue non plus car dans analyseCharged je vais avoir TOUTE les traces, et dans la meme boucle analyseCharged sera appelle trop de fois (nbr_traces_selected x nbr_jets) 
     // //Sinon raisonner avec JetConstituent mais ca implique aussi modifier analyseCharged()
-    //   }
-    // }
+    //  }
+      // }
 
       ///////////// leading track cut try : (because filter doesnt work)
       bool hasHighPtConstituent = false;
