@@ -76,6 +76,7 @@ struct JetSubstructureTask {
   Configurable<float> trackQAPtMin{"trackQAPtMin", 0.15, "minimum pT acceptance for tracks in the processTracks QA"};
   Configurable<float> trackQAPtMax{"trackQAPtMax", 100.0, "maximum pT acceptance for tracks in the processTracks QA"};
   Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
+  Configurable<std::string> trackSelections{"trackSelections", "globalTracks", "set track selections"};
   Configurable<float> ptLeadingTrackCut{"ptLeadingTrackCut", 5.0f, "Leading track cut"};
 
   Service<o2::framework::O2DatabasePDG> pdg;
@@ -107,6 +108,7 @@ struct JetSubstructureTask {
   HistogramRegistry registry;
 
   std::vector<int> eventSelectionBits;
+  int trackSelection = -1;
 
   void init(InitContext const&)
   {
@@ -131,6 +133,9 @@ struct JetSubstructureTask {
 
     jetReclusterer.isReclustering = true;
     jetReclusterer.algorithm = fastjet::JetAlgorithm::cambridge_algorithm;
+
+    eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
+    trackSelection = jetderiveddatautilities::initialiseTrackSelection(static_cast<std::string>(trackSelections));
   }
 
   Preslice<aod::JetTracks> TracksPerCollision = aod::jtrack::collisionId;
