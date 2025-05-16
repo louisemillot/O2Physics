@@ -288,10 +288,6 @@ struct JetSubstructureTask {
     //   }
     // }
 
-    auto selectedTracks = soa::Filtered(tracks, [&](auto const& track) {
-      return jetderiveddatautilities::selectTrack(track, trackSelection);
-    });
-
       ///////////// leading track cut try : (because filter doesnt work)
       bool hasHighPtConstituent = false;
       for (auto& jet : jets){
