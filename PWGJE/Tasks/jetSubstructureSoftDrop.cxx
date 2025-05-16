@@ -257,19 +257,13 @@ struct JetSubstructureTask {
                               soa::Join<aod::ChargedJets, aod::ChargedJetConstituents> const& jets)
   {
     // registry.fill(HIST("h_jets"), 0.5);
-
     // LOGF(info, "Collision Index = %d", collision.globalIndex());
-    registry.fill(HIST("h_collisionidex"), collision.globalIndex());
+    // registry.fill(HIST("h_collisionidex"), collision.globalIndex());
     // registry.fill(HIST("h_collisions"), 0.5);
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
       return;
     }
     registry.fill(HIST("h_collisions"), 1);
-
-    // void processChargedJetsData(soa::Join<aod::ChargedJets, aod::ChargedJetConstituents>::iterator const& jet,
-    //                             soa::Filtered<aod::JetCollisions> const& collisions,
-    //                             soa::Filtered<aod::JetTracks> const& tracks)
-    // {
     // int count = 0; 
     // for (const auto& track : tracks) {
     //   // LOGF(info, "track collion Id = %d", track.collisionId());
@@ -280,31 +274,46 @@ struct JetSubstructureTask {
     // }
     // LOGF(info, "Nombre de tracks non associées à la collision : %d", count);
     
-
-
     ///////////// leading track cut try : (because filter doesnt work)
 
-      bool hasHighPtConstituent = false;
-      for (auto& jet : jets){
-        for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-          if (jetConstituent.pt() >= ptLeadingTrackCut) {
-            hasHighPtConstituent = true;
-            break; // Sortir de la boucle dès qu'un constituant valide est trouvé
-          }
-        }
-        // Si un jet contient un constituant avec un pt > au critère, on l'analyse
-        if (hasHighPtConstituent) {
-          analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
+    bool hasHighPtConstituent = false;
+    for (auto& jet : jets){
+      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+        if (jetConstituent.pt() >= ptLeadingTrackCut) {
+          hasHighPtConstituent = true;
+          break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
+      // Si un jet contient un constituant avec un pt > au critère, on l'analyse
+      if (hasHighPtConstituent) {
+        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
+      }
+    }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
-  void processChargedJetsEventWiseSubData(soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents>::iterator const& jet,
+  void processChargedJetsEventWiseSubData(aod::JetCollisions::iterator const& collision,
+                                          soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
                                           aod::JetTracksSub const& tracks)
   {
     // LOGF(info, "Entering processChargedJetsEventWiseSubData ");
-    analyseCharged<true>(jet, tracks, TracksPerCollisionDataSub, jetSubstructureDataSubTable, jetSplittingsDataSubTable);
+    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
+      return;
+    }
+    registry.fill(HIST("h_collisions"), 1);
+    bool hasHighPtConstituent = false;
+    for (auto& jet : jets){
+      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+        if (jetConstituent.pt() >= ptLeadingTrackCut) {
+          hasHighPtConstituent = true;
+          break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+        }
+      }
+      // Si un jet contient un constituant avec un pt > au critère, on l'analyse
+      if (hasHighPtConstituent) {
+        analyseCharged<false>(jet, tracks, TracksPerCollisionDataSub, jetSubstructureDataSubTable, jetSplittingsDataSubTable);
+      }
+    }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
 
