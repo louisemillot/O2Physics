@@ -279,16 +279,16 @@ struct JetSubstructureTask {
     // }
     // LOGF(info, "Nombre de tracks non associées à la collision : %d", count);
     
-    // for (auto const& track : tracks) {
-    //   if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
-    // //     return;
-    //     auto selectedTrack = track.track_as<soa::Join<aod::JetTracks>>();
-    //     selectedTrack.push_back(track)
-    // //on ne peut pas mettre return car si jamais je trouve ne serais ce que 1 seul track non selectionne j'abandonne la collision entiere, 
-    // //je ne peux pas mettre continue non plus car dans analyseCharged je vais avoir TOUTE les traces, et dans la meme boucle analyseCharged sera appelle trop de fois (nbr_traces_selected x nbr_jets) 
-    // //Sinon raisonner avec JetConstituent mais ca implique aussi modifier analyseCharged()
-    //   }
-    // }
+    for (auto const& track : tracks) {
+      if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
+    //     return;
+        auto selectedTrack = track.track_as<soa::Join<aod::JetTracks>>();
+        selectedTrack.push_back(track)
+    //on ne peut pas mettre return car si jamais je trouve ne serais ce que 1 seul track non selectionne j'abandonne la collision entiere, 
+    //je ne peux pas mettre continue non plus car dans analyseCharged je vais avoir TOUTE les traces, et dans la meme boucle analyseCharged sera appelle trop de fois (nbr_traces_selected x nbr_jets) 
+    //Sinon raisonner avec JetConstituent mais ca implique aussi modifier analyseCharged()
+      }
+    }
 
       ///////////// leading track cut try : (because filter doesnt work)
       bool hasHighPtConstituent = false;
