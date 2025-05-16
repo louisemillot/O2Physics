@@ -312,7 +312,7 @@ struct JetSubstructureTask {
     registry.fill(HIST("h_collisions"), 1);
     bool hasHighPtConstituent = false;
     for (auto& jet : jets){
-      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+      for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           hasHighPtConstituent = true;
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
