@@ -260,7 +260,7 @@ struct JetSubstructureTask {
                                           soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
                                           aod::JetTracksSub const& tracks)
   {
-    LOGF(info, "Entering processChargedJetsEventWiseSubData ");
+    // LOGF(info, "Entering processChargedJetsEventWiseSubData ");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
       return;
     }
@@ -269,6 +269,7 @@ struct JetSubstructureTask {
     for (auto& jet : jets){
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
+          LOGF(info, "test1 ");
           hasHighPtConstituent = true;
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
