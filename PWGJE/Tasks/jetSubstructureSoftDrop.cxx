@@ -139,7 +139,7 @@ struct JetSubstructureTask {
   template <bool isMCP, bool isSubtracted, typename T, typename U>
   void jetReclustering(T const& jet, U& splittingTable)
   {
-    // LOGF(info, " Entering jetReclustering " );
+    LOGF(info, " Entering jetReclustering " );
     energyMotherVec.clear(); //to be sure its empty before filling
     ptLeadingVec.clear();
     ptSubLeadingVec.clear();
@@ -277,6 +277,7 @@ struct JetSubstructureTask {
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
+        LOGF(info, "test2 ");
         analyseCharged<false>(jet, tracks, jetSplittingsDataSubTable);
       }
     }
