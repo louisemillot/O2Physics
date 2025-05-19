@@ -281,15 +281,15 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
 
-  void processChargedJetsEventWiseSubMCD(aod::JetCollisions::iterator const& collision,
-                                         typename soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
-                                         aod::JetTracks const& tracks)
-  { 
-    for (auto& jet : jets){
-      analyseCharged<false>(jet, tracks, jetSplittingsMCDSubTable);
-    }
-  }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
+  // void processChargedJetsEventWiseSubMCD(aod::JetCollisions::iterator const& collision,
+  //                                        typename soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
+  //                                        aod::JetTracks const& tracks)
+  // { 
+  //   for (auto& jet : jets){
+  //     analyseCharged<false>(jet, tracks, jetSplittingsMCDSubTable);
+  //   }
+  // }
+  // PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
 
     void processChargedJetsMCD(aod::JetCollisions::iterator const& collision,
                                typename soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
