@@ -52,7 +52,7 @@ struct JetSubstructureTask {
   Produces<aod::ChargedMCDetectorLevelSPs> jetSplittingsMCDTable;
   Produces<aod::ChargedMCParticleLevelSPs> jetSplittingsMCPTable;
   Produces<aod::ChargedEventWiseSubtractedSPs> jetSplittingsDataSubTable;
-  Produces<aod::ChargedEventWiseSubtractedSPs> jetSplittingsMCDSubTable;
+  Produces<aod::MCDChargedEventWiseSubtractedSPs> jetSplittingsMCDSubTable;
   // Produces<aod::ChargedEventWiseSubtractedSPs> jetSplittingsMCPSubTable;
 
   Configurable<float> zCut{"zCut", 0.1, "soft drop z cut"};
