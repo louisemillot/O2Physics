@@ -47,20 +47,11 @@ using namespace o2::framework::expressions;
 #include "Framework/runDataProcessing.h"
 
 struct JetSubstructureTask {
-  Produces<aod::CJetSSs> jetSubstructureDataTable;
-  Produces<aod::CMCDJetSSs> jetSubstructureMCDTable;
-  Produces<aod::CMCPJetSSs> jetSubstructureMCPTable;
-  Produces<aod::CEWSJetSSs> jetSubstructureDataSubTable;
 
   Produces<aod::ChargedSPs> jetSplittingsDataTable;
   Produces<aod::ChargedMCDetectorLevelSPs> jetSplittingsMCDTable;
   Produces<aod::ChargedMCParticleLevelSPs> jetSplittingsMCPTable;
   Produces<aod::ChargedEventWiseSubtractedSPs> jetSplittingsDataSubTable;
-
-  Produces<aod::ChargedPRs> jetPairsDataTable;
-  Produces<aod::ChargedMCDetectorLevelPRs> jetPairsMCDTable;
-  Produces<aod::ChargedMCParticleLevelPRs> jetPairsMCPTable;
-  Produces<aod::ChargedEventWiseSubtractedPRs> jetPairsDataSubTable;
 
   Configurable<float> zCut{"zCut", 0.1, "soft drop z cut"};
   Configurable<float> beta{"beta", 0.0, "soft drop beta"};
@@ -152,7 +143,7 @@ struct JetSubstructureTask {
     ptSubLeadingVec.clear();
     thetaVec.clear();
     jetReclustered.clear();
-    fastjet::ClusterSequenceArea clusterSeq(jetReclusterer.findJets(jetConstituents, jetReclustered)); // jetConstituents is a vector of fastjet::PseudoJet containing (tracks/constituants)
+    fastjet::ClusterSequenceArea clusterSeq(jetReclusterer.findJets(jetConstituents, jetReclustered)); // jetConstituents is a vector of fastjet::PseudoJet containing (tracks/constituents)
     jetReclustered = sorted_by_pt(jetReclustered); //sort jets by pt decreasing order 
     fastjet::PseudoJet daughterSubJet = jetReclustered[0]; //order 0 of reclustering 
     fastjet::PseudoJet parentSubJet1; //parent1 of daughter
@@ -220,7 +211,7 @@ struct JetSubstructureTask {
   }
 
   template <bool isSubtracted, typename T, typename U, typename V, typename M, typename N>
-  void analyseCharged(T const& jet, U const& tracks, V const& trackSlicer, M& outputTable, N& splittingTable)
+  void analyseCharged(T const& jet, U const& tracks, N& splittingTable)
   {
     // LOGF(info, " Entering analyseCharged " );
     jetConstituents.clear();
@@ -261,7 +252,7 @@ struct JetSubstructureTask {
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
-        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
+        analyseCharged<false>(jet, tracks, jetSplittingsDataTable);
       }
     }
   }
@@ -286,18 +277,28 @@ struct JetSubstructureTask {
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
-        analyseCharged<false>(jet, tracks, TracksPerCollisionDataSub, jetSubstructureDataSubTable, jetSplittingsDataSubTable);
+        analyseCharged<false>(jet, tracks, jetSplittingsDataSubTable);
       }
     }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
 
-  void processChargedJetsMCD(aod::JetCollisions::iterator const& collision,
-                             typename soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
-                             aod::JetTracks const& tracks)
+  // void processChargedJetsEventWiseSubMCD(aod::JetCollisions::iterator const& collision,
+  //                                        typename soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
+  //                                        aod::JetTracks const& tracks)
+  // { 
+  //   for (auto& jet : jets){
+  //     analyseCharged<false>(jet, tracks, jetSplittingsDataSubTable);
+  //   }
+  // }
+  // PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
+
+    void processChargedJetsMCD(aod::JetCollisions::iterator const& collision,
+                               typename soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
+                               aod::JetTracks const& tracks)
   { 
     for (auto& jet : jets){
-      analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureMCDTable, jetSplittingsMCDTable);
+      analyseCharged<false>(jet, tracks, jetSplittingsMCDTable);
     }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet substructure", false);
