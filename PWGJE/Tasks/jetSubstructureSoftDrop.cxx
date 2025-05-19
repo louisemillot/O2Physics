@@ -278,7 +278,7 @@ struct JetSubstructureTask {
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
         LOGF(info, "test2 ");
-        analyseCharged<false>(jet, tracks, jetSplittingsDataSubTable);
+        analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable);
       }
     }
   }
