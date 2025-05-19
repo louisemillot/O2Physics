@@ -232,10 +232,6 @@ struct JetSubstructureTask {
                               aod::JetTracks const& tracks,
                               soa::Join<aod::ChargedJets, aod::ChargedJetConstituents> const& jets)
   {
-    // registry.fill(HIST("h_jets"), 0.5);
-    // LOGF(info, "Collision Index = %d", collision.globalIndex());
-    // registry.fill(HIST("h_collisionidex"), collision.globalIndex());
-    // registry.fill(HIST("h_collisions"), 0.5);
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
       return;
     }
@@ -252,7 +248,7 @@ struct JetSubstructureTask {
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
-        analyseCharged<false>(jet, tracks, jetSplittingsDataTable);
+        analyseCharged<false>(jet, jetConstituent, jetSplittingsDataTable);
       }
     }
   }
