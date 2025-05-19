@@ -219,20 +219,6 @@ struct JetSubstructureTask {
     }
   }
 
-  template <typename T, typename U>
-  void jetSubstructureSimple(T const& jet, U const& /*tracks*/)
-  {
-    angularity = 0.0;
-    leadingConstituentPt = 0.0;
-    for (auto& constituent : jet.template tracks_as<U>()) {
-      if (constituent.pt() >= leadingConstituentPt) {
-        leadingConstituentPt = constituent.pt();
-      }
-      angularity += std::pow(constituent.pt(), kappa) * std::pow(jetutilities::deltaR(jet, constituent), alpha);
-    }
-    angularity /= (jet.pt() * (jet.r() / 100.f));
-  }
-
   template <bool isSubtracted, typename T, typename U, typename V, typename M, typename N>
   void analyseCharged(T const& jet, U const& tracks, V const& trackSlicer, M& outputTable, N& splittingTable)
   {
@@ -244,8 +230,6 @@ struct JetSubstructureTask {
     }
     // nSub = jetsubstructureutilities::getNSubjettiness(jet, jet.template tracks_as<U>(), jet.template tracks_as<U>(), jet.template tracks_as<U>(), 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
     jetReclustering<false, isSubtracted>(jet, splittingTable);
-    // jetSubstructureSimple(jet, jet.template tracks_as<U>());
-    outputTable(energyMotherVec, ptLeadingVec, ptSubLeadingVec, thetaVec, nSub[0], nSub[1], nSub[2], pairJetPtVec, pairJetEnergyVec, pairJetThetaVec, pairJetPerpCone1PtVec, pairJetPerpCone1EnergyVec, pairJetPerpCone1ThetaVec, pairPerpCone1PerpCone1PtVec, pairPerpCone1PerpCone1EnergyVec, pairPerpCone1PerpCone1ThetaVec, pairPerpCone1PerpCone2PtVec, pairPerpCone1PerpCone2EnergyVec, pairPerpCone1PerpCone2ThetaVec, angularity, leadingConstituentPt, perpConeRho);
   }
 
   void processDummy(aod::JetTracks const&)
@@ -265,40 +249,21 @@ struct JetSubstructureTask {
       return;
     }
     registry.fill(HIST("h_collisions"), 1);
-    // int count = 0; 
-    // for (const auto& track : tracks) {
-    //   // LOGF(info, "track collion Id = %d", track.collisionId());
-    //   registry.fill(HIST("h_tracks_per_collision"), track.collisionId());
-    //     if (track.collisionId() != collision.globalIndex()) {
-    //       ++count;
-    //     }
-    // }
-    // LOGF(info, "Nombre de tracks non associées à la collision : %d", count);
-    
-    // for (auto const& track : tracks) {
-    //   if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
-    //     return;
-    // //on ne peut pas mettre return car si jamais je trouve ne serais ce que 1 seul track non selectionne j'abandonne la collision entiere, 
-    // //je ne peux pas mettre continue non plus car dans analyseCharged je vais avoir TOUTE les traces, et dans la meme boucle analyseCharged sera appelle trop de fois (nbr_traces_selected x nbr_jets) 
-    // //Sinon raisonner avec JetConstituent mais ca implique aussi modifier analyseCharged()
-    //  }
-      // }
 
-      ///////////// leading track cut try : (because filter doesnt work)
-      bool hasHighPtConstituent = false;
-      for (auto& jet : jets){
-        for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
-          if (jetConstituent.pt() >= ptLeadingTrackCut) {
-            hasHighPtConstituent = true;
-            break; // Sortir de la boucle dès qu'un constituant valide est trouvé
-          }
-        }
-        // Si un jet contient un constituant avec un pt > au critère, on l'analyse
-        if (hasHighPtConstituent) {
-        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
+    ///////////// leading track cut try : (because filter doesnt work)
+    bool hasHighPtConstituent = false;
+    for (auto& jet : jets){
+      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+        if (jetConstituent.pt() >= ptLeadingTrackCut) {
+          hasHighPtConstituent = true;
+          break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
-    
+      // Si un jet contient un constituant avec un pt > au critère, on l'analyse
+      if (hasHighPtConstituent) {
+        analyseCharged<false>(jet, tracks, TracksPerCollision, jetSubstructureDataTable, jetSplittingsDataTable);
+      }
+    }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
@@ -346,11 +311,8 @@ struct JetSubstructureTask {
       for (auto& jetConstituent : jet.template tracks_as<aod::JetParticles>()) {
         fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
       }
-      nSub = jetsubstructureutilities::getNSubjettiness(jet, particles, particles, particles, 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
       jetReclustering<true, false>(jet, jetSplittingsMCPTable);
-      jetSubstructureSimple(jet, particles);
-      jetSubstructureMCPTable(energyMotherVec, ptLeadingVec, ptSubLeadingVec, thetaVec, nSub[0], nSub[1], nSub[2], pairJetPtVec, pairJetEnergyVec, pairJetThetaVec, pairJetPerpCone1PtVec, pairJetPerpCone1EnergyVec, pairJetPerpCone1ThetaVec, pairPerpCone1PerpCone1PtVec, pairPerpCone1PerpCone1EnergyVec, pairPerpCone1PerpCone1ThetaVec, pairPerpCone1PerpCone2PtVec, pairPerpCone1PerpCone2EnergyVec, pairPerpCone1PerpCone2ThetaVec, angularity, leadingConstituentPt, perpConeRho);
-      }
+    }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCP, "charged jet substructure on MC particle level", false);
 };
