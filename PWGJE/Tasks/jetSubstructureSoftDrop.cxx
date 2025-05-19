@@ -213,7 +213,7 @@ struct JetSubstructureTask {
   }
 
   template <bool isSubtracted, typename T, typename U, typename N>
-  void analyseCharged(T const& jet, U const& /*tracks*/, N& splittingTable)
+  void analyseCharged(T const& jet, U const& tracks, N& splittingTable) //  void analyseCharged(T const& jet, U const& /*tracks*/, N& splittingTable)
   {
     // LOGF(info, " Entering analyseCharged " );
     jetConstituents.clear();
