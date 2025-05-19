@@ -248,7 +248,7 @@ struct JetSubstructureTask {
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
-        analyseCharged<false>(jet, jetConstituents, jetSplittingsDataTable);
+        analyseCharged<false>(jet, jet.tracks_as<aod::JetTracks>(), jetSplittingsDataTable);
       }
     }
   }
