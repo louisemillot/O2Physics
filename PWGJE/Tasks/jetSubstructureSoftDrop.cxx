@@ -234,7 +234,8 @@ struct JetSubstructureTask {
   void processChargedJetsData(aod::JetCollisions::iterator const& collision,
                               aod::JetTracks const& tracks,
                               soa::Join<aod::ChargedJets, aod::ChargedJetConstituents> const& jets)
-  {
+  { 
+    LOGF(info, " Entering processChargedJetsData :" );
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
       return;
     }
