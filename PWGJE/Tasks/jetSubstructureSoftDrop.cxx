@@ -289,7 +289,7 @@ struct JetSubstructureTask {
                                          aod::JetTracks const& tracks)
   { 
     for (auto& jet : jets){
-      analyseCharged<true>(jet, tracks, jetSplittingsMCDSubTable);
+      analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable);
     }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
@@ -299,7 +299,7 @@ struct JetSubstructureTask {
                                aod::JetTracks const& tracks)
   { 
     for (auto& jet : jets){
-      analyseCharged<false>(jet, tracks, jetSplittingsDataSubTable);
+      analyseCharged<false>(jet, tracks, jetSplittingsMCDTable);
     }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet substructure", false);
