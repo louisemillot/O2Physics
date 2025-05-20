@@ -9,27 +9,21 @@
 // granted to it by virtue of its status as an Intergovernmental Organization
 // or submit itself to any jurisdiction.
 
-//
-// Task to add a table of track parameters propagated to the primary vertex
-//
+/// \file traciDcaCovFillerRun2.cxx
+/// \brief Fills DCA and DCA Cov tables for Run 2 tracks
+/// \author Aimeric Landou <aimeric.landou@cern.ch>, CERN
+// Run 2 AO2Ds cannot have their dcacov filled by the current track-propagation workflow as the workflow isn't designed for them, given Run 2 tracks are already propagated to the PV.
+// This task fills the DCA Cov (and DCA) tables for Run 2 tracks by "propagating" the tracks (though given they are already at the PV it doesn't actually do the propagation) and retrieving the DCA and DCA cov given by the propagateToDCABxByBz function
 
 #include "TableHelper.h"
 #include "Common/Tools/TrackTuner.h"
 #include "DataFormatsParameters/GRPObject.h"
 
-// The Run 3 AO2D stores the tracks at the point of innermost update. For a track with ITS this is the innermost (or second innermost)
-// ITS layer. For a track without ITS, this is the TPC inner wall or for loopers in the TPC even a radius beyond that.
-// In order to use the track parameters, the tracks have to be propagated to the collision vertex which is done by this task.
-// The task consumes the TracksIU and TracksCovIU tables and produces Tracks and TracksCov to which then the user analysis can subscribe.
-//
-// This task is not needed for Run 2 converted data.
-// There are two versions of the task (see process flags), one producing also the covariance matrix and the other only the tracks table.
-
 using namespace o2;
 using namespace o2::framework;
 // using namespace o2::framework::expressions;
 
-struct TrackDcaFillerRun2 {
+struct TrackDcaCovFillerRun2 {
   Produces<aod::TracksDCA> tracksDCA;
   Produces<aod::TracksDCACov> tracksDCACov;
 
@@ -46,22 +40,10 @@ struct TrackDcaFillerRun2 {
   const o2::dataformats::MeanVertexObject* mMeanVtx = nullptr;
   o2::parameters::GRPMagField* grpmag = nullptr;
   o2::base::MatLayerCylSet* lut = nullptr;
-  // TrackTuner trackTunerObj;
 
   Configurable<std::string> ccdburl{"ccdb-url", "http://alice-ccdb.cern.ch", "url of the ccdb repository"};
-  // Configurable<std::string> geoPath{"geoPath", "GLO/Config/GeometryAligned", "Path of the geometry file"};
   Configurable<std::string> ccdbPathGrp{"grpmagPath", "GLO/GRP/GRP", "CCDB path of the grp file (run2)"};
   Configurable<std::string> mVtxPath{"mVtxPath", "GLO/Calib/MeanVertex", "Path of the mean vertex file"};
-  // Configurable<float> minPropagationRadius{"minPropagationDistance", o2::constants::geom::XTPCInnerRef + 0.1, "Only tracks which are at a smaller radius will be propagated, defaults to TPC inner wall"};
-  // for TrackTuner only (MC smearing)
-  // Configurable<bool> useTrackTuner{"useTrackTuner", false, "Apply track tuner corrections to MC"};
-  // Configurable<bool> fillTrackTunerTable{"fillTrackTunerTable", false, "flag to fill track tuner table"};
-  // Configurable<int> trackTunerConfigSource{"trackTunerConfigSource", aod::track_tuner::InputString, "1: input string; 2: TrackTuner Configurables"};
-  // Configurable<std::string> trackTunerParams{"trackTunerParams", "debugInfo=0|updateTrackDCAs=1|updateTrackCovMat=1|updateCurvature=0|updateCurvatureIU=0|updatePulls=0|isInputFileFromCCDB=1|pathInputFile=Users/m/mfaggin/test/inputsTrackTuner/PbPb2022|nameInputFile=trackTuner_DataLHC22sPass5_McLHC22l1b2_run529397.root|pathFileQoverPt=Users/h/hsharma/qOverPtGraphs|nameFileQoverPt=D0sigma_Data_removal_itstps_MC_LHC22b1b.root|usePvRefitCorrections=0|qOverPtMC=-1.|qOverPtData=-1.", "TrackTuner parameter initialization (format: <name>=<value>|<name>=<value>)"};
-  // ConfigurableAxis axisPtQA{"axisPtQA", {VARIABLE_WIDTH, 0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.0f, 1.1f, 1.2f, 1.3f, 1.4f, 1.5f, 1.6f, 1.7f, 1.8f, 1.9f, 2.0f, 2.2f, 2.4f, 2.6f, 2.8f, 3.0f, 3.2f, 3.4f, 3.6f, 3.8f, 4.0f, 4.4f, 4.8f, 5.2f, 5.6f, 6.0f, 6.5f, 7.0f, 7.5f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 17.0f, 19.0f, 21.0f, 23.0f, 25.0f, 30.0f, 35.0f, 40.0f, 50.0f}, "pt axis for QA histograms"};
-  // OutputObj<TH1D> trackTunedTracks{TH1D("trackTunedTracks", "", 1, 0.5, 1.5), OutputObjHandlingPolicy::AnalysisObject};
-
-  // using TracksIUWithMc = soa::Join<aod::StoredTracksIU, aod::McTrackLabels, aod::TracksCovIU>;
 
   HistogramRegistry registry{"registry"};
 
@@ -74,27 +56,6 @@ struct TrackDcaFillerRun2 {
     ccdb->setURL(ccdburl);
     ccdb->setCaching(true);
     ccdb->setLocalObjectValidityChecking();
-
-    // /// TrackTuner initialization
-    // if (useTrackTuner) {
-    //   std::string outputStringParams = "";
-    //   switch (trackTunerConfigSource) {
-    //     case aod::track_tuner::InputString:
-    //       outputStringParams = trackTunerObj.configParams(trackTunerParams);
-    //       break;
-    //     case aod::track_tuner::Configurables:
-    //       outputStringParams = trackTunerObj.configParams();
-    //       break;
-
-    //     default:
-    //       LOG(fatal) << "TrackTuner configuration source not defined. Fix it! (Supported options: input string (1); Configurables (2))";
-    //       break;
-    //   }
-
-    //   trackTunerObj.getDcaGraphs();
-    //   trackTunedTracks->SetTitle(outputStringParams.c_str());
-    //   trackTunedTracks->GetXaxis()->SetBinLabel(1, "all tracks");
-    // }
   }
 
   void initCCDB(aod::BCsWithTimestamps::iterator const& bc)
@@ -145,7 +106,6 @@ struct TrackDcaFillerRun2 {
 
     for (auto& track : tracks) {
       if constexpr (fillCovMat) {
-        // if (fillTracksDCACov) {
         if (fillTracksDCA || fillTracksDCACov) {
           mDcaInfoCov.set(999, 999, 999, 999, 999);
         }
@@ -157,34 +117,26 @@ struct TrackDcaFillerRun2 {
         }
         setTrackPar(track, mTrackPar);
       }
-      aod::track::TrackTypeEnum trackType = (aod::track::TrackTypeEnum)track.trackType();
-      
-      
-      // Only propagate tracks which have passed the innermost wall of the TPC (e.g. skipping loopers etc). Others fill unpropagated.
-      // if (track.trackType() == aod::track::TrackIU && track.x() < minPropagationRadius) { //////AIMERIC: this i am not sure if I should remove or keep
-        bool isPropagationOK = true;
-        if (track.has_collision()) {
-          auto const& collision = track.collision();
-          if constexpr (fillCovMat) {
-            mVtx.setPos({collision.posX(), collision.posY(), collision.posZ()});
-            mVtx.setCov(collision.covXX(), collision.covXY(), collision.covYY(), collision.covXZ(), collision.covYZ(), collision.covZZ());
-            isPropagationOK = o2::base::Propagator::Instance()->propagateToDCABxByBz(mVtx, mTrackParCov, 2.f, matCorr, &mDcaInfoCov);
-          } else {
-            isPropagationOK = o2::base::Propagator::Instance()->propagateToDCABxByBz({collision.posX(), collision.posY(), collision.posZ()}, mTrackPar, 2.f, matCorr, &mDcaInfo);
-          }
+
+      bool isPropagationOK = true;
+      if (track.has_collision()) {
+        auto const& collision = track.collision();
+        if constexpr (fillCovMat) {
+          mVtx.setPos({collision.posX(), collision.posY(), collision.posZ()});
+          mVtx.setCov(collision.covXX(), collision.covXY(), collision.covYY(), collision.covXZ(), collision.covYZ(), collision.covZZ());
+          isPropagationOK = o2::base::Propagator::Instance()->propagateToDCABxByBz(mVtx, mTrackParCov, 2.f, matCorr, &mDcaInfoCov);
         } else {
-          if constexpr (fillCovMat) {
-            mVtx.setPos({mMeanVtx->getX(), mMeanVtx->getY(), mMeanVtx->getZ()});
-            mVtx.setCov(mMeanVtx->getSigmaX() * mMeanVtx->getSigmaX(), 0.0f, mMeanVtx->getSigmaY() * mMeanVtx->getSigmaY(), 0.0f, 0.0f, mMeanVtx->getSigmaZ() * mMeanVtx->getSigmaZ());
-            isPropagationOK = o2::base::Propagator::Instance()->propagateToDCABxByBz(mVtx, mTrackParCov, 2.f, matCorr, &mDcaInfoCov);
-          } else {
-            isPropagationOK = o2::base::Propagator::Instance()->propagateToDCABxByBz({mMeanVtx->getX(), mMeanVtx->getY(), mMeanVtx->getZ()}, mTrackPar, 2.f, matCorr, &mDcaInfo);
-          }
+          isPropagationOK = o2::base::Propagator::Instance()->propagateToDCABxByBz({collision.posX(), collision.posY(), collision.posZ()}, mTrackPar, 2.f, matCorr, &mDcaInfo);
         }
-        if (isPropagationOK) {
-          trackType = aod::track::Track;
+      } else {
+        if constexpr (fillCovMat) {
+          mVtx.setPos({mMeanVtx->getX(), mMeanVtx->getY(), mMeanVtx->getZ()});
+          mVtx.setCov(mMeanVtx->getSigmaX() * mMeanVtx->getSigmaX(), 0.0f, mMeanVtx->getSigmaY() * mMeanVtx->getSigmaY(), 0.0f, 0.0f, mMeanVtx->getSigmaZ() * mMeanVtx->getSigmaZ());
+          isPropagationOK = o2::base::Propagator::Instance()->propagateToDCABxByBz(mVtx, mTrackParCov, 2.f, matCorr, &mDcaInfoCov);
+        } else {
+          isPropagationOK = o2::base::Propagator::Instance()->propagateToDCABxByBz({mMeanVtx->getX(), mMeanVtx->getY(), mMeanVtx->getZ()}, mTrackPar, 2.f, matCorr, &mDcaInfo);
         }
-      // }
+      }
 
       if constexpr (fillCovMat) {
         if (fillTracksDCA) {
@@ -205,13 +157,13 @@ struct TrackDcaFillerRun2 {
   {
     fillTrackTables</*TTrack*/ soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksCov>, /*Particle*/ soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksCov>, /*isMc = */ false, /*fillCovMat =*/true>(tracks, tracks, collisions, bcs);
   }
-  PROCESS_SWITCH(TrackDcaFillerRun2, processCovariance, "Process with covariance", false);
+  PROCESS_SWITCH(TrackDcaCovFillerRun2, processCovariance, "Process with covariance", false);
 
   void processStandard(soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksCov> const& tracks, aod::Collisions const& collisions, aod::BCsWithTimestamps const& bcs)
   {
     fillTrackTables</*TTrack*/ soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksCov>, /*Particle*/ soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksCov>, /*isMc = */ false, /*fillCovMat =*/false>(tracks, tracks, collisions, bcs);
   }
-  PROCESS_SWITCH(TrackDcaFillerRun2, processStandard, "Process without covariance", true);
+  PROCESS_SWITCH(TrackDcaCovFillerRun2, processStandard, "Process without covariance", true);
 };
 
 //****************************************************************************************
@@ -221,6 +173,6 @@ struct TrackDcaFillerRun2 {
 //****************************************************************************************
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
-  WorkflowSpec workflow{adaptAnalysisTask<TrackDcaFillerRun2>(cfgc)};
+  WorkflowSpec workflow{adaptAnalysisTask<TrackDcaCovFillerRun2>(cfgc)};
   return workflow;
 }
