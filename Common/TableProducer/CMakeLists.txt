@@ -66,17 +66,14 @@ o2physics_add_dpl_workflow(track-propagation
                     SOURCES trackPropagation.cxx
                     PUBLIC_LINK_LIBRARIES O2Physics::AnalysisCore
                     COMPONENT_NAME Analysis)
-
-o2physics_add_dpl_workflow(track-dca-cov-filler-run2
-                    SOURCES trackDcaCovFillerRun2.cxx
+o2physics_add_dpl_workflow(track-dca-filler-run2
+                    SOURCES trackDcaFillerRun2.cxx
                     PUBLIC_LINK_LIBRARIES O2::DetectorsBase O2Physics::AnalysisCore
                     COMPONENT_NAME Analysis)
-
 o2physics_add_dpl_workflow(track-propagation-tester
                     SOURCES trackPropagationTester.cxx
                     PUBLIC_LINK_LIBRARIES O2Physics::AnalysisCore O2Physics::trackSelectionRequest
                     COMPONENT_NAME Analysis)
-
 o2physics_add_dpl_workflow(calo-clusters
                     SOURCES caloClusterProducer.cxx
                     PUBLIC_LINK_LIBRARIES O2::DataFormatsPHOS O2::PHOSBase O2::PHOSReconstruction O2Physics::DataModel
@@ -159,4 +156,3 @@ o2physics_add_dpl_workflow(muon-realignment
                     SOURCES muonRealignment.cxx
                     PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::AnalysisCore O2::DetectorsBase O2::DetectorsCommonDataFormats O2::MathUtils O2::MCHTracking O2::DataFormatsMCH O2::GlobalTracking O2::MCHBase O2::MCHGeometryTransformer O2::CommonUtils
                     COMPONENT_NAME Analysis)
-
