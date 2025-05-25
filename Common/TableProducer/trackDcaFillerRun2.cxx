@@ -18,6 +18,8 @@
 #include "TableHelper.h"
 #include "Common/Tools/TrackTuner.h"
 #include "DataFormatsParameters/GRPObject.h"
+#include <array>
+
 
 using namespace o2;
 using namespace o2::framework;
