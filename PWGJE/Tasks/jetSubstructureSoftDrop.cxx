@@ -192,8 +192,8 @@ struct JetSubstructureTask {
           }
           if constexpr (isSubtracted && !isMCP) {
             // LOGF(info, " Entering if statement for histograms :" );
-            registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"), jet.pt(), zg);
-            registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"), jet.pt(), rg);
+            registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"), jet.pt(), zg, collision.mcCollision().weight());
+            registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"), jet.pt(), rg, collision.mcCollision().weight());
           }
           softDropped = true;//mark the splitting as true to avoid filling it again
         }
@@ -285,7 +285,7 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
 
-    void processChargedJetsMCD(aod::JetCollisions::iterator const& collision,
+    void processChargedJetsMCD(aod::JetCollisionsMCD::iterator const& collision,
                                typename soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
                                aod::JetTracks const& tracks)
   { 
@@ -295,9 +295,10 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet substructure", false);
 
-    void processChargedJetsEventWiseSubMCD(aod::JetCollisions::iterator const& collision,
-                                         typename soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
-                                         aod::JetTracks const& tracks)
+    void processChargedJetsEventWiseSubMCD(aod::JetCollisionsMCD::iterator const& collision,
+                                           aod::JetMcCollisions const&, //join the weight
+                                           typename soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
+                                           aod::JetTracks const& tracks)
   { 
     for (auto& jet : jets){
       analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable);
