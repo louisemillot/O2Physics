@@ -137,7 +137,7 @@ struct JetSubstructureTask {
 
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
-  void jetReclustering(T const& jet, U& splittingTable)
+  void jetReclustering(T const& jet, U& splittingTable, double weight = 1.0)
   {
     // LOGF(info, " Entering jetReclustering " );
     energyMotherVec.clear(); //to be sure its empty before filling
@@ -192,8 +192,8 @@ struct JetSubstructureTask {
           }
           if constexpr (isSubtracted && !isMCP) {
             // LOGF(info, " Entering if statement for histograms :" );
-            registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"), jet.pt(), zg, collision.mcCollision().weight());
-            registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"), jet.pt(), rg, collision.mcCollision().weight());
+            registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"), weight());
+            registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"), weight());
           }
           softDropped = true;//mark the splitting as true to avoid filling it again
         }
@@ -223,7 +223,7 @@ struct JetSubstructureTask {
       fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex());
     }
     // nSub = jetsubstructureutilities::getNSubjettiness(jet, jet.template tracks_as<U>(), jet.template tracks_as<U>(), jet.template tracks_as<U>(), 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
-    jetReclustering<false, isSubtracted>(jet, splittingTable);
+    jetReclustering<false, isSubtracted>(jet, splittingTable, collision.mcCollision().weight());
   }
 
   void processDummy(aod::JetTracks const&)
