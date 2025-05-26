@@ -214,7 +214,7 @@ struct JetSubstructureTask {
   }
 
   template <bool isSubtracted, typename T, typename U, typename N>
-  void analyseCharged(T const& jet, U const& tracks, N& splittingTable) //  void analyseCharged(T const& jet, U const& /*tracks*/, N& splittingTable)
+  void analyseCharged(T const& jet, U const& tracks, N& splittingTable, double weight) //  void analyseCharged(T const& jet, U const& /*tracks*/, N& splittingTable)
   {
     // LOGF(info, " Entering analyseCharged " );
     jetConstituents.clear();
@@ -252,7 +252,7 @@ struct JetSubstructureTask {
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
-        analyseCharged<false>(jet, tracks, jetSplittingsDataTable);//attention je donne TOUTES les traces pas juste les traces des jets comme dans jetSubstructure.cxx (jetConstituentS,jet.tracks_as<aod::JetTracks>()) en fait on s'en fou car c'est deja filtré dans analysisCharged() c'est emme mieux de tout donner si jamais il y manque
+        analyseCharged<false>(jet, tracks, jetSplittingsDataTable, collision.mcCollision().weight());//attention je donne TOUTES les traces pas juste les traces des jets comme dans jetSubstructure.cxx (jetConstituentS,jet.tracks_as<aod::JetTracks>()) en fait on s'en fou car c'est deja filtré dans analysisCharged() c'est emme mieux de tout donner si jamais il y manque
       }
     }
   }
@@ -279,7 +279,7 @@ struct JetSubstructureTask {
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
         // LOGF(info, "test2 ");
-        analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable);
+        analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable, collision.mcCollision().weight());
       }
     }
   }
@@ -290,7 +290,7 @@ struct JetSubstructureTask {
                                aod::JetTracks const& tracks)
   { 
     for (auto& jet : jets){
-      analyseCharged<false>(jet, tracks, jetSplittingsMCDTable);
+      analyseCharged<false>(jet, tracks, jetSplittingsMCDTable,collision.mcCollision().weight());
     }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet substructure", false);
@@ -301,24 +301,24 @@ struct JetSubstructureTask {
                                            aod::JetTracks const& tracks)
   { 
     for (auto& jet : jets){
-      analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable);
+      analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable,collision.mcCollision().weight());
     }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
 
-  void processChargedJetsMCP(aod::JetMcCollisions::iterator const& mcCollision,
-                             typename soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents> const& jets,
-                             aod::JetParticles const& particles)
-  {
-    for (auto& jet : jets){
-      jetConstituents.clear();
-      for (auto& jetConstituent : jet.template tracks_as<aod::JetParticles>()) {
-        fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
-      }
-      jetReclustering<true, false>(jet, jetSplittingsMCPTable);
-    }
-  }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCP, "charged jet substructure on MC particle level", false);
+  // void processChargedJetsMCP(aod::JetMcCollisions::iterator const& mcCollision,
+  //                            typename soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents> const& jets,
+  //                            aod::JetParticles const& particles)
+  // {
+  //   for (auto& jet : jets){
+  //     jetConstituents.clear();
+  //     for (auto& jetConstituent : jet.template tracks_as<aod::JetParticles>()) {
+  //       fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
+  //     }
+  //     jetReclustering<true, false>(jet, jetSplittingsMCPTable);
+  //   }
+  // }
+  // PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCP, "charged jet substructure on MC particle level", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
