@@ -192,8 +192,8 @@ struct JetSubstructureTask {
           }
           if constexpr (isSubtracted && !isMCP) {
             // LOGF(info, " Entering if statement for histograms :" );
-            registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"), weight());
-            registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"), weight());
+            registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"), weight);
+            registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"), weight);
           }
           softDropped = true;//mark the splitting as true to avoid filling it again
         }
