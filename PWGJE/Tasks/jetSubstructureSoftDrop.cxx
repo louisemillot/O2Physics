@@ -223,7 +223,7 @@ struct JetSubstructureTask {
       fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex());
     }
     // nSub = jetsubstructureutilities::getNSubjettiness(jet, jet.template tracks_as<U>(), jet.template tracks_as<U>(), jet.template tracks_as<U>(), 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
-    jetReclustering<false, isSubtracted>(jet, splittingTable, collision.mcCollision().weight());
+    jetReclustering<false, isSubtracted>(jet, splittingTable, weight);
   }
 
   void processDummy(aod::JetTracks const&)
