@@ -286,7 +286,7 @@ struct JetSubstructureTask {
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
 
     void processChargedJetsMCD(aod::JetCollisions::iterator const& collision,
-                               typename soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
+                               soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
                                aod::JetTracks const& tracks)
   { 
     for (auto& jet : jets){
@@ -296,7 +296,7 @@ struct JetSubstructureTask {
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet substructure", false);
 
     void processChargedJetsEventWiseSubMCD(aod::JetCollisions::iterator const& collision,
-                                         typename soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
+                                         soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
                                          aod::JetTracks const& tracks)
   { 
     for (auto& jet : jets){
