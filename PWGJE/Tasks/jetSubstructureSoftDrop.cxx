@@ -137,7 +137,7 @@ struct JetSubstructureTask {
 
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
-  void jetReclustering(T const& jet, U& splittingTable)
+  void jetReclustering(T const& jet, U& splittingTable, double weight)
   {
     // LOGF(info, " Entering jetReclustering " );
     energyMotherVec.clear(); //to be sure its empty before filling
@@ -183,17 +183,17 @@ struct JetSubstructureTask {
           rg = theta;
           if constexpr (!isSubtracted && !isMCP) {
             // LOGF(info, " Entering if statement for histograms :" );
-            registry.fill(HIST("h2_jet_pt_jet_zg"), jet.pt(), zg);
-            registry.fill(HIST("h2_jet_pt_jet_rg"), jet.pt(), rg);
+            registry.fill(HIST("h2_jet_pt_jet_zg"), jet.pt(), zg, weight);
+            registry.fill(HIST("h2_jet_pt_jet_rg"), jet.pt(), rg, weight);
           }
           if constexpr (!isSubtracted && isMCP) {
-            registry.fill(HIST("h2_jet_pt_part_jet_zg_part"), jet.pt(), zg);
-            registry.fill(HIST("h2_jet_pt_part_jet_rg_part"), jet.pt(), rg);
+            registry.fill(HIST("h2_jet_pt_part_jet_zg_part"), jet.pt(), zg, weight);
+            registry.fill(HIST("h2_jet_pt_part_jet_rg_part"), jet.pt(), rg, weight);
           }
           if constexpr (isSubtracted && !isMCP) {
             // LOGF(info, " Entering if statement for histograms :" );
-            registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"), jet.pt(), zg);
-            registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"), jet.pt(), rg);
+            registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"),jet.pt(), zg, weight);
+            registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"),jet.pt(), rg, weight);
           }
           softDropped = true;//mark the splitting as true to avoid filling it again
         }
@@ -203,18 +203,18 @@ struct JetSubstructureTask {
     }
     if constexpr (!isSubtracted && !isMCP) {
       // LOGF(info, " Entering if statement for histograms: " );
-      registry.fill(HIST("h2_jet_pt_jet_nsd"), jet.pt(), nsd);
+      registry.fill(HIST("h2_jet_pt_jet_nsd"), jet.pt(), nsd, weight);
     }
     if constexpr (!isSubtracted && isMCP) {
-      registry.fill(HIST("h2_jet_pt_part_jet_nsd_part"), jet.pt(), nsd);
+      registry.fill(HIST("h2_jet_pt_part_jet_nsd_part"), jet.pt(), nsd, weight);
     }
     if constexpr (isSubtracted && !isMCP) {
-      registry.fill(HIST("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted"), jet.pt(), nsd);
+      registry.fill(HIST("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted"), jet.pt(), nsd, weight);
     }
   }
 
   template <bool isSubtracted, typename T, typename U, typename N>
-  void analyseCharged(T const& jet, U const& tracks, N& splittingTable) //  void analyseCharged(T const& jet, U const& /*tracks*/, N& splittingTable)
+  void analyseCharged(T const& jet, U const& tracks, N& splittingTable, double weight = 1.0) 
   {
     // LOGF(info, " Entering analyseCharged " );
     jetConstituents.clear();
@@ -223,7 +223,7 @@ struct JetSubstructureTask {
       fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex());
     }
     // nSub = jetsubstructureutilities::getNSubjettiness(jet, jet.template tracks_as<U>(), jet.template tracks_as<U>(), jet.template tracks_as<U>(), 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
-    jetReclustering<false, isSubtracted>(jet, splittingTable);
+    jetReclustering<false, isSubtracted>(jet, splittingTable, weight);
   }
 
   void processDummy(aod::JetTracks const&)
@@ -285,39 +285,41 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
 
-    void processChargedJetsMCD(aod::JetCollisions::iterator const& collision,
+    void processChargedJetsMCD(aod::JetCollisionsMCD::iterator const& collision,
+                               aod::JetMcCollisions const&, //join the weight
                                soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
                                aod::JetTracks const& tracks)
   { 
     for (auto& jet : jets){
-      analyseCharged<false>(jet, tracks, jetSplittingsMCDTable);
+      analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, collision.mcCollision().weight());
     }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet substructure", false);
 
-    void processChargedJetsEventWiseSubMCD(aod::JetCollisions::iterator const& collision,
-                                         soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
-                                         aod::JetTracks const& tracks)
+    void processChargedJetsEventWiseSubMCD(aod::JetCollisionsMCD::iterator const& collision,
+                                           aod::JetMcCollisions const&, //join the weight
+                                           soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
+                                           aod::JetTracks const& tracks)
   { 
     for (auto& jet : jets){
-      analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable);
+      analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable, collision.mcCollision().weight());
     }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
 
-  void processChargedJetsMCP(aod::JetMcCollisions::iterator const& mcCollision,
-                             typename soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents> const& jets,
-                             aod::JetParticles const& particles)
-  {
-    for (auto& jet : jets){
-      jetConstituents.clear();
-      for (auto& jetConstituent : jet.template tracks_as<aod::JetParticles>()) {
-        fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
-      }
-      jetReclustering<true, false>(jet, jetSplittingsMCPTable);
-    }
-  }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCP, "charged jet substructure on MC particle level", false);
+  // void processChargedJetsMCP(aod::JetMcCollisions::iterator const& mcCollision,
+  //                            typename soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents> const& jets,
+  //                            aod::JetParticles const& particles)
+  // {
+  //   for (auto& jet : jets){
+  //     jetConstituents.clear();
+  //     for (auto& jetConstituent : jet.template tracks_as<aod::JetParticles>()) {
+  //       fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
+  //     }
+  //     jetReclustering<true, false>(jet, jetSplittingsMCPTable);
+  //   }
+  // }
+  // PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCP, "charged jet substructure on MC particle level", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
