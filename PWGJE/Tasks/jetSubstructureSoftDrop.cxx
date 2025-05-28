@@ -235,7 +235,7 @@ struct JetSubstructureTask {
                               aod::JetTracks const& tracks,
                               soa::Join<aod::ChargedJets, aod::ChargedJetConstituents> const& jets)
   { 
-    // LOGF(info, " Entering processChargedJetsData :" );
+    LOGF(info, " Entering processChargedJetsData :" );
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
       return;
     }
@@ -262,7 +262,7 @@ struct JetSubstructureTask {
                                           soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
                                           aod::JetTracksSub const& tracks)
   {
-    // LOGF(info, "Entering processChargedJetsEventWiseSubData ");
+    LOGF(info, "Entering processChargedJetsEventWiseSubData ");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
       return;
     }
