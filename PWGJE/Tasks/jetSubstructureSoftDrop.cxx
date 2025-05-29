@@ -330,7 +330,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  }
+  
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
 
   // void processChargedJetsMCP(aod::JetMcCollisions::iterator const& mcCollision,
