@@ -317,7 +317,6 @@ struct JetSubstructureTask {
       jetReclustering<true, false>(jet, jetSplittingsMCPTable);
     }
   }
-  
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCP, "charged jet substructure on MC particle level", false);
 };
 
