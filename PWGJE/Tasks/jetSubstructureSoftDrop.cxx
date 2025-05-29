@@ -290,8 +290,20 @@ struct JetSubstructureTask {
                                soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
                                aod::JetTracks const& tracks)
   { 
+    registry.fill(HIST("h_collisions"), 1);
+    ///////////// leading track cut /////////////
+    bool hasHighPtConstituent = false;
     for (auto& jet : jets){
-      analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, collision.mcCollision().weight());
+      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+        if (jetConstituent.pt() >= ptLeadingTrackCut) {
+          hasHighPtConstituent = true;
+          break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+        }
+      }
+      // Si un jet contient un constituant avec un pt > au critère, on l'analyse
+      if (hasHighPtConstituent) {
+        analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, collision.mcCollision().weight());
+      }
     }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet substructure", false);
@@ -299,11 +311,24 @@ struct JetSubstructureTask {
     void processChargedJetsEventWiseSubMCD(aod::JetCollisionsMCD::iterator const& collision,
                                            aod::JetMcCollisions const&, //join the weight
                                            soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
-                                           aod::JetTracks const& tracks)
+                                           aod::JetTracksSub const& tracks)
   { 
+    registry.fill(HIST("h_collisions"), 1);
+    ///////////// leading track cut /////////////
+    bool hasHighPtConstituent = false;
     for (auto& jet : jets){
-      analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable, collision.mcCollision().weight());
+      for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
+        if (jetConstituent.pt() >= ptLeadingTrackCut) {
+          hasHighPtConstituent = true;
+          break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+        }
+      }
+      // Si un jet contient un constituant avec un pt > au critère, on l'analyse
+      if (hasHighPtConstituent) {
+        analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable, collision.mcCollision().weight());
+      }
     }
+  }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
 
