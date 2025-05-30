@@ -304,6 +304,7 @@ struct JetSubstructureTask {
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
         analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, collision.mcCollision().weight());
+        LOGF(info, "processChargedJetsMCD: weight = %.4f", collision.mcCollision().weight());
       }
     }
   }
@@ -327,6 +328,7 @@ struct JetSubstructureTask {
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
         analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable, collision.mcCollision().weight());
+        LOGF(info, "processChargedJetsEventWiseSubMCD: weight = %.4f", collision.mcCollision().weight());
       }
     }
   }
