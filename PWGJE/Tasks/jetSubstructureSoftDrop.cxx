@@ -180,12 +180,12 @@ struct JetSubstructureTask {
       thetaVec.push_back(theta);
 
       if (z >= zCut * TMath::Power(theta / (jet.r() / 100.f), beta)) {
-      auto thetag ;
-      LOGF(info, "Jet radius = %.2f", jet.r() / 100.f);
+        float thetag = theta / (jet.r() / 100.f);
+        LOGF(info, "Jet radius = %.2f", jet.r() / 100.f);
         if (!softDropped) {//if the splitting hasent been already softdropped softdrop=false
           zg = z;
           rg = theta;
-          thetag= rg / (jet.r() / 100.f);
+          
           if constexpr (!isSubtracted && !isMCP) {
             // LOGF(info, " Entering if statement for histograms :" );
             registry.fill(HIST("h2_jet_pt_jet_zg"), jet.pt(), zg, weight);
