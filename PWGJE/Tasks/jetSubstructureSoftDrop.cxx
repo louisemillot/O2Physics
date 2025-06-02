@@ -108,14 +108,17 @@ struct JetSubstructureTask {
   {
     registry.add("h2_jet_pt_jet_zg", ";#it{p}_{T,jet} (GeV/#it{c});#it{z}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_rg", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+    registry.add("h2_jet_pt_jet_thetag", ";#it{p}_{T,jet} (GeV/#it{c});#it{theta}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_nsd", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
 
     registry.add("h2_jet_pt_part_jet_zg_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{z}_{g}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_part_jet_rg_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{R}_{g}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+    registry.add("h2_jet_pt_part_jet_thetag_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{theta}_{g}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_part_jet_nsd_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{n}_{SD}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
 
     registry.add("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{z}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+    registry.add("h2_jet_pt_jet_thetag_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{theta}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
 
     registry.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{1, 0.5, 1.5}}});
@@ -177,24 +180,28 @@ struct JetSubstructureTask {
       thetaVec.push_back(theta);
 
       if (z >= zCut * TMath::Power(theta / (jet.r() / 100.f), beta)) {
-      
-      // LOGF(info, "Jet radius = %.2f", jet.r() / 100.f);
+      auto thetag ;
+      LOGF(info, "Jet radius = %.2f", jet.r() / 100.f);
         if (!softDropped) {//if the splitting hasent been already softdropped softdrop=false
           zg = z;
           rg = theta;
+          thetag= rg / (jet.r() / 100.f);
           if constexpr (!isSubtracted && !isMCP) {
             // LOGF(info, " Entering if statement for histograms :" );
             registry.fill(HIST("h2_jet_pt_jet_zg"), jet.pt(), zg, weight);
             registry.fill(HIST("h2_jet_pt_jet_rg"), jet.pt(), rg, weight);
+            registry.fill(HIST("h2_jet_pt_jet_thetag"), jet.pt(), thetag, weight);
           }
           if constexpr (!isSubtracted && isMCP) {
             registry.fill(HIST("h2_jet_pt_part_jet_zg_part"), jet.pt(), zg, weight);
             registry.fill(HIST("h2_jet_pt_part_jet_rg_part"), jet.pt(), rg, weight);
+            registry.fill(HIST("h2_jet_pt_part_jet_thetag_part"), jet.pt(), thetag, weight);
           }
           if constexpr (isSubtracted && !isMCP) {
             // LOGF(info, " Entering if statement for histograms :" );
             registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"),jet.pt(), zg, weight);
             registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"),jet.pt(), rg, weight);
+            registry.fill(HIST("h2_jet_pt_jet_thetag_eventwiseconstituentsubtracted"),jet.pt(), thetag, weight);
           }
           softDropped = true;//mark the splitting as true to avoid filling it again
         }
