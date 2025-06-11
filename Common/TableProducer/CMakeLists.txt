@@ -61,10 +61,12 @@ o2physics_add_dpl_workflow(track-propagation
                     SOURCES trackPropagation.cxx
                     PUBLIC_LINK_LIBRARIES O2Physics::AnalysisCore
                     COMPONENT_NAME Analysis)
-o2physics_add_dpl_workflow(track-dca-filler-run2
-                    SOURCES trackDcaFillerRun2.cxx
+
+o2physics_add_dpl_workflow(track-dca-cov-filler-run2
+                    SOURCES trackDcaCovFillerRun2.cxx
                     PUBLIC_LINK_LIBRARIES O2::DetectorsBase O2Physics::AnalysisCore
                     COMPONENT_NAME Analysis)
+
 o2physics_add_dpl_workflow(track-propagation-tester
                     SOURCES trackPropagationTester.cxx
                     PUBLIC_LINK_LIBRARIES O2Physics::AnalysisCore O2Physics::trackSelectionRequest
