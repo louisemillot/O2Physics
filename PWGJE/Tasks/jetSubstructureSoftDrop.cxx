@@ -72,6 +72,8 @@ struct JetSubstructureTask {
   Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
   Configurable<std::string> trackSelections{"trackSelections", "globalTracks", "set track selections"};
   Configurable<float> ptLeadingTrackCut{"ptLeadingTrackCut", 5.0f, "Leading track cut"};
+  Configurable<int> trackOccupancyInTimeRangeMax{"trackOccupancyInTimeRangeMax", 999999, "maximum track occupancy of tracks in neighbouring collisions in a given time range; only applied to reconstructed collisions (data and mcd jets), not mc collisions (mcp jets)"};
+  Configurable<int> trackOccupancyInTimeRangeMin{"trackOccupancyInTimeRangeMin", -999999, "minimum track occupancy of tracks in neighbouring collisions in a given time range; only applied to reconstructed collisions (data and mcd jets), not mc collisions (mcp jets)"};
 
   Service<o2::framework::O2DatabasePDG> pdg;
   std::vector<fastjet::PseudoJet> jetConstituents;
@@ -181,7 +183,7 @@ struct JetSubstructureTask {
 
       if (z >= zCut * TMath::Power(theta / (jet.r() / 100.f), beta)) {
         float thetag = theta / (jet.r() / 100.f);
-        LOGF(info, "Jet radius = %.2f", jet.r() / 100.f);
+        // LOGF(info, "Jet radius = %.2f", jet.r() / 100.f);
         if (!softDropped) {//if the splitting hasent been already softdropped softdrop=false
           zg = z;
           rg = theta;
@@ -270,11 +272,17 @@ struct JetSubstructureTask {
                                           soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
                                           aod::JetTracksSub const& tracks)
   {
-    LOGF(info, "Entering processChargedJetsEventWiseSubData ");
+    registry.fill(HIST("h_collisions"), 0.5);
+    // LOGF(info, "Entering processChargedJetsEventWiseSubData ");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
       return;
     }
-    registry.fill(HIST("h_collisions"), 1);
+    registry.fill(HIST("h_collisions"), 1.5);
+    if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+      return;
+    }
+    registry.fill(HIST("h_collisions"), 2.5);
+
     bool hasHighPtConstituent = false;
     for (auto& jet : jets){
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
