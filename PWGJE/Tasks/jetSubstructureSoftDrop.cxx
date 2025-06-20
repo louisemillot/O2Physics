@@ -303,7 +303,7 @@ struct JetSubstructureTask {
       if (hasHighPtConstituent) {
         // LOGF(info, "test2 ");
         registry.fill(HIST("h_jet_pT"), 1.5);
-        analyseCharged<true>(jet, tracksFullList, jetSplittingsDataSubTable);
+        analyseCharged<true>(jet, tracksOfCollisions, jetSplittingsDataSubTable);
         registry.fill(HIST("h_jet_pT"), 2.5);
         
       }
