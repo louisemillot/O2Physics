@@ -279,7 +279,7 @@ struct JetSubstructureTask {
     for (auto& jet : jets){
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
-          LOGF(info, "Jet with leading constituent pt >= %.2f found", jetConstituent.pt().value);
+          LOGF(info, "Jet with leading constituent pt >= %.2f found", jetConstituent.pt());
           // LOGF(info, "test1 ");
           hasHighPtConstituent = true;
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
