@@ -244,7 +244,7 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
-  void processCollisions(aod::JetCollisions>::iterator const& collision)
+  void processCollisions(aod::JetCollisions::iterator const& collision)
   {
     registry.fill(HIST("h_collisions"), 0.5);
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
