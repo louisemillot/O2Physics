@@ -256,7 +256,7 @@ struct JetSubstructureTask {
     }
     registry.fill(HIST("h_collisions"), 2.5);
   }
-  PROCESS_SWITCH(JetSpectraCharged, processCollisions, "collisions Data and MCD", true);
+  PROCESS_SWITCH(JetSubstructureTask, processCollisions, "collisions Data and MCD", true);
 
   void processChargedJetsData(aod::JetCollisions::iterator const& collision,
                               aod::JetTracks const& tracksOfCollisions,
