@@ -289,7 +289,7 @@ struct JetSubstructureTask {
                                           soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
                                           aod::JetTracksSub const& tracksOfCollisions)
   {
-    registry.add("h_jet_pT", "jet pT", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+    TH1F* h_jet_pT = new TH1F("h_jet_pT", "Jet pT at various cuts;Step;Jet pT", 3, 0, 3);
     h_jet_pT->GetXaxis()->SetBinLabel(1, "Before cut");
     h_jet_pT->GetXaxis()->SetBinLabel(2, "After leading track");
     h_jet_pT->GetXaxis()->SetBinLabel(3, "After grooming");
