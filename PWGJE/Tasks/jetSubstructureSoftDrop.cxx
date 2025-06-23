@@ -131,6 +131,10 @@ struct JetSubstructureTask {
     registry.add("h_tracks_per_collision", "Tracks per Collision;Collision Index;Counts", {HistType::kTH1F, {{1, 0.5, 1.5}}});
     registry.add("h_collisionidex", "Collision Index;Collision Index;Counts", {HistType::kTH1F, {{1, 0.5, 1.5}}});
 
+    h_jet_pT->GetXaxis()->SetBinLabel(1, "Before cut");
+    h_jet_pT->GetXaxis()->SetBinLabel(2, "After leading track");
+    h_jet_pT->GetXaxis()->SetBinLabel(3, "After grooming");
+
       
 
     jetReclusterer.isReclustering = true;
@@ -292,7 +296,7 @@ struct JetSubstructureTask {
 
     bool hasHighPtConstituent = false;
     for (auto& jet : jets){
-    registry.fill(HIST("h_jet_pT"), 0.5);
+    h_jet_pT->Fill(0.5, jet.Pt()); 
     // auto & jetConstituent0 = jet.tracks_as<aod::JetTracksSub>().iteratorAt(0)
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
@@ -305,9 +309,9 @@ struct JetSubstructureTask {
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
         // LOGF(info, "test2 ");
-        registry.fill(HIST("h_jet_pT"), 1.5);
+        h_jet_pT->Fill(1.5, jet.Pt());
         analyseCharged<true>(jet, tracksOfCollisions, jetSplittingsDataSubTable);
-        registry.fill(HIST("h_jet_pT"), 2.5);
+        h_jet_pT->Fill(2.5, jet.Pt());
         
       }
     }
