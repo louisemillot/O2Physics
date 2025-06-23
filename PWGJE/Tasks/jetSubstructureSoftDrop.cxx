@@ -296,7 +296,7 @@ struct JetSubstructureTask {
 
     bool hasHighPtConstituent = false;
     for (auto& jet : jets){
-    h_jet_pT->Fill(0.5, jet.Pt()); 
+    h_jet_pT->Fill(0.5, jet.pt()); 
     // auto & jetConstituent0 = jet.tracks_as<aod::JetTracksSub>().iteratorAt(0)
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
