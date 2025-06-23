@@ -126,11 +126,12 @@ struct JetSubstructureTask {
     registry.add("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
 
     registry.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
-    
+    registry.add("h_jet_pt_initial", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    registry.add("h_jet_pt_after_leadingtrackcut", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
     registry.add("h_jets", ";Number of jets;Count", {HistType::kTH1F, {{1, 0.5, 1.5}}});
     registry.add("h_tracks_per_collision", "Tracks per Collision;Collision Index;Counts", {HistType::kTH1F, {{1, 0.5, 1.5}}});
     registry.add("h_collisionidex", "Collision Index;Collision Index;Counts", {HistType::kTH1F, {{1, 0.5, 1.5}}});
-
 
       
 
@@ -139,6 +140,8 @@ struct JetSubstructureTask {
 
     eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
     trackSelection = jetderiveddatautilities::initialiseTrackSelection(static_cast<std::string>(trackSelections));
+
+    AxisSpec jetPtAxis = {200, 0., 200., "#it{p}_{T} (GeV/#it{c})"};
   }
 
   // Filter trackCuts = (aod::jtrack::pt >= trackPtMin && aod::jtrack::pt < trackPtMax && aod::jtrack::eta > trackEtaMin && aod::jtrack::eta < trackEtaMax);
@@ -289,14 +292,11 @@ struct JetSubstructureTask {
                                           soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
                                           aod::JetTracksSub const& tracksOfCollisions)
   {
-    TH1F* h_jet_pT = new TH1F("h_jet_pT", "Jet pT at various cuts;Step;Jet pT", 3, 0, 3);
-    h_jet_pT->GetXaxis()->SetBinLabel(1, "Before cut");
-    h_jet_pT->GetXaxis()->SetBinLabel(2, "After leading track");
-    h_jet_pT->GetXaxis()->SetBinLabel(3, "After grooming");
+    
 
     bool hasHighPtConstituent = false;
     for (auto& jet : jets){
-    h_jet_pT->Fill(0.5, jet.pt()); 
+      registry.fill(HIST("h_jet_pt_initial"), jet.pt(), weight);
     // auto & jetConstituent0 = jet.tracks_as<aod::JetTracksSub>().iteratorAt(0)
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
@@ -309,9 +309,9 @@ struct JetSubstructureTask {
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
         // LOGF(info, "test2 ");
-        h_jet_pT->Fill(1.5, jet.pt());
+        registry.fill(HIST("h_jet_pt_after_leadingtrackcut"), jet.pt(), weight);
         analyseCharged<true>(jet, tracksOfCollisions, jetSplittingsDataSubTable);
-        h_jet_pT->Fill(2.5, jet.pt());
+        registry.fill(HIST("h_jet_pt_after_grooming"), jet.pt(), weight);
         
       }
     }
