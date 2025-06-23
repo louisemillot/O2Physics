@@ -126,14 +126,11 @@ struct JetSubstructureTask {
     registry.add("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
 
     registry.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
-    registry.add("h_jet_pT", "jet pT", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+    
     registry.add("h_jets", ";Number of jets;Count", {HistType::kTH1F, {{1, 0.5, 1.5}}});
     registry.add("h_tracks_per_collision", "Tracks per Collision;Collision Index;Counts", {HistType::kTH1F, {{1, 0.5, 1.5}}});
     registry.add("h_collisionidex", "Collision Index;Collision Index;Counts", {HistType::kTH1F, {{1, 0.5, 1.5}}});
 
-    h_jet_pT->GetXaxis()->SetBinLabel(1, "Before cut");
-    h_jet_pT->GetXaxis()->SetBinLabel(2, "After leading track");
-    h_jet_pT->GetXaxis()->SetBinLabel(3, "After grooming");
 
       
 
@@ -292,7 +289,10 @@ struct JetSubstructureTask {
                                           soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
                                           aod::JetTracksSub const& tracksOfCollisions)
   {
-    
+    registry.add("h_jet_pT", "jet pT", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+    h_jet_pT->GetXaxis()->SetBinLabel(1, "Before cut");
+    h_jet_pT->GetXaxis()->SetBinLabel(2, "After leading track");
+    h_jet_pT->GetXaxis()->SetBinLabel(3, "After grooming");
 
     bool hasHighPtConstituent = false;
     for (auto& jet : jets){
