@@ -111,7 +111,7 @@ struct JetSubstructureTask {
   void init(InitContext const&)
   {
     AxisSpec jetPtAxis = {200, 0., 200., "#it{p}_{T} (GeV/#it{c})"};
-    
+
     registry.add("h2_jet_pt_jet_zg", ";#it{p}_{T,jet} (GeV/#it{c});#it{z}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_rg", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_thetag", ";#it{p}_{T,jet} (GeV/#it{c});#it{theta}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
@@ -298,7 +298,7 @@ struct JetSubstructureTask {
 
     bool hasHighPtConstituent = false;
     for (auto& jet : jets){
-      registry.fill(HIST("h_jet_pt_initial"), jet.pt(), weight);
+      registry.fill(HIST("h_jet_pt_initial"), jet.pt()); //rajouter weight pour MC
     // auto & jetConstituent0 = jet.tracks_as<aod::JetTracksSub>().iteratorAt(0)
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
@@ -311,9 +311,9 @@ struct JetSubstructureTask {
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
         // LOGF(info, "test2 ");
-        registry.fill(HIST("h_jet_pt_after_leadingtrackcut"), jet.pt(), weight);
+        registry.fill(HIST("h_jet_pt_after_leadingtrackcut"), jet.pt());
         analyseCharged<true>(jet, tracksOfCollisions, jetSplittingsDataSubTable);
-        registry.fill(HIST("h_jet_pt_after_grooming"), jet.pt(), weight);
+        registry.fill(HIST("h_jet_pt_after_grooming"), jet.pt());
         
       }
     }
