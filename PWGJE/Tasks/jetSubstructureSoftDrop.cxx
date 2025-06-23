@@ -246,7 +246,6 @@ struct JetSubstructureTask {
     }
     // nSub = jetsubstructureutilities::getNSubjettiness(jet, jet.template tracks_as<U>(), jet.template tracks_as<U>(), jet.template tracks_as<U>(), 2, fastjet::contrib::CA_Axes(), true, zCut, beta);
     jetReclustering<false, isSubtracted>(jet, splittingTable, weight);
-    registry.fill(HIST("h_jet_pt_after_grooming"), jet.pt());
   }
 
   void processDummy(aod::JetTracks const&)
@@ -295,7 +294,13 @@ struct JetSubstructureTask {
                                           soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
                                           aod::JetTracksSub const& tracksOfCollisions)
   {
-    
+    //EventSelection, skipMBGapEvents, OccupancyCut
+    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+      return;
+    }
+    if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+      return;
+    }
 
     bool hasHighPtConstituent = false;
     for (auto& jet : jets){
@@ -314,8 +319,7 @@ struct JetSubstructureTask {
         // LOGF(info, "test2 ");
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut"), jet.pt());
         analyseCharged<true>(jet, tracksOfCollisions, jetSplittingsDataSubTable);
-        
-        
+        registry.fill(HIST("h_jet_pt_after_grooming"), jet.pt());
       }
     }
   }
