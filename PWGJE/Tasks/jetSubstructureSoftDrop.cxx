@@ -294,16 +294,17 @@ struct JetSubstructureTask {
                                           soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
                                           aod::JetTracksSub const& tracksOfCollisions)
   {
-    //EventSelection, skipMBGapEvents, OccupancyCut
+    //Collision selection on : EventSelection, skipMBGapEvents, OccupancyCut
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
-
-    bool hasHighPtConstituent = false;
+    // Leading track cut 
+    // bool hasHighPtConstituent = false;
     for (auto& jet : jets){
+      bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial"), jet.pt()); //rajouter weight pour MC
     // auto & jetConstituent0 = jet.tracks_as<aod::JetTracksSub>().iteratorAt(0)
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
@@ -317,9 +318,9 @@ struct JetSubstructureTask {
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
         // LOGF(info, "test2 ");
-        registry.fill(HIST("h_jet_pt_after_leadingtrackcut"), jet.pt());
+        registry.fill(HIST("h_jet_pt_after_leadingtrackcut"), jet.pt()); //rajouter weight pour MC
         analyseCharged<true>(jet, tracksOfCollisions, jetSplittingsDataSubTable);
-        registry.fill(HIST("h_jet_pt_after_grooming"), jet.pt());
+        registry.fill(HIST("h_jet_pt_after_grooming"), jet.pt()); //rajouter weight pour MC
       }
     }
   }
