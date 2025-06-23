@@ -140,6 +140,9 @@ struct JetSubstructureTask {
     trackSelection = jetderiveddatautilities::initialiseTrackSelection(static_cast<std::string>(trackSelections));
   }
 
+  // Filter trackCuts = (aod::jtrack::pt >= trackPtMin && aod::jtrack::pt < trackPtMax && aod::jtrack::eta > trackEtaMin && aod::jtrack::eta < trackEtaMax);
+  Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
+
   Preslice<aod::JetTracks> TracksPerCollision = aod::jtrack::collisionId;
   Preslice<aod::JetTracksSub> TracksPerCollisionDataSub = aod::bkgcharged::collisionId;
   Preslice<aod::JetParticles> ParticlesPerMcCollision = aod::jmcparticle::mcCollisionId;
@@ -244,7 +247,7 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
 
-  void processCollisions(aod::JetCollisions::iterator const& collision)
+  void processCollisions(soa::Filtered<aod::JetCollisions>::iterator const& collision)
   {
     registry.fill(HIST("h_collisions"), 0.5);
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
@@ -258,7 +261,7 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processCollisions, "collisions Data and MCD", true);
 
-  void processChargedJetsData(aod::JetCollisions::iterator const& collision,
+  void processChargedJetsData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                               aod::JetTracks const& tracksOfCollisions,
                               soa::Join<aod::ChargedJets, aod::ChargedJetConstituents> const& jets)
   { 
@@ -281,7 +284,7 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
 
-  void processChargedJetsEventWiseSubData(aod::JetCollisions::iterator const& collision,
+  void processChargedJetsEventWiseSubData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                           soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
                                           aod::JetTracksSub const& tracksOfCollisions)
   {
@@ -311,7 +314,7 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
 
-    void processChargedJetsMCD(aod::JetCollisionsMCD::iterator const& collision,
+    void processChargedJetsMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                                aod::JetMcCollisions const&, //join the weight
                                soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
                                aod::JetTracks const& tracks)
@@ -334,7 +337,7 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet substructure", false);
 
-    void processChargedJetsEventWiseSubMCD(aod::JetCollisionsMCD::iterator const& collision,
+    void processChargedJetsEventWiseSubMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                                            aod::JetMcCollisions const&, //join the weight
                                            soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
                                            aod::JetTracksSub const& tracks)
