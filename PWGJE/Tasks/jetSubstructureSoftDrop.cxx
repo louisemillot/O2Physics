@@ -385,6 +385,7 @@ struct JetSubstructureTask {
                                            soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
                                            aod::JetTracksSub const& tracks)
   { 
+    LOGF(info, " Entering processChargedJetsEventWiseSubMCD " );
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
