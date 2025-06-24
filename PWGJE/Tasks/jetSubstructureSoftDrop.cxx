@@ -53,7 +53,7 @@ struct JetSubstructureTask {
   Produces<aod::ChargedMCDetectorLevelSPs> jetSplittingsMCDTable;
   Produces<aod::ChargedMCParticleLevelSPs> jetSplittingsMCPTable;
   Produces<aod::ChargedEventWiseSubtractedSPs> jetSplittingsDataSubTable;
-  // Produces<aod::ChargedEventWiseSubtractedSPs> jetSplittingsMCDSubTable;
+  Produces<aod::ChargedEventWiseSubtractedSPs> jetSplittingsMCDSubTable;
   // Produces<aod::ChargedEventWiseSubtractedSPs> jetSplittingsMCPSubTable;
 
   Configurable<float> zCut{"zCut", 0.1, "soft drop z cut"};
@@ -405,7 +405,7 @@ struct JetSubstructureTask {
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_eventwise"), jet.pt(), collision.mcCollision().weight()); 
-        analyseCharged<true>(jet, tracks, jetSplittingsDataSubTable, collision.mcCollision().weight());
+        analyseCharged<true>(jet, tracks, jetSplittingsMCDSubTable, collision.mcCollision().weight());
         LOGF(info, "processChargedJetsEventWiseSubMCD: weight = %.4f", collision.mcCollision().weight());
       }
     }
