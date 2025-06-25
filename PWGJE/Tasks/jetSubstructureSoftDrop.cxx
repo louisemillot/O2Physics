@@ -424,9 +424,9 @@ struct JetSubstructureTask {
     if (!jetderiveddatautilities::selectCollision(mcCollision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
-    if (mcCollision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < mcCollision.trackOccupancyInTimeRange()) {
-      return;
-    }
+    // if (mcCollision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < mcCollision.trackOccupancyInTimeRange()) {
+    //   return;
+    // }
     for (auto& jet : jets){
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt(), mcCollision().weight()); 
