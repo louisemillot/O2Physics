@@ -429,7 +429,7 @@ struct JetSubstructureTask {
     // }
     for (auto& jet : jets){
       bool hasHighPtConstituent = false;
-      registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt(), mcCollision().weight()); 
+      registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt(), mcCollision.weight()); 
       for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           hasHighPtConstituent = true;
@@ -443,9 +443,9 @@ struct JetSubstructureTask {
         for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
           fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
         }
-        jetReclustering<true, false>(jet, jetSplittingsMCPTable, mcCollision().weight());
+        jetReclustering<true, false>(jet, jetSplittingsMCPTable, mcCollision.weight());
         //fin de analyseCharged version MCP
-        LOGF(info, "processChargedJetsMCP: weight = %.4f", mcCollision().weight());
+        LOGF(info, "processChargedJetsMCP: weight = %.4f", mcCollision.weight());
       }
     }
   }
