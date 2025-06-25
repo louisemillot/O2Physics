@@ -421,7 +421,7 @@ struct JetSubstructureTask {
                              soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents> const& jets,
                              aod::JetParticles const& particles)
   {
-    LOGF(info, " Entering processChargedJetsEventWiseSubMCD " );
+    LOGF(info, " Entering processChargedJetsEventWiseSubMCP " );
     // if (!jetderiveddatautilities::selectCollision(mcCollision, eventSelectionBits, skipMBGapEvents)) {
     //   return;
     // }
