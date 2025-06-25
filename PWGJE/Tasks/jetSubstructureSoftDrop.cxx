@@ -168,7 +168,7 @@ struct JetSubstructureTask {
 
   // Filter trackCuts = (aod::jtrack::pt >= trackPtMin && aod::jtrack::pt < trackPtMax && aod::jtrack::eta > trackEtaMin && aod::jtrack::eta < trackEtaMax);
   Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
-  Filter mcCollisionFilter = (nabs(aod::jmccollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
+  Filter mcCollisionFilter = nabs(aod::jmccollision::posZ)< vertexZCut;
 
   Preslice<aod::JetTracks> TracksPerCollision = aod::jtrack::collisionId;
   Preslice<aod::JetTracksSub> TracksPerCollisionDataSub = aod::bkgcharged::collisionId;
