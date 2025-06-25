@@ -421,9 +421,9 @@ struct JetSubstructureTask {
                              aod::JetParticles const& particles)
   {
     LOGF(info, " Entering processChargedJetsEventWiseSubMCD " );
-    if (!jetderiveddatautilities::selectCollision(mcCollision, eventSelectionBits, skipMBGapEvents)) {
-      return;
-    }
+    // if (!jetderiveddatautilities::selectCollision(mcCollision, eventSelectionBits, skipMBGapEvents)) {
+    //   return;
+    // }
     // if (mcCollision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < mcCollision.trackOccupancyInTimeRange()) {
     //   return;
     // }
@@ -437,7 +437,7 @@ struct JetSubstructureTask {
         }
       }
       if (hasHighPtConstituent) {
-        registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcp"), jet.pt(), mcCollision().weight()); 
+        registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcp"), jet.pt(), mcCollision.weight()); 
         //début de analyseCharged version MCP
         jetConstituents.clear();
         for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
