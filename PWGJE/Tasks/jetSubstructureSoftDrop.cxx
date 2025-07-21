@@ -421,36 +421,38 @@ struct JetSubstructureTask {
                              soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents> const& jets,
                              aod::JetParticles const& particles)
   {
-    LOGF(info, " Entering processChargedJetsMCP " );
+    // LOGF(info, " Entering processChargedJetsMCP " );
+
     // if (!jetderiveddatautilities::selectCollision(mcCollision, eventSelectionBits, skipMBGapEvents)) {
     //   return;
     // }
     // if (mcCollision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < mcCollision.trackOccupancyInTimeRange()) {
     //   return;
     // }
+
     for (auto& jet : jets){
-      LOGF(info, " Entering boucle_jets " );
+      // LOGF(info, " Entering boucle_jets " );
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt(), mcCollision.weight()); 
       for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
-        LOGF(info, " Entering boucle_jets_constituents " );
+        // LOGF(info, " Entering boucle_jets_constituents " );
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           hasHighPtConstituent = true;
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
       if (hasHighPtConstituent) {
-        LOGF(info, " leading track cut applied " );
+        // LOGF(info, " leading track cut applied " );
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcp"), jet.pt(), mcCollision.weight()); 
         //début de analyseCharged version MCP
         jetConstituents.clear();
         for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
-          LOGF(info, " AnalyseCharged for MCP " );
+          // LOGF(info, " AnalyseCharged for MCP " );
           fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
         }
         jetReclustering<true, false>(jet, jetSplittingsMCPTable, mcCollision.weight());
         //fin de analyseCharged version MCP
-        LOGF(info, "processChargedJetsMCP: weight = %.4f", mcCollision.weight());
+        // LOGF(info, "processChargedJetsMCP: weight = %.4f", mcCollision.weight());
       }
     }
   }
