@@ -502,7 +502,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet MCD substructure weighted", false);
+  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCDWeighted, "charged jet MCD substructure weighted", false);
 
   //   void processChargedJetsEventWiseSubMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
   //                                          aod::JetMcCollisions const&, //join the weight
