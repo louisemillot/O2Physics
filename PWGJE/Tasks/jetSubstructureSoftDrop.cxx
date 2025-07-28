@@ -207,7 +207,7 @@ struct JetSubstructureTask {
     }
     bool checkConstituentPt = true;
     bool checkConstituentMinPt = (ptLeadingTrackCut > -98.0);
-    bool checkConstituentMaxPt = (leadingConstituentPtMax < 9998.0);
+    bool checkConstituentMaxPt = (ptLeadingTrackCutMax < 9998.0);
     if (!checkConstituentMinPt && !checkConstituentMaxPt) {
       checkConstituentPt = false;
     }
@@ -225,7 +225,7 @@ struct JetSubstructureTask {
         if (checkConstituentMinPt && pt >= ptLeadingTrackCut) {
           isMinLeadingConstituent = true;
         }
-        if (checkConstituentMaxPt && pt > leadingConstituentPtMax) {
+        if (checkConstituentMaxPt && pt > ptLeadingTrackCutMax) {
           isMaxLeadingConstituent = false;
         }
       }
