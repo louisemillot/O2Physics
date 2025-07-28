@@ -449,7 +449,7 @@ struct JetSubstructureTask {
     bool mcLevelIsParticleLevel = true;
 
     registry.fill(HIST("h_mcColl_counts"), 0.5);
-    if (std::abs(mccollision.posZ()) > vertexZCut) {
+    if (std::abs(mcCollision.posZ()) > vertexZCut) {
       return;
     }
     registry.fill(HIST("h_mcColl_counts"), 1.5);
@@ -502,7 +502,7 @@ struct JetSubstructureTask {
       return;
     }
     registry.fill(HIST("h_mcColl_counts"), 6.5);
-    registry.fill(HIST("h_mcColl_rho"), mccollision.rho());
+    registry.fill(HIST("h_mcColl_rho"), mcCollision.rho());
 
 
 
