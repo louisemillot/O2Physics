@@ -461,7 +461,7 @@ struct JetSubstructureTask {
 
   void processChargedJetsMCDWeighted(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                                      aod::JetMcCollisions const&, //join the weight
-                                     soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
+                                     soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetEventWeights> const& jets,
                                      aod::JetTracks const& tracks)
   { 
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
@@ -478,7 +478,6 @@ struct JetSubstructureTask {
       if (!isAcceptedJet<aod::JetTracks>(jet)) {
         continue;
       }
-      // float eventWeight = collision.weight();
       float jetweight = jet.eventWeight();
       float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
       if (jet.pt() > pTHatMaxMCD * pTHat) {
