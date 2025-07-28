@@ -38,7 +38,7 @@
 #include "PWGJE/Core/JetUtilities.h"
 #include "PWGJE/Core/JetSubstructureUtilities.h"
 #include "PWGJE/Core/JetFindingUtilities.h"
-#include "PWGJE/DataModel/JetReducedData.h"
+#include "PWGJE/DataModel/JetSubtraction.h"
 
 
 
