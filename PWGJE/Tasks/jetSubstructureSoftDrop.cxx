@@ -625,7 +625,7 @@ struct JetSubstructureTask {
           // LOGF(info, " AnalyseCharged for MCP " );
           fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
         }
-        jetReclustering<true, false>(jet, jetSplittingsMCPTable);
+        jetReclustering<true, false>(jet, jetSplittingsMCPTable , 1);
         //fin de analyseCharged version MCP
         // LOGF(info, "processChargedJetsMCP: weight = %.4f", mcCollision.weight());
       }
