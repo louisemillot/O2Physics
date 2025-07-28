@@ -25,7 +25,7 @@
 #include "Framework/ASoA.h" 
 #include "Framework/O2DatabasePDGPlugin.h"
 #include "Framework/HistogramRegistry.h"
-#include <Framework/Configurable.h>
+#include <Framework/HistogramSpec.h>
 
 
 #include "Common/Core/TrackSelection.h"
