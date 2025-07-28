@@ -22,7 +22,7 @@
 
 #include "Framework/AnalysisTask.h"
 #include "Framework/AnalysisDataModel.h"
-#include "Framework/ASoA.h"
+#include "Framework/ASoA.h" 
 #include "Framework/O2DatabasePDGPlugin.h"
 #include "Framework/HistogramRegistry.h"
 
@@ -38,6 +38,7 @@
 #include "PWGJE/Core/JetUtilities.h"
 #include "PWGJE/Core/JetSubstructureUtilities.h"
 #include "PWGJE/Core/JetFindingUtilities.h"
+#include "PWGJE/Core/JetDerivedDataUtilities.h"
 
 
 #include "EventFiltering/filterTables.h"
