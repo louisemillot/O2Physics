@@ -156,10 +156,17 @@ struct JetSubstructureTask {
     registry.add("h_jet_pt_after_leadingtrackcut_data_eventwise", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
     // registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
 
-    //MCD
+    //MCD 
     registry.add("h_jet_pt_initial_mcd", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
     registry.add("h_jet_pt_after_leadingtrackcut_mcd", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
     // registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+
+    //MCD + weighted
+    registry.add("h_jet_pthat_initial_mcd", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    registry.add("h_jet_pthat_initial_mcd_weighted", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    registry.add("h_jet_pt_after_leadingtrackcut_mcd_weighted", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+
+    
 
     //MCD + eventwise
     registry.add("h_jet_pt_initial_mcd_eventwise", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
@@ -382,6 +389,8 @@ struct JetSubstructureTask {
                                           soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
                                           aod::JetTracksSub const& tracksOfCollisions)
   {
+    //rajouter les cuts de jetspectra
+
     //Collision selection on : EventSelection, skipMBGapEvents, OccupancyCut
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
@@ -413,7 +422,44 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
 
-    void processChargedJetsMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
+  void processChargedJetsMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
+                             soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
+                             aod::JetTracks const& tracks)
+  { 
+    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+      return;
+    }
+    if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+      return;
+    }
+
+    for (auto& jet : jets){
+      if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+        continue;
+      }
+      if (!isAcceptedJet<aod::JetTracks>(jet)) {
+        continue;
+      }
+
+      bool hasHighPtConstituent = false;
+      registry.fill(HIST("h_jet_pt_initial_mcd"), jet.pt());  
+      ///////////// leading track cut /////////////
+      for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+        if (jetConstituent.pt() >= ptLeadingTrackCut) {
+          hasHighPtConstituent = true;
+          break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+        }
+      }
+      // Si un jet contient un constituant avec un pt > au critère, on l'analyse
+      if (hasHighPtConstituent) {
+        registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd"), jet.pt()); 
+        analyseCharged<false>(jet, tracks, jetSplittingsMCDTable);
+      }
+    } 
+  }
+  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet MCD substructure weighted", false);
+
+  void processChargedJetsMCDWeighted(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                                aod::JetMcCollisions const&, //join the weight
                                soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
                                aod::JetTracks const& tracks)
@@ -424,10 +470,24 @@ struct JetSubstructureTask {
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
-    ///////////// leading track cut /////////////
+    
     for (auto& jet : jets){
+      if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+        continue;
+      }
+      if (!isAcceptedJet<aod::JetTracks>(jet)) {
+        continue;
+      }
+      float eventWeight = collision.weight();
+      float jetweight = jet.eventWeight();
+      float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
+      if (jet.pt() > pTHatMaxMCD * pTHat) {
+        return;
+      }
       bool hasHighPtConstituent = false;
-      registry.fill(HIST("h_jet_pt_initial_mcd"), jet.pt(), collision.mcCollision().weight()); 
+      registry.fill(HIST("h_jet_pthat_initial_mcd"), pTHat); 
+      registry.fill(HIST("h_jet_pthat_initial_mcd_weighted"), pTHat, jetweight); 
+      ///////////// leading track cut /////////////
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           hasHighPtConstituent = true;
@@ -436,46 +496,48 @@ struct JetSubstructureTask {
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
-        registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd"), jet.pt(), collision.mcCollision().weight()); 
+        registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
         analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, collision.mcCollision().weight());
-        LOGF(info, "processChargedJetsMCD: weight = %.4f", collision.mcCollision().weight());
+        LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight, "2 : " , collision.mcCollision().weight());
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet substructure", false);
+  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet MCD substructure weighted", false);
 
-    void processChargedJetsEventWiseSubMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
-                                           aod::JetMcCollisions const&, //join the weight
-                                           soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
-                                           aod::JetTracksSub const& tracks)
-  { 
-    LOGF(info, " Entering processChargedJetsEventWiseSubMCD " );
-    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
-      return;
-    }
-    if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
-      return;
-    }
-    ///////////// leading track cut /////////////
-    for (auto& jet : jets){
-      registry.fill(HIST("h_jet_pt_initial_mcd_eventwise"), jet.pt(), collision.mcCollision().weight()); 
-      bool hasHighPtConstituent = false;
-      for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
-        if (jetConstituent.pt() >= ptLeadingTrackCut) {
-          hasHighPtConstituent = true;
-          break; // Sortir de la boucle dès qu'un constituant valide est trouvé
-        }
-      }
-      // Si un jet contient un constituant avec un pt > au critère, on l'analyse
-      if (hasHighPtConstituent) {
-        registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_eventwise"), jet.pt(), collision.mcCollision().weight()); 
-        analyseCharged<true>(jet, tracks, jetSplittingsMCDSubTable, collision.mcCollision().weight());
-        LOGF(info, "processChargedJetsEventWiseSubMCD: weight = %.4f", collision.mcCollision().weight());
-      }
-    }
-  }
-  
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
+  //   void processChargedJetsEventWiseSubMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
+  //                                          aod::JetMcCollisions const&, //join the weight
+  //                                          soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
+  //                                          aod::JetTracksSub const& tracks)
+  // { 
+  //   //rajouter les cuts de jetspectra
+  // 
+  //   
+  //   LOGF(info, " Entering processChargedJetsEventWiseSubMCD " );
+  //   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+  //     return;
+  //   }
+  //   if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+  //     return;
+  //   }
+  //   ///////////// leading track cut /////////////
+  //   for (auto& jet : jets){
+  //     registry.fill(HIST("h_jet_pt_initial_mcd_eventwise"), jet.pt(), collision.mcCollision().weight()); 
+  //     bool hasHighPtConstituent = false;
+  //     for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
+  //       if (jetConstituent.pt() >= ptLeadingTrackCut) {
+  //         hasHighPtConstituent = true;
+  //         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+  //       }
+  //     }
+  //     // Si un jet contient un constituant avec un pt > au critère, on l'analyse
+  //     if (hasHighPtConstituent) {
+  //       registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_eventwise"), jet.pt(), collision.mcCollision().weight()); 
+  //       analyseCharged<true>(jet, tracks, jetSplittingsMCDSubTable, collision.mcCollision().weight());
+  //       LOGF(info, "processChargedJetsEventWiseSubMCD: weight = %.4f", collision.mcCollision().weight());
+  //     }
+  //   }
+  // }
+  // PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
 
   void processChargedJetsMCP(soa::Filtered<aod::JetMcCollisions>::iterator const& mcCollision,
                              soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
@@ -500,6 +562,7 @@ struct JetSubstructureTask {
       return;
     }
     registry.fill(HIST("h_mcColl_counts"), 1.5);
+
     if (collisions.size() < 1) {
       return;
     }
@@ -533,9 +596,6 @@ struct JetSubstructureTask {
     registry.fill(HIST("h_mcColl_counts"), 5.5);
     registry.fill(HIST("h_mc_zvertex"), mcCollision.posZ());
 
-
-
-
     for (auto& jet : jets){
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
@@ -545,7 +605,7 @@ struct JetSubstructureTask {
       }
       // LOGF(info, " Entering boucle_jets " );
       bool hasHighPtConstituent = false;
-      registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt(), mcCollision.weight()); 
+      registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt()); 
       for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
         // LOGF(info, " Entering boucle_jets_constituents " );
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
@@ -555,20 +615,23 @@ struct JetSubstructureTask {
       }
       if (hasHighPtConstituent) {
         // LOGF(info, " leading track cut applied " );
-        registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcp"), jet.pt(), mcCollision.weight()); 
+        registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcp"), jet.pt()); 
         //début de analyseCharged version MCP
         jetConstituents.clear();
         for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
           // LOGF(info, " AnalyseCharged for MCP " );
           fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
         }
-        jetReclustering<true, false>(jet, jetSplittingsMCPTable, mcCollision.weight());
+        jetReclustering<true, false>(jet, jetSplittingsMCPTable);
         //fin de analyseCharged version MCP
-        LOGF(info, "processChargedJetsMCP: weight = %.4f", mcCollision.weight());
+        // LOGF(info, "processChargedJetsMCP: weight = %.4f", mcCollision.weight());
       }
     }
   }
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCP, "charged jet substructure on MC particle level", false);
+
+
+
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
