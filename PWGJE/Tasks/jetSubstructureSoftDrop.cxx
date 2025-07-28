@@ -25,8 +25,6 @@
 #include "Framework/ASoA.h" 
 #include "Framework/O2DatabasePDGPlugin.h"
 #include "Framework/HistogramRegistry.h"
-#include <Framework/runDataProcessing.h>
-
 
 #include "Common/Core/TrackSelection.h"
 #include "Common/Core/TrackSelectionDefaults.h"
@@ -44,6 +42,19 @@
 
 
 #include "EventFiltering/filterTables.h"
+#include "PWGJE/DataModel/JetReducedData.h" //pas ca
+#include "PWGJE/DataModel/JetSubtraction.h"//pas ca
+#include <CommonConstants/MathConstants.h>  //osef
+#include <Framework/Configurable.h> //pas ca
+#include <Framework/HistogramSpec.h> //pas ca
+#include <Framework/InitContext.h>//pas ca
+#include <Framework/runDataProcessing.h>
+
+#include <THn.h>
+
+#include <cmath>
+#include <string>
+#include <type_traits>
 
 
 using namespace o2;
