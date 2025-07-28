@@ -42,19 +42,6 @@
 
 
 #include "EventFiltering/filterTables.h"
-#include "PWGJE/DataModel/JetReducedData.h" //pas ca
-#include "PWGJE/DataModel/JetSubtraction.h"//pas ca
-#include <CommonConstants/MathConstants.h>  //osef
-#include <Framework/Configurable.h> //pas ca
-#include <Framework/HistogramSpec.h> //pas ca
-#include <Framework/InitContext.h>//pas ca
-#include <Framework/runDataProcessing.h>
-
-#include <THn.h>
-
-#include <cmath>
-#include <string>
-#include <type_traits>
 
 
 using namespace o2;
@@ -204,6 +191,8 @@ struct JetSubstructureTask {
   Preslice<aod::JetTracks> TracksPerCollision = aod::jtrack::collisionId;
   Preslice<aod::JetTracksSub> TracksPerCollisionDataSub = aod::bkgcharged::collisionId;
   Preslice<aod::JetParticles> ParticlesPerMcCollision = aod::jmcparticle::mcCollisionId;
+  
+  bool isAcceptedJet(TJets const& jet, bool mcLevelIsParticleLevel = false)
 
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
