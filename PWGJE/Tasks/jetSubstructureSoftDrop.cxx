@@ -37,6 +37,8 @@
 #include "PWGJE/Core/FastJetUtilities.h"
 #include "PWGJE/Core/JetUtilities.h"
 #include "PWGJE/Core/JetSubstructureUtilities.h"
+#include "PWGJE/Core/JetFindingUtilities.h"
+
 
 #include "EventFiltering/filterTables.h"
 
