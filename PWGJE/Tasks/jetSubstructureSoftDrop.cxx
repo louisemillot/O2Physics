@@ -486,7 +486,7 @@ struct JetSubstructureTask {
       return;
     }
     registry.fill(HIST("h_mcColl_counts"), 5.5);
-    registry.fill(HIST("h_mc_zvertex"), mccollision.posZ());
+    registry.fill(HIST("h_mc_zvertex"), mcCollision.posZ());
 
 
 
