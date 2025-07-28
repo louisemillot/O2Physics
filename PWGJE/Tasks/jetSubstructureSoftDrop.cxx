@@ -38,7 +38,8 @@
 #include "PWGJE/Core/JetUtilities.h"
 #include "PWGJE/Core/JetSubstructureUtilities.h"
 #include "PWGJE/Core/JetFindingUtilities.h"
-#include "PWGJE/Core/JetDerivedDataUtilities.h"
+#include "PWGJE/DataModel/JetReducedData.h"
+
 
 
 #include "EventFiltering/filterTables.h"
