@@ -25,6 +25,8 @@
 #include "Framework/ASoA.h" 
 #include "Framework/O2DatabasePDGPlugin.h"
 #include "Framework/HistogramRegistry.h"
+#include <Framework/Configurable.h>
+
 
 #include "Common/Core/TrackSelection.h"
 #include "Common/Core/TrackSelectionDefaults.h"
@@ -38,7 +40,6 @@
 #include "PWGJE/Core/JetUtilities.h"
 #include "PWGJE/Core/JetSubstructureUtilities.h"
 #include "PWGJE/Core/JetFindingUtilities.h"
-#include "PWGJE/DataModel/JetSubtraction.h"
 
 
 
