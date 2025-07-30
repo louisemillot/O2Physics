@@ -657,7 +657,7 @@ struct JetSubstructureTask {
 
   void processChargedJetsMCPWeighted(soa::Filtered<aod::JetMcCollisions>::iterator const& mcCollision,
                                       soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
-                                      soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents> const& jets,
+                                      soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents , aod::ChargedMCParticleLevelJetEventWeights> const& jets,
                                       aod::JetParticles const& particles)
   {
 
