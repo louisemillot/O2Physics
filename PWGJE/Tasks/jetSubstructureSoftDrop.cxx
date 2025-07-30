@@ -663,7 +663,7 @@ struct JetSubstructureTask {
 
   //meme criteres que JetSpectra:
   bool mcLevelIsParticleLevel = true;
-  float eventWeight = mccollision.weight();
+  float eventWeight = mcCollision.weight();
 
   registry.fill(HIST("h_mcColl_counts"), 0.5);
   registry.fill(HIST("h_mcColl_counts_weight"), 0.5, eventWeight);
@@ -713,7 +713,7 @@ struct JetSubstructureTask {
   registry.fill(HIST("h_mcColl_counts_weight"), 5.5, eventWeight);
 
   registry.fill(HIST("h_mc_zvertex"), mcCollision.posZ());
-  registry.fill(HIST("h_mc_zvertex_weight"), mccollision.posZ(), eventWeight);
+  registry.fill(HIST("h_mc_zvertex_weight"), mcCollision.posZ(), eventWeight);
 
   for (auto& jet : jets){
     if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
