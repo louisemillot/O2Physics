@@ -895,10 +895,15 @@ struct JetSpectraCharged {
       }
       float jetweight = jet.eventWeight();
 <<<<<<< HEAD
+<<<<<<< HEAD
       fillJetHistograms(jet, centrality, jetweight);
 =======
       LOGF(info, "jetweight = %.4f ",jetweight);
+=======
+      LOGF(info, "jetweight = %.8f ",jetweight);
+>>>>>>> 1ccfebeee (change in jetSpectra)
       float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
+      LOGF(info, "pTHat = %.8f ",pTHat);
       if (jet.pt() > pTHatMaxMCD * pTHat) {
         return;
       }
