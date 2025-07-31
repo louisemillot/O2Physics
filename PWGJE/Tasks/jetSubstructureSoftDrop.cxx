@@ -483,7 +483,7 @@ struct JetSubstructureTask {
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet MCD substructure weighted", false);
 
   void processChargedJetsMCDWeighted(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
-                                     aod::JetMcCollisions const&, //join the weight
+                                    //  aod::JetMcCollisions const&, //join the weight
                                      soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetEventWeights> const& jets,
                                      aod::JetTracks const& tracks)
   { 
@@ -519,8 +519,9 @@ struct JetSubstructureTask {
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
-        analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, collision.mcCollision().weight());
-        LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight, "2 : " , collision.mcCollision().weight());
+        analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
+        LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight);
+        // LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight, "2 : " , collision.mcCollision().weight());
       }
     }
   }
