@@ -744,7 +744,7 @@ struct JetSubstructureTask {
     bool hasHighPtConstituent = false;
     float jetweight = jet.eventWeight();
     LOGF(info, "MCP 7");
-    LOGF(info, "jetweight",jetweight);
+    LOGF(info, "jetweight = %.4f",jetweight);
     double pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
     registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt());
     registry.fill(HIST("h_jet_phat_initial_mcp"), pTHat);
@@ -771,9 +771,9 @@ struct JetSubstructureTask {
         fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
       }
       LOGF(info, "MCP 10");
-      jetReclustering<true, false>(jet, jetSplittingsMCPTable , 1);
+      jetReclustering<true, false>(jet, jetSplittingsMCPTable , jetweight);
       //fin de analyseCharged version MCP
-      LOGF(info, "processChargedJetsMCP: weight = %.4f", "1 : " ,jetweight);
+      LOGF(info, "processChargedJetsMCP: weight = %.4f",jetweight);
 
     }
   }
