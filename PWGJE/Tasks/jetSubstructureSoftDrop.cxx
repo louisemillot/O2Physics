@@ -198,7 +198,6 @@ struct JetSubstructureTask {
       registry.add("h_jet_pthat_initial_mcp_weighted", "jet pT hat;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
       registry.add("h_jet_pt_after_leadingtrackcut_mcp_weighted", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
 
-
       registry.add("h_mcColl_counts_weight", " number of mc events; event status; entries", {HistType::kTH1F, {{10, 0, 10}}});
       registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(1, "allMcColl");
       registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(2, "vertexZ");
@@ -731,7 +730,7 @@ struct JetSubstructureTask {
     registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt());
     registry.fill(HIST("h_jet_phat_initial_mcp"), pTHat);
     registry.fill(HIST("h_jet_pt_initial_mcp_weighted"), jet.pt(),jetweight);
-    registry.fill(HIST("h_jet_phat_initial_mcp_weighted"), pTHat, jetweight); 
+    registry.fill(HIST("h_jet_pthat_initial_mcp_weighted"), pTHat, jetweight); 
     for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
       // LOGF(info, " Entering boucle_jets_constituents " );
       if (jetConstituent.pt() >= ptLeadingTrackCut) {
