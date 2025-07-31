@@ -744,8 +744,9 @@ struct JetSubstructureTask {
     bool hasHighPtConstituent = false;
     float jetweight = jet.eventWeight();
     LOGF(info, "MCP 7");
-    LOGF(info, "jetweight = %.4f",jetweight);
+    LOGF(info, "jetweight = %.8f",jetweight);
     double pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
+    LOGF(info, "pTHat = %.8f ",pTHat);
     registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt());
     registry.fill(HIST("h_jet_phat_initial_mcp"), pTHat);
     registry.fill(HIST("h_jet_pt_initial_mcp_weighted"), jet.pt(),jetweight);
