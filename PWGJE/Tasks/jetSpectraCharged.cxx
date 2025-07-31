@@ -894,7 +894,18 @@ struct JetSpectraCharged {
         continue;
       }
       float jetweight = jet.eventWeight();
+<<<<<<< HEAD
       fillJetHistograms(jet, centrality, jetweight);
+=======
+      LOGF(info, "jetweight = %.4f ",jetweight);
+      float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
+      if (jet.pt() > pTHatMaxMCD * pTHat) {
+        return;
+      }
+      registry.fill(HIST("h_jet_phat"), pTHat);
+      registry.fill(HIST("h_jet_phat_weighted"), pTHat, jetweight);
+      fillJetHistograms(jet, collision.centFT0M(), jetweight);
+>>>>>>> 7e1969252 (change in jetSpectra)
     }
   }
   PROCESS_SWITCH(JetSpectraCharged, processSpectraMCDWeighted, "jet finder QA mcd with weighted events", false);
