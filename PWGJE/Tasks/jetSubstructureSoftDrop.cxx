@@ -487,40 +487,49 @@ struct JetSubstructureTask {
                                      soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetEventWeights> const& jets,
                                      aod::JetTracks const& tracks)
   { 
+    LOGF(info, "test 1 ");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
+    LOGF(info, "test 2 ");
     
     for (auto& jet : jets){
+      LOGF(info, "test 3 ");
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
       }
       if (!isAcceptedJet<aod::JetTracks>(jet)) {
         continue;
       }
+      LOGF(info, "test 4 ");
       float jetweight = jet.eventWeight();
       float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
       if (jet.pt() > pTHatMaxMCD * pTHat) {
         return;
+        LOGF(info, "test 5 ");
       }
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pthat_initial_mcd"), pTHat); 
       registry.fill(HIST("h_jet_pthat_initial_mcd_weighted"), pTHat, jetweight); 
+      LOGF(info, "test 6 ");
       ///////////// leading track cut /////////////
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           hasHighPtConstituent = true;
+          LOGF(info, "test 7 ");
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
+        LOGF(info, "test 8 ");
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
         analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
-        LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight);
+        // LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight);
+        LOGF(info, "test 9 ");
         // LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight, "2 : " , collision.mcCollision().weight());
       }
     }
