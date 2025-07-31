@@ -488,14 +488,17 @@ struct JetSubstructureTask {
                                      aod::JetTracks const& tracks)
   { 
     // LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight);
+    LOGF(info, "MCD 1");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
+    LOGF(info, "MCD 2");
     
     for (auto& jet : jets){
+      LOGF(info, "MCD 3");
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
       }
@@ -507,11 +510,13 @@ struct JetSubstructureTask {
       if (jet.pt() > pTHatMaxMCD * pTHat) {
         return;
       }
+      LOGF(info, "MCD 4");
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pthat_initial_mcd"), pTHat); 
       registry.fill(HIST("h_jet_pthat_initial_mcd_weighted"), pTHat, jetweight); 
       ///////////// leading track cut /////////////
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+        LOGF(info, "MCD 5");
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           hasHighPtConstituent = true;
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
@@ -519,6 +524,7 @@ struct JetSubstructureTask {
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
+        LOGF(info, "MCD 6");
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
         analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
         LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight);
@@ -665,6 +671,7 @@ struct JetSubstructureTask {
   {
 
   //meme criteres que JetSpectra:
+  LOGF(info, "MCP 1");
   bool mcLevelIsParticleLevel = true;
   float eventWeight = mcCollision.weight();
 
@@ -681,7 +688,7 @@ struct JetSubstructureTask {
   }
   registry.fill(HIST("h_mcColl_counts"), 2.5);
   registry.fill(HIST("h_mcColl_counts_weight"), 2.5, eventWeight);
-  
+  LOGF(info, "MCP 2");
 
   bool hasSel8Coll = false;
   bool centralityIsGood = false;
@@ -697,6 +704,7 @@ struct JetSubstructureTask {
       occupancyIsGood = true;
     }
   }
+  LOGF(info, "MCP 3");
   if (!hasSel8Coll) {
     return;
   }
@@ -712,6 +720,7 @@ struct JetSubstructureTask {
   if (!occupancyIsGood) {
     return;
   }
+  LOGF(info, "MCP 4");
   registry.fill(HIST("h_mcColl_counts"), 5.5);
   registry.fill(HIST("h_mcColl_counts_weight"), 5.5, eventWeight);
 
@@ -719,16 +728,18 @@ struct JetSubstructureTask {
   registry.fill(HIST("h_mc_zvertex_weight"), mcCollision.posZ(), eventWeight);
 
   for (auto& jet : jets){
+    LOGF(info, "MCP 5");
     if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
       continue;
     }
     if (!isAcceptedJet<aod::JetParticles>(jet, mcLevelIsParticleLevel)) {
       continue;
     }
+    LOGF(info, "MCP 6");
     // LOGF(info, " Entering boucle_jets " );
     bool hasHighPtConstituent = false;
     float jetweight = jet.eventWeight();
-    LOGF(info, "test0");
+    LOGF(info, "MCP 7");
     LOGF(info, "jetweight",jetweight);
     double pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
     registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt());
@@ -742,6 +753,7 @@ struct JetSubstructureTask {
         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
       }
     }
+    LOGF(info, "MCP 8");
     if (hasHighPtConstituent) {
       LOGF(info, "test1");
       // LOGF(info, " leading track cut applied " );
@@ -750,9 +762,11 @@ struct JetSubstructureTask {
       //début de analyseCharged version MCP
       jetConstituents.clear();
       for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
+        LOGF(info, "MCP 9");
         // LOGF(info, " AnalyseCharged for MCP " );
         fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
       }
+      LOGF(info, "MCP 10");
       jetReclustering<true, false>(jet, jetSplittingsMCPTable , 1);
       //fin de analyseCharged version MCP
       LOGF(info, "processChargedJetsMCP: weight = %.4f", "1 : " ,jetweight);
