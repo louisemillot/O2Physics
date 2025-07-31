@@ -531,7 +531,7 @@ struct JetSubstructureTask {
         LOGF(info, "MCD 7");
         LOGF(info, "jetweight = %.4f",jetweight);
         // analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
-        LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight);
+        LOGF(info, "processChargedJetsMCD: weight = %.4f",jetweight);
         // LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight, "2 : " , collision.mcCollision().weight());
       }
     }
