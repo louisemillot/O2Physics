@@ -527,6 +527,7 @@ struct JetSubstructureTask {
         LOGF(info, "MCD 6");
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
         LOGF(info, "MCD 7");
+        LOGF(info, "jetweight = ",jetweight);
         analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
         LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight);
         // LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight, "2 : " , collision.mcCollision().weight());
