@@ -728,6 +728,7 @@ struct JetSubstructureTask {
     // LOGF(info, " Entering boucle_jets " );
     bool hasHighPtConstituent = false;
     float jetweight = jet.eventWeight();
+    LOGF(info, "test0");
     LOGF(info, "jetweight",jetweight);
     double pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
     registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt());
