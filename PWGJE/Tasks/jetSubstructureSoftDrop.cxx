@@ -506,7 +506,7 @@ struct JetSubstructureTask {
         continue;
       }
       float jetweight = jet.eventWeight();
-      LOGF(info, "jetweight = ",jetweight);
+      LOGF(info, "jetweight = %.4f ",jetweight);
       float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
       if (jet.pt() > pTHatMaxMCD * pTHat) {
         return;
