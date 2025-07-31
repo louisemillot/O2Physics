@@ -750,7 +750,8 @@ struct JetSubstructureTask {
       }
       jetReclustering<true, false>(jet, jetSplittingsMCPTable , 1);
       //fin de analyseCharged version MCP
-      // LOGF(info, "processChargedJetsMCP: weight = %.4f", mcCollision.weight());
+      LOGF(info, "processChargedJetsMCP: weight = %.4f", "1 : " ,jetweight, "2 : " , mcCollision().weight());
+
     }
   }
 }
