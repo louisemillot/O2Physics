@@ -378,7 +378,8 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processCollisions, "collisions Data and MCD", true);
 
-  void processMcCollisions(soa::Filtered<aod::JetMcCollisions>::iterator const& mcCollision)
+  void processMcCollisions(soa::Filtered<aod::JetMcCollisions>::iterator const& mcCollision,
+                           soa::SmallGroups<aod::JetCollisionsMCD> const& collisions)
   { 
     float eventWeight = mcCollision.weight();
     registry.fill(HIST("h_mcColl_counts"), 0.5);
@@ -392,7 +393,7 @@ struct JetSubstructureTask {
     if (doprocessChargedJetsMCPWeighted) {
       registry.fill(HIST("h_mcColl_counts_weight"), 1.5, eventWeight);
     }
-    if (mcCollision.size() < 1) {
+    if (collision.size() < 1) {
       return;
     }
     registry.fill(HIST("h_mcColl_counts"), 2.5);
@@ -406,10 +407,10 @@ struct JetSubstructureTask {
       if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
         hasSel8Coll = true;
       }
-      if ((centralityMin < mcCollision.centrality()) && (mcCollision.centrality() < centralityMax)) {
+      if ((centralityMin < collision.centrality()) && (collision.centrality() < centralityMax)) {
         centralityIsGood = true;
       }
-      if ((trackOccupancyInTimeRangeMin < mcCollision.trackOccupancyInTimeRange()) && (mcCollision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
+      if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (mcCollision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
         occupancyIsGood = true;
       }
     }
