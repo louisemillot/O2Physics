@@ -391,6 +391,12 @@ struct JetSubstructureTask {
     }
     ///////////// leading track cut try : (because filter doesnt work)
     for (auto& jet : jets){
+      if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+        continue;
+      }
+      if (!isAcceptedJet<aod::JetTracks>(jet)) {
+        continue;
+      }
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial_data"), jet.pt()); 
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
@@ -423,9 +429,15 @@ struct JetSubstructureTask {
     }
     // Leading track cut 
     for (auto& jet : jets){
+      if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+        continue;
+      }
+      if (!isAcceptedJet<aod::JetTracks>(jet)) {
+        continue;
+      }
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial_data_eventwise"), jet.pt());
-    // auto & jetConstituent0 = jet.tracks_as<aod::JetTracksSub>().iteratorAt(0)
+      // auto & jetConstituent0 = jet.tracks_as<aod::JetTracksSub>().iteratorAt(0)
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           // LOGF(info, "Jet with leading constituent pt = %.2f found", jetConstituent.pt());
@@ -463,7 +475,6 @@ struct JetSubstructureTask {
       if (!isAcceptedJet<aod::JetTracks>(jet)) {
         continue;
       }
-
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial_mcd"), jet.pt());  
       ///////////// leading track cut /////////////
