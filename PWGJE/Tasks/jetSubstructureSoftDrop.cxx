@@ -378,6 +378,69 @@ struct JetSubstructureTask {
   }
   PROCESS_SWITCH(JetSubstructureTask, processCollisions, "collisions Data and MCD", true);
 
+  void processMcCollisions(soa::Filtered<aod::JetMcCollisions>::iterator const& mcCollision)
+  { 
+    float eventWeight = mcCollision.weight();
+    registry.fill(HIST("h_mcColl_counts"), 0.5);
+    if (doprocessChargedJetsMCPWeighted) {
+      registry.fill(HIST("h_mcColl_counts_weight"), 0.5, eventWeight);
+    }
+    if (std::abs(mcCollision.posZ()) > vertexZCut) {
+      return;
+    }
+    registry.fill(HIST("h_mcColl_counts"), 1.5);
+    if (doprocessChargedJetsMCPWeighted) {
+      registry.fill(HIST("h_mcColl_counts_weight"), 1.5, eventWeight);
+    }
+    if (collisions.size() < 1) {
+      return;
+    }
+    registry.fill(HIST("h_mcColl_counts"), 2.5);
+    if (doprocessChargedJetsMCPWeighted) {
+      registry.fill(HIST("h_mcColl_counts_weight"), 2.5, eventWeight);
+    }
+    bool hasSel8Coll = false;
+    bool centralityIsGood = false;
+    bool occupancyIsGood = false;
+    for (auto const& collision : collisions) {
+      if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+        hasSel8Coll = true;
+      }
+      if ((centralityMin < collision.centrality()) && (collision.centrality() < centralityMax)) {
+        centralityIsGood = true;
+      }
+      if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
+        occupancyIsGood = true;
+      }
+    }
+    if (!hasSel8Coll) {
+      return;
+    }
+    registry.fill(HIST("h_mcColl_counts"), 3.5);
+    if (doprocessChargedJetsMCPWeighted) {
+      registry.fill(HIST("h_mcColl_counts_weight"), 3.5, eventWeight);
+    }
+    if (!centralityIsGood) {
+      return;
+    }
+    registry.fill(HIST("h_mcColl_counts"), 4.5);
+    if (doprocessChargedJetsMCPWeighted) {
+      registry.fill(HIST("h_mcColl_counts_weight"), 4.5, eventWeight);
+    }
+    if (!occupancyIsGood) {
+      return;
+    }
+    registry.fill(HIST("h_mcColl_counts"), 5.5);
+    if (doprocessChargedJetsMCPWeighted) {
+      registry.fill(HIST("h_mcColl_counts_weight"), 5.5, eventWeight);
+    }
+    registry.fill(HIST("h_mc_zvertex"), mcCollision.posZ());
+    if (doprocessChargedJetsMCPWeighted) {
+      registry.fill(HIST("h_mc_zvertex_weight"), mcCollision.posZ(), eventWeight);
+    }
+  }
+  PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions + Mc collision weighted if wanted ", true);
+
   void processChargedJetsData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                               aod::JetTracks const& tracksOfCollisions,
                               soa::Join<aod::ChargedJets, aod::ChargedJetConstituents> const& jets)
@@ -601,18 +664,12 @@ struct JetSubstructureTask {
 
     //meme criteres que JetSpectra:
     bool mcLevelIsParticleLevel = true;
-
-    registry.fill(HIST("h_mcColl_counts"), 0.5);
     if (std::abs(mcCollision.posZ()) > vertexZCut) {
       return;
     }
-    registry.fill(HIST("h_mcColl_counts"), 1.5);
-
     if (collisions.size() < 1) {
       return;
     }
-    registry.fill(HIST("h_mcColl_counts"), 2.5);
-
     bool hasSel8Coll = false;
     bool centralityIsGood = false;
     bool occupancyIsGood = false;
@@ -630,17 +687,12 @@ struct JetSubstructureTask {
     if (!hasSel8Coll) {
       return;
     }
-    registry.fill(HIST("h_mcColl_counts"), 3.5);
     if (!centralityIsGood) {
       return;
     }
-    registry.fill(HIST("h_mcColl_counts"), 4.5);
     if (!occupancyIsGood) {
       return;
     }
-    registry.fill(HIST("h_mcColl_counts"), 5.5);
-    registry.fill(HIST("h_mc_zvertex"), mcCollision.posZ());
-
     for (auto& jet : jets){
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
@@ -684,27 +736,15 @@ struct JetSubstructureTask {
                                       soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents , aod::ChargedMCParticleLevelJetEventWeights> const& jets,
                                       aod::JetParticles const& particles)
   {
-
   //meme criteres que JetSpectra:
-  LOGF(info, "MCP 1");
   bool mcLevelIsParticleLevel = true;
   float eventWeight = mcCollision.weight();
-
-  registry.fill(HIST("h_mcColl_counts"), 0.5);
-  registry.fill(HIST("h_mcColl_counts_weight"), 0.5, eventWeight);
   if (std::abs(mcCollision.posZ()) > vertexZCut) {
-  return;
+    return;
   }
-  registry.fill(HIST("h_mcColl_counts"), 1.5);
-  registry.fill(HIST("h_mcColl_counts_weight"), 1.5, eventWeight);
-
   if (collisions.size() < 1) {
-  return;
+    return;
   }
-  registry.fill(HIST("h_mcColl_counts"), 2.5);
-  registry.fill(HIST("h_mcColl_counts_weight"), 2.5, eventWeight);
-  LOGF(info, "MCP 2");
-
   bool hasSel8Coll = false;
   bool centralityIsGood = false;
   bool occupancyIsGood = false;
@@ -719,42 +759,25 @@ struct JetSubstructureTask {
       occupancyIsGood = true;
     }
   }
-  LOGF(info, "MCP 3");
   if (!hasSel8Coll) {
     return;
   }
-  registry.fill(HIST("h_mcColl_counts"), 3.5);
-  registry.fill(HIST("h_mcColl_counts_weight"), 3.5, eventWeight);
-
   if (!centralityIsGood) {
     return;
   }
-  registry.fill(HIST("h_mcColl_counts"), 4.5);
-  registry.fill(HIST("h_mcColl_counts_weight"), 4.5, eventWeight);
-
   if (!occupancyIsGood) {
     return;
   }
-  LOGF(info, "MCP 4");
-  registry.fill(HIST("h_mcColl_counts"), 5.5);
-  registry.fill(HIST("h_mcColl_counts_weight"), 5.5, eventWeight);
-
-  registry.fill(HIST("h_mc_zvertex"), mcCollision.posZ());
-  registry.fill(HIST("h_mc_zvertex_weight"), mcCollision.posZ(), eventWeight);
-
   for (auto& jet : jets){
-    LOGF(info, "MCP 5");
     if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
       continue;
     }
     if (!isAcceptedJet<aod::JetParticles>(jet, mcLevelIsParticleLevel)) {
       continue;
     }
-    LOGF(info, "MCP 6");
     // LOGF(info, " Entering boucle_jets " );
     bool hasHighPtConstituent = false;
     float jetweight = jet.eventWeight();
-    LOGF(info, "MCP 7");
     LOGF(info, "jetweight = %.8f",jetweight);
     double pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
     LOGF(info, "pTHat = %.8f ",pTHat);
@@ -769,24 +792,19 @@ struct JetSubstructureTask {
         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
       }
     }
-    LOGF(info, "MCP 8");
     if (hasHighPtConstituent) {
-      LOGF(info, "test1");
       // LOGF(info, " leading track cut applied " );
       registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcp"), jet.pt());
       registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcp_weighted"), jet.pt(),jetweight);
       //début de analyseCharged version MCP
       jetConstituents.clear();
       for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
-        LOGF(info, "MCP 9");
         // LOGF(info, " AnalyseCharged for MCP " );
         fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
       }
-      LOGF(info, "MCP 10");
       jetReclustering<true, false>(jet, jetSplittingsMCPTable , jetweight);
       //fin de analyseCharged version MCP
       LOGF(info, "processChargedJetsMCP: weight = %.4f",jetweight);
-
     }
   }
 }
