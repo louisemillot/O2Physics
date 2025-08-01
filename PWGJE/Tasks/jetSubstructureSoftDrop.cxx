@@ -392,7 +392,7 @@ struct JetSubstructureTask {
     if (doprocessChargedJetsMCPWeighted) {
       registry.fill(HIST("h_mcColl_counts_weight"), 1.5, eventWeight);
     }
-    if (collisions.size() < 1) {
+    if (mcCollision.size() < 1) {
       return;
     }
     registry.fill(HIST("h_mcColl_counts"), 2.5);
@@ -406,10 +406,10 @@ struct JetSubstructureTask {
       if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
         hasSel8Coll = true;
       }
-      if ((centralityMin < collision.centrality()) && (collision.centrality() < centralityMax)) {
+      if ((centralityMin < mcCollision.centrality()) && (mcCollision.centrality() < centralityMax)) {
         centralityIsGood = true;
       }
-      if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
+      if ((trackOccupancyInTimeRangeMin < mcCollision.trackOccupancyInTimeRange()) && (mcCollision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
         occupancyIsGood = true;
       }
     }
