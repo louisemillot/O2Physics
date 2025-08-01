@@ -221,7 +221,7 @@ struct JetSubstructureTask {
   }
 
   // Filter trackCuts = (aod::jtrack::pt >= trackPtMin && aod::jtrack::pt < trackPtMax && aod::jtrack::eta > trackEtaMin && aod::jtrack::eta < trackEtaMax);
-  Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
+  Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centFT0M >= centralityMin && aod::jcollision::centFT0M < centralityMax);
   Filter mcCollisionFilter = nabs(aod::jmccollision::posZ)< vertexZCut;
 
   Preslice<aod::JetTracks> TracksPerCollision = aod::jtrack::collisionId;
@@ -375,6 +375,8 @@ struct JetSubstructureTask {
       return;
     }
     registry.fill(HIST("h_collisions"), 2.5);
+    registry.fill(HIST("h2_centrality_occupancy"), collision.centFT0M(), collision.trackOccupancyInTimeRange());
+    registry.fill(HIST("h_collisions_Zvertex"), collision.posZ());
   }
   PROCESS_SWITCH(JetSubstructureTask, processCollisions, "collisions Data and MCD", true);
 
@@ -407,7 +409,7 @@ struct JetSubstructureTask {
       if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
         hasSel8Coll = true;
       }
-      if ((centralityMin < collision.centrality()) && (collision.centrality() < centralityMax)) {
+      if ((centralityMin < collision.centFT0M()) && (collision.centFT0M() < centralityMax)) {
         centralityIsGood = true;
       }
       if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (mcCollision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
@@ -678,7 +680,7 @@ struct JetSubstructureTask {
       if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
         hasSel8Coll = true;
       }
-      if ((centralityMin < collision.centrality()) && (collision.centrality() < centralityMax)) {
+      if ((centralityMin < collision.centFT0M()) && (collision.centFT0M() < centralityMax)) {
         centralityIsGood = true;
       }
       if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
@@ -753,7 +755,7 @@ struct JetSubstructureTask {
     if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       hasSel8Coll = true;
     }
-    if ((centralityMin < collision.centrality()) && (collision.centrality() < centralityMax)) {
+    if ((centralityMin < collision.centFT0M()) && (collision.centFT0M() < centralityMax)) {
       centralityIsGood = true;
     }
     if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
