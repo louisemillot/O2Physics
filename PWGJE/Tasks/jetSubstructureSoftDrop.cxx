@@ -340,7 +340,7 @@ struct JetSubstructureTask {
             registry.fill(HIST("h2_jet_pt_part_jet_zg_part"), jet.pt(), zg, weight);
             registry.fill(HIST("h2_jet_pt_part_jet_rg_part"), jet.pt(), rg, weight);
             registry.fill(HIST("h2_jet_pt_part_jet_thetag_part"), jet.pt(), thetag, weight);
-            registry.fill(HIST("h_jet_thetag_MCP"), theta, weight);
+            registry.fill(HIST("h_jet_thetag_MCP"), thetag, weight);
             registry.fill(HIST("h_jet_zg_MCP"), zg, weight);
           }
           if constexpr (isSubtracted && !isMCP) { //data & MDD sub
