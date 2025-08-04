@@ -131,6 +131,8 @@ struct JetSubstructureTask {
     AxisSpec jetPtAxis = {200, 0., 200., "#it{p}_{T} (GeV/#it{c})"};
     AxisSpec centralityAxis = {1200, -10., 110., "Centrality"};
 
+    registry.add("h_leading_prong_pt", "Leading prong p_{T};p_{T} (GeV/c);Entries", {HistType::kTH1F, {jetPtAxis}});
+    registry.add("h_subleading_prong_pt", "Subleading prong p_{T};p_{T} (GeV/c);Entries", {HistType::kTH1F, {jetPtAxis}});
 
     registry.add("h2_jet_pt_jet_zg", ";#it{p}_{T,jet} (GeV/#it{c});#it{z}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_rg", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
@@ -293,8 +295,10 @@ struct JetSubstructureTask {
 
     while (daughterSubJet.has_parents(parentSubJet1, parentSubJet2)) {//while daughter has parents, until we reach the end of reclustering
       if (parentSubJet1.perp() < parentSubJet2.perp()) {
-        std::swap(parentSubJet1, parentSubJet2);//for 1 to be greather in pt than 2
+        std::swap(parentSubJet1, parentSubJet2);//for 1 to be greather in pt than 2 (1: leading, 2:subleading)
       }
+      registry.fill(HIST("h_leading_prong_pt"), parentSubJet1.pt(), weight);
+      registry.fill(HIST("h_subleading_prong_pt"), parentSubJet2.pt(), weight);
       std::vector<int32_t> tracks;
       std::vector<int32_t> candidates;
       std::vector<int32_t> clusters;
