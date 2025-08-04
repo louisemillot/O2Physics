@@ -138,7 +138,7 @@ struct JetSubstructureTask {
     registry.add("h2_jet_pt_jet_rg", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_thetag", ";#it{p}_{T,jet} (GeV/#it{c});#it{theta}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
     registry.add("h2_jet_pt_jet_nsd", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
-    registry.add("h_jet_thetag", "#;it{theta}_{g};Entries", {HistType::kTH1F, {22, 0.0, 1.1}});
+    registry.add("h_jet_thetag", ";#it{theta}_{g};Entries", {HistType::kTH1F, {22, 0.0, 1.1}});
     registry.add("h_jet_zg", ";#it{z}_{g};Entries", {HistType::kTH1F, {22, 0.0, 1.1}});
 
     registry.add("h2_jet_pt_part_jet_zg_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{z}_{g}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
