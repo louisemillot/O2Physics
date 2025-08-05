@@ -131,55 +131,93 @@ struct JetSubstructureTask {
     AxisSpec jetPtAxis = {200, 0., 200., "#it{p}_{T} (GeV/#it{c})"};
     AxisSpec centralityAxis = {1200, -10., 110., "Centrality"};
 
+
+    //Reclustering
     registry.add("h_leading_prong_pt", "Leading prong p_{T};p_{T} (GeV/c);Entries", {HistType::kTH1F, {jetPtAxis}});
     registry.add("h_subleading_prong_pt", "Subleading prong p_{T};p_{T} (GeV/c);Entries", {HistType::kTH1F, {jetPtAxis}});
 
-    registry.add("h2_jet_pt_jet_zg", ";#it{p}_{T,jet} (GeV/#it{c});#it{z}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
-    registry.add("h2_jet_pt_jet_rg", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
-    registry.add("h2_jet_pt_jet_thetag", ";#it{p}_{T,jet} (GeV/#it{c});#it{theta}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
-    registry.add("h2_jet_pt_jet_nsd", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
-    registry.add("h_jet_thetag", ";#it{theta}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
-    registry.add("h_jet_zg", ";#it{z}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
+    if (doprocessChargedJetsData || doprocessChargedJetsMCD || doprocessChargedJetsMCDWeighted) {
+      registry.add("h2_jet_pt_jet_zg", ";#it{p}_{T,jet} (GeV/#it{c});#it{z}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+      registry.add("h2_jet_pt_jet_rg", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+      registry.add("h2_jet_pt_jet_thetag", ";#it{p}_{T,jet} (GeV/#it{c});#it{theta}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+      registry.add("h2_jet_pt_jet_nsd", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
+      registry.add("h_jet_thetag", ";#it{theta}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
+      registry.add("h_jet_zg", ";#it{z}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
+    }
 
-    registry.add("h2_jet_pt_part_jet_zg_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{z}_{g}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
-    registry.add("h2_jet_pt_part_jet_rg_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{R}_{g}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
-    registry.add("h2_jet_pt_part_jet_thetag_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{theta}_{g}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
-    registry.add("h2_jet_pt_part_jet_nsd_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{n}_{SD}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
-    registry.add("h_jet_thetag_MCP", ";#it{theta}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
-    registry.add("h_jet_zg_MCP", ";#it{z}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
+    if (doprocessChargedJetsMCP || doprocessChargedJetsMCPWeighted) {
+      registry.add("h2_jet_pt_part_jet_zg_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{z}_{g}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+      registry.add("h2_jet_pt_part_jet_rg_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{R}_{g}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+      registry.add("h2_jet_pt_part_jet_thetag_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{theta}_{g}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+      registry.add("h2_jet_pt_part_jet_nsd_part", ";#it{p}_{T,jet}^{part} (GeV/#it{c});#it{n}_{SD}^{part}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
+      registry.add("h_jet_thetag_MCP", ";#it{theta}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
+      registry.add("h_jet_zg_MCP", ";#it{z}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
+    }
 
-    registry.add("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{z}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
-    registry.add("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
-    registry.add("h2_jet_pt_jet_thetag_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{theta}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
-    registry.add("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
-    registry.add("h_jet_thetag_eventwiseconstituentsubtracted", ";#it{theta}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
-    registry.add("h_jet_zg_eventwiseconstituentsubtracted", ";#it{z}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
+    if (doprocessChargedJetsEventWiseSubData || processChargedJetsEventWiseSubMCD ) { //rajouter plus tard EventWiseMCDWeighted
+      registry.add("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{z}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+      registry.add("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+      registry.add("h2_jet_pt_jet_thetag_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{theta}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
+      registry.add("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{n}_{SD}", {HistType::kTH2F, {{200, 0., 200.}, {15, -0.5, 14.5}}});
+      registry.add("h_jet_thetag_eventwiseconstituentsubtracted", ";#it{theta}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
+      registry.add("h_jet_zg_eventwiseconstituentsubtracted", ";#it{z}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
+    }
 
-
-    //collisions
+    //Collisions
     if (doprocessCollisions || doprocessCollisionsWeighted) {
       registry.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+      registry.add("h_fakecollisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
       registry.add("h2_centrality_occupancy", "centrality vs occupancy; centrality; occupancy", {HistType::kTH2F, {centralityAxis, {60, 0, 30000}}});
       registry.add("h_collisions_Zvertex", "position of collision ;#it{Z} (cm)", {HistType::kTH1F, {{300, -15.0, 15.0}}});
       // registry.add("h_jets", ";Number of jets;Count", {HistType::kTH1F, {{1, 0.5, 1.5}}});
       // registry.add("h_tracks_per_collision", "Tracks per Collision;Collision Index;Counts", {HistType::kTH1F, {{1, 0.5, 1.5}}});
       // registry.add("h_collisionidex", "Collision Index;Collision Index;Counts", {HistType::kTH1F, {{1, 0.5, 1.5}}});
+      if (doprocessCollisionsWeighted) {
+        registry.add("h_collisions_weighted", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+      }
+    }
+    //McCollisions
+    if (doprocessMcCollisions || doprocessMcCollisionsWeighted) {
+      registry.add("h_mcColl_counts", " number of mc events; event status; entries", {HistType::kTH1F, {{10, 0, 10}}});
+      registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(1, "allMcColl");
+      registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(2, "vertexZ");
+      registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(3, "noRecoColl");
+      registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(4, "recoEvtSel");
+      registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(5, "centralitycut");
+      registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(6, "occupancycut");
+      registry.add("h_mc_zvertex", "position of collision ;#it{Z} (cm)", {HistType::kTH1F, {{300, -15.0, 15.0}}});
+      if (doprocessMcCollisionsWeighted) {
+        registry.add("h_mcColl_counts_weight", " number of mc events; event status; entries", {HistType::kTH1F, {{10, 0, 10}}});
+        registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(1, "allMcColl");
+        registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(2, "vertexZ");
+        registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(3, "noRecoColl");
+        registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(4, "recoEvtSel");
+        registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(5, "centralitycut");
+        registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(6, "occupancycut");
+        registry.add("h_mc_zvertex_weight", "position of collision ;#it{Z} (cm)", {HistType::kTH1F, {{300, -15.0, 15.0}}});
+      }
     }
 
     //data
-    registry.add("h_jet_pt_initial_data", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
-    registry.add("h_jet_pt_after_leadingtrackcut_data", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
-    // registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    if (doprocessChargedJetsData) {
+      registry.add("h_jet_pt_initial_data", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+      registry.add("h_jet_pt_after_leadingtrackcut_data", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+      // registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    }
 
     //data + eventwise
-    registry.add("h_jet_pt_initial_data_eventwise", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
-    registry.add("h_jet_pt_after_leadingtrackcut_data_eventwise", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
-    // registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    if (doprocessChargedJetsEventWiseSubData) {
+      registry.add("h_jet_pt_initial_data_eventwise", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+      registry.add("h_jet_pt_after_leadingtrackcut_data_eventwise", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+      // registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    }
 
     //MCD 
-    registry.add("h_jet_pt_initial_mcd", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
-    registry.add("h_jet_pt_after_leadingtrackcut_mcd", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
-    // registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    if (doprocessChargedJetsMCD) {
+      registry.add("h_jet_pt_initial_mcd", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+      registry.add("h_jet_pt_after_leadingtrackcut_mcd", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+      // registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    }
 
     //MCD + weighted
     if (doprocessChargedJetsMCDWeighted) {
@@ -187,41 +225,26 @@ struct JetSubstructureTask {
       registry.add("h_jet_pthat_initial_mcd_weighted", "jet pT hat;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
       registry.add("h_jet_pt_after_leadingtrackcut_mcd_weighted", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
     }
-    
 
     //MCD + eventwise
-    registry.add("h_jet_pt_initial_mcd_eventwise", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
-    registry.add("h_jet_pt_after_leadingtrackcut_mcd_eventwise", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
-    // registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    if (doprocessChargedJetsEventWiseSubMCD) {
+      registry.add("h_jet_pt_initial_mcd_eventwise", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+      registry.add("h_jet_pt_after_leadingtrackcut_mcd_eventwise", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+      // registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    }
 
     //MCP 
-    registry.add("h_jet_pt_initial_mcp", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
-    registry.add("h_jet_pt_after_leadingtrackcut_mcp", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
-
-    registry.add("h_mcColl_counts", " number of mc events; event status; entries", {HistType::kTH1F, {{10, 0, 10}}});
-    registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(1, "allMcColl");
-    registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(2, "vertexZ");
-    registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(3, "noRecoColl");
-    registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(4, "recoEvtSel");
-    registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(5, "centralitycut");
-    registry.get<TH1>(HIST("h_mcColl_counts"))->GetXaxis()->SetBinLabel(6, "occupancycut");
-    registry.add("h_mc_zvertex", "position of collision ;#it{Z} (cm)", {HistType::kTH1F, {{300, -15.0, 15.0}}});
-
+    if (doprocessChargedJetsMCP) {
+      registry.add("h_jet_pt_initial_mcp", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+      registry.add("h_jet_pt_after_leadingtrackcut_mcp", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+    }
+    
     //MCP + weighted 
     if (doprocessChargedJetsMCPWeighted) {
       registry.add("h_jet_phat_initial_mcp", "jet pT hat;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
       registry.add("h_jet_pt_initial_mcp_weighted", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
       registry.add("h_jet_pthat_initial_mcp_weighted", "jet pT hat;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
       registry.add("h_jet_pt_after_leadingtrackcut_mcp_weighted", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
-
-      registry.add("h_mcColl_counts_weight", " number of mc events; event status; entries", {HistType::kTH1F, {{10, 0, 10}}});
-      registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(1, "allMcColl");
-      registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(2, "vertexZ");
-      registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(3, "noRecoColl");
-      registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(4, "recoEvtSel");
-      registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(5, "centralitycut");
-      registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(6, "occupancycut");
-      registry.add("h_mc_zvertex_weight", "position of collision ;#it{Z} (cm)", {HistType::kTH1F, {{300, -15.0, 15.0}}});
     }
 
 
@@ -428,27 +451,72 @@ struct JetSubstructureTask {
   PROCESS_SWITCH(JetSubstructureTask, processCollisionsWeighted, "weighted collsions for Data and MCD", false);
 
   void processMcCollisions(soa::Filtered<aod::JetMcCollisions>::iterator const& mcCollision,
+    soa::SmallGroups<aod::JetCollisionsMCD> const& collisions)
+{ 
+  float eventWeight = mcCollision.weight();
+  registry.fill(HIST("h_mcColl_counts"), 0.5);
+
+  if (std::abs(mcCollision.posZ()) > vertexZCut) {
+    return;
+  }
+  registry.fill(HIST("h_mcColl_counts"), 1.5);
+
+  if (collisions.size() < 1) {
+    return;
+  }
+  registry.fill(HIST("h_mcColl_counts"), 2.5);
+
+  bool hasSel8Coll = false;
+  bool centralityIsGood = false;
+  bool occupancyIsGood = false;
+  for (auto const& collision : collisions) {
+    if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+      hasSel8Coll = true;
+    }
+    if ((centralityMin < collision.centFT0M()) && (collision.centFT0M() < centralityMax)) {
+      centralityIsGood = true;
+    }
+    if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
+      occupancyIsGood = true;
+    }
+  }
+  if (!hasSel8Coll) {
+    return;
+  }
+  registry.fill(HIST("h_mcColl_counts"), 3.5);
+
+  if (!centralityIsGood) {
+    return;
+  }
+  registry.fill(HIST("h_mcColl_counts"), 4.5);
+
+  if (!occupancyIsGood) {
+    return;
+  }
+  registry.fill(HIST("h_mcColl_counts"), 5.5);
+  registry.fill(HIST("h_mc_zvertex"), mcCollision.posZ());
+}
+PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", true);
+
+  void processMcCollisionsWeighted(soa::Filtered<aod::JetMcCollisions>::iterator const& mcCollision,
                            soa::SmallGroups<aod::JetCollisionsMCD> const& collisions)
   { 
     float eventWeight = mcCollision.weight();
     registry.fill(HIST("h_mcColl_counts"), 0.5);
-    if (doprocessChargedJetsMCPWeighted) {
-      registry.fill(HIST("h_mcColl_counts_weight"), 0.5, eventWeight);
-    }
+    registry.fill(HIST("h_mcColl_counts_weight"), 0.5, eventWeight);
+    
     if (std::abs(mcCollision.posZ()) > vertexZCut) {
       return;
     }
     registry.fill(HIST("h_mcColl_counts"), 1.5);
-    if (doprocessChargedJetsMCPWeighted) {
-      registry.fill(HIST("h_mcColl_counts_weight"), 1.5, eventWeight);
-    }
+    registry.fill(HIST("h_mcColl_counts_weight"), 1.5, eventWeight);
+    
     if (collisions.size() < 1) {
       return;
     }
     registry.fill(HIST("h_mcColl_counts"), 2.5);
-    if (doprocessChargedJetsMCPWeighted) {
-      registry.fill(HIST("h_mcColl_counts_weight"), 2.5, eventWeight);
-    }
+    registry.fill(HIST("h_mcColl_counts_weight"), 2.5, eventWeight);
+  
     bool hasSel8Coll = false;
     bool centralityIsGood = false;
     bool occupancyIsGood = false;
@@ -467,29 +535,23 @@ struct JetSubstructureTask {
       return;
     }
     registry.fill(HIST("h_mcColl_counts"), 3.5);
-    if (doprocessChargedJetsMCPWeighted) {
-      registry.fill(HIST("h_mcColl_counts_weight"), 3.5, eventWeight);
-    }
+    registry.fill(HIST("h_mcColl_counts_weight"), 3.5, eventWeight);
+    
     if (!centralityIsGood) {
       return;
     }
     registry.fill(HIST("h_mcColl_counts"), 4.5);
-    if (doprocessChargedJetsMCPWeighted) {
-      registry.fill(HIST("h_mcColl_counts_weight"), 4.5, eventWeight);
-    }
+    registry.fill(HIST("h_mcColl_counts_weight"), 4.5, eventWeight);
+
     if (!occupancyIsGood) {
       return;
     }
     registry.fill(HIST("h_mcColl_counts"), 5.5);
-    if (doprocessChargedJetsMCPWeighted) {
-      registry.fill(HIST("h_mcColl_counts_weight"), 5.5, eventWeight);
-    }
+    registry.fill(HIST("h_mcColl_counts_weight"), 5.5, eventWeight);
     registry.fill(HIST("h_mc_zvertex"), mcCollision.posZ());
-    if (doprocessChargedJetsMCPWeighted) {
-      registry.fill(HIST("h_mc_zvertex_weight"), mcCollision.posZ(), eventWeight);
-    }
+    registry.fill(HIST("h_mc_zvertex_weight"), mcCollision.posZ(), eventWeight);
   }
-  PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions + Mc collision weighted if wanted ", true);
+  PROCESS_SWITCH(JetSubstructureTask, processMcCollisionsWeighted, "Mc collision weighted ", true);
 
   void processChargedJetsData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                               aod::JetTracks const& tracksOfCollisions,
