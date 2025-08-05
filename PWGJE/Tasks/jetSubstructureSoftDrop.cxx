@@ -154,7 +154,7 @@ struct JetSubstructureTask {
       registry.add("h_jet_zg_MCP", ";#it{z}_{g};Entries", {HistType::kTH1F, {{22, 0.0, 1.1}}});
     }
 
-    if (doprocessChargedJetsEventWiseSubData || processChargedJetsEventWiseSubMCD ) { //rajouter plus tard EventWiseMCDWeighted
+    if (doprocessChargedJetsEventWiseSubData || doprocessChargedJetsEventWiseSubMCD ) { //rajouter plus tard EventWiseMCDWeighted
       registry.add("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{z}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
       registry.add("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{R}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
       registry.add("h2_jet_pt_jet_thetag_eventwiseconstituentsubtracted", ";#it{p}_{T,jet} (GeV/#it{c});#it{theta}_{g}", {HistType::kTH2F, {{200, 0., 200.}, {22, 0.0, 1.1}}});
