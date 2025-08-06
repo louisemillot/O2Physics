@@ -1107,13 +1107,10 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "
 }
 PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCPWeighted, "charged jet substructure on MC particle level weighted", false);
 
-
-};
-
 void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const& collision,
-                        ChargedMCDMatchedJets const& mcdjets,
-                        ChargedMCPMatchedJets const&,
-                        aod::JetTracks const&, aod::JetParticles const&)
+                              ChargedMCDMatchedJets const& mcdjets,
+                              ChargedMCPMatchedJets const&,
+                                aod::JetTracks const&, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
@@ -1132,9 +1129,9 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
 
 void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
-                                      ChargedMCDMatchedJetsWeighted const& mcdjets,
-                                      ChargedMCPMatchedJetsWeighted const&,
-                                      aod::JetTracks const&, aod::JetParticles const&)
+                ChargedMCDMatchedJetsWeighted const& mcdjets,
+                ChargedMCPMatchedJetsWeighted const&,
+                aod::JetTracks const&, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
@@ -1146,10 +1143,14 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
     if (!isAcceptedJet<aod::JetTracks>(mcdjet)) {
       continue;
     }
-  fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet, mcdjet.eventWeight());
+    fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet, mcdjet.eventWeight());
   }
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeighted, "matched mcp and mcd jets with weighted events", false);
+
+};
+
+
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
