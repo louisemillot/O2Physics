@@ -258,7 +258,7 @@ struct JetSubstructureTask {
       }
     }
 
-    if (doprocessJetsMatched || doprocessJetsMatchedWeighted) {
+    if (doprocessJetsMCDMatchedMCP || doprocessJetsMCDMatchedMCPWeighted) {
       if (checkGeoMatched) {
         registry.add("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint", "pT mcd vs. pT mcp;#it{p}_{T,jet}^{mcd} (GeV/#it{c});#it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxis, jetPtAxis}});
         registry.add("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcpetaconstraint", "pT mcd vs. pT mcp;#it{p}_{T,jet}^{mcd} (GeV/#it{c});#it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxis, jetPtAxis}});
