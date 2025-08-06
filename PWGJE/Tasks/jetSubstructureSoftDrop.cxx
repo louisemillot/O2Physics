@@ -1117,7 +1117,7 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
     }
     bool hasHighPtConstituent = false;
     ///////////// leading track cut /////////////
-    for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+    for (auto& jetConstituent : mcdjet.tracks_as<aod::JetTracks>()) {
       if (jetConstituent.pt() >= ptLeadingTrackCut) {
         hasHighPtConstituent = true;
         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
