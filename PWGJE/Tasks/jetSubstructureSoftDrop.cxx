@@ -40,6 +40,7 @@
 #include "PWGJE/Core/JetFindingUtilities.h"
 
 
+#include <optional>
 
 #include "EventFiltering/filterTables.h"
 
@@ -435,7 +436,7 @@ struct JetSubstructureTask {
   }
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
-  void jetReclustering(T const& jet, U& splittingTable, double weight)
+  std::optional<float> jetReclustering(T const& jet, U& splittingTable, double weight)
   {
     // LOGF(info, " Entering jetReclustering " );
     energyMotherVec.clear(); //to be sure its empty before filling
@@ -506,6 +507,7 @@ struct JetSubstructureTask {
             registry.fill(HIST("h_jet_zg_eventwiseconstituentsubtracted"), zg, weight);
           }
           softDropped = true;//mark the splitting as true to avoid filling it again
+          return thetag;
         }
         nsd++;//step up the number of iterations
       }
@@ -521,6 +523,8 @@ struct JetSubstructureTask {
     if constexpr (isSubtracted && !isMCP) {
       registry.fill(HIST("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted"), jet.pt(), nsd, weight);
     }
+    return std::nullopt;
+
   }
 
   template <bool isSubtracted, typename T, typename U, typename N>
@@ -1131,9 +1135,9 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
 
 void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
-                ChargedMCDMatchedJetsWeighted const& mcdjets,
-                ChargedMCPMatchedJetsWeighted const&,
-                aod::JetTracks const&, aod::JetParticles const&)
+                                      ChargedMCDMatchedJetsWeighted const& mcdjets,
+                                      ChargedMCPMatchedJetsWeighted const&,
+                                      aod::JetTracks const&, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
