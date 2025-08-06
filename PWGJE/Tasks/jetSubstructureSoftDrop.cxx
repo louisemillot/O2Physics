@@ -525,7 +525,7 @@ struct JetSubstructureTask {
     if constexpr (isSubtracted && !isMCP) {
       registry.fill(HIST("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted"), jet.pt(), nsd, weight);
     }
-    return std::nullopt;
+    return -1.f;
 
   }
 
