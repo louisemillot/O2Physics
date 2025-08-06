@@ -137,6 +137,8 @@ struct JetSubstructureTask {
   {
     AxisSpec jetPtAxis = {200, 0., 200., "#it{p}_{T} (GeV/#it{c})"};
     AxisSpec centralityAxis = {1200, -10., 110., "Centrality"};
+    AxisSpec jetEtaAxis = {nBinsEta, -1.0, 1.0, "#eta"};
+    AxisSpec phiAxis = {160, -1.0, 7.0, "#varphi"};
 
 
     //Reclustering
