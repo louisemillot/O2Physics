@@ -362,18 +362,26 @@ struct JetSubstructureTask {
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             double dpt = jetMCP.pt() - jetMCD.pt();
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+              if (thetagMCD.has_value() && thetagMCP.has_value()) {
+                registry.fill(HIST("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_mcdetaconstraint"), thetagMCD.value(), thetagMCP.value(), weight);
+              }
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_diff_matchedgeo"), jetMCD.pt(), dpt / jetMCD.pt(), weight);
               registry.fill(HIST("h2_jet_ntracks_mcd_jet_ntracks_mcp_matchedgeo"), jetMCD.tracksIds().size(), jetMCP.tracksIds().size(), weight);
             }
             if (jetfindingutilities::isInEtaAcceptance(jetMCP, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+              if (thetagMCD.has_value() && thetagMCP.has_value()) {
+                registry.fill(HIST("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_mcpetaconstraint"), thetagMCD.value(), thetagMCP.value(), weight);
+              }
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcpetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcpetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
               registry.fill(HIST("h2_jet_pt_mcp_jet_pt_diff_matchedgeo"), jetMCP.pt(), dpt / jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_pt_mcp_jet_pt_ratio_matchedgeo"), jetMCP.pt(), jetMCD.pt() / jetMCP.pt(), weight);
             }
             registry.fill(HIST("h2_jet_eta_mcd_jet_eta_mcp_matchedgeo"), jetMCD.eta(), jetMCP.eta(), weight);
+            registry.fill(HIST("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo"), thetagMCD.value(), thetagMCP.value(), weight);
+
           }
         }
       }
