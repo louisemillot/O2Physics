@@ -438,7 +438,7 @@ struct JetSubstructureTask {
   }
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
-  std::optional<float> jetReclustering(T const& jet, U& splittingTable, double weight)
+  float jetReclustering(T const& jet, U& splittingTable, double weight)
   {
     // LOGF(info, " Entering jetReclustering " );
     energyMotherVec.clear(); //to be sure its empty before filling
