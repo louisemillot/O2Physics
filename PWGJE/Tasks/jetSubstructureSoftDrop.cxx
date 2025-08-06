@@ -1102,7 +1102,7 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCPWeighted, "charged jet 
 void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                               ChargedMCDMatchedJets const& mcdjets,
                               ChargedMCPMatchedJets const&,
-                                aod::JetTracks const&, aod::JetParticles const&)
+                              aod::JetTracks const&, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
@@ -1115,7 +1115,17 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
     if (!isAcceptedJet<aod::JetTracks>(mcdjet)) {
       continue;
     }
-    fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet);
+    bool hasHighPtConstituent = false;
+    ///////////// leading track cut /////////////
+    for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
+      if (jetConstituent.pt() >= ptLeadingTrackCut) {
+        hasHighPtConstituent = true;
+        break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+      }
+    }
+    if (hasHighPtConstituent) {
+      fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet);
+    }
   }
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
