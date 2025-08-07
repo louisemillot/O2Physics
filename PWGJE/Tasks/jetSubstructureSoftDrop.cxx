@@ -1123,7 +1123,7 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "
         fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
       }
       jetReclustering<true, false>(jet, jetSplittingsMCPTable , jetweight);
-      auto thetagMCP = jetReclustering<true, false>(jet, jetSplittingsMCPTable, weight);
+      auto thetagMCP = jetReclustering<true, false>(jet, jetSplittingsMCPTable, jetweight);
       LOGF(info, "thetagMCP_process = %.4f", thetagMCP.value());
       LOGF(info, "jetMCP_process: pt = %.3f, eta = %.3f, phi = %.3f", jet.pt(), jet.eta(), jet.phi());
       //fin de analyseCharged version MCP
