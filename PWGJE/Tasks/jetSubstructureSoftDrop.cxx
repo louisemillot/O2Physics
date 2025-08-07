@@ -1148,12 +1148,13 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
       }
     }
+  }
     if (hasHighPtConstituent) {
       // fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet,jetSplittingsMCDTable,jetSplittingsMCPTable);
       fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet);
 
     }
-  }
+  
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
 
@@ -1180,6 +1181,7 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
       }
     }
+  }
     if (hasHighPtConstituent) {
       //if (doprocessChargedJetsMCD || doprocessChargedJetsMCDWeighted){ //doprocessChargedJetsEventWiseSubMCD
         // fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,jetSplittingsMCDTable, jetSplittingsMCPTable, mcdjet.eventWeight());
@@ -1187,7 +1189,7 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
 
       //}
     }
-  }
+  
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeighted, "matched mcp and mcd jets with weighted events", false);
 
