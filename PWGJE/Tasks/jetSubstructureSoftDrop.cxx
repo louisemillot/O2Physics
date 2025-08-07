@@ -361,7 +361,7 @@ struct JetSubstructureTask {
     static int counter = 0;
     int countMCP = 0;
     ++counter;
-    LOGF(info, "fillMatchedHistograms called %d times", counter);
+    // LOGF(info, "fillMatchedHistograms called %d times", counter);
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCD.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
       return;
@@ -369,14 +369,14 @@ struct JetSubstructureTask {
     // fill geometry matched histograms
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
-        auto thetagMCD = jetReclustering<false, false>(jetMCD, jetSplittingsMCDTable, weight);
-        LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
-        LOGF(info, "jetMCD: pt = %.3f", jetMCD.pt());
+        // auto thetagMCD = jetReclustering<false, false>(jetMCD, jetSplittingsMCDTable, weight);
+        // LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
+        // LOGF(info, "jetMCD: pt = %.3f", jetMCD.pt());
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
           countMCP++;
-          auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
-          LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
-          LOGF(info, "jetMCP: pt = %.3f", jetMCP.pt());
+          // auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
+          // LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
+          // LOGF(info, "jetMCP: pt = %.3f", jetMCP.pt());
 
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
@@ -1148,13 +1148,12 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
       }
     }
-  }
     if (hasHighPtConstituent) {
       // fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet,jetSplittingsMCDTable,jetSplittingsMCPTable);
       fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet);
 
     }
-  
+  }
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
 
@@ -1181,15 +1180,16 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
       }
     }
-  }
     if (hasHighPtConstituent) {
       //if (doprocessChargedJetsMCD || doprocessChargedJetsMCDWeighted){ //doprocessChargedJetsEventWiseSubMCD
         // fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,jetSplittingsMCDTable, jetSplittingsMCPTable, mcdjet.eventWeight());
         fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet, mcdjet.eventWeight());
+        auto thetagMCD = jetReclustering<false, false>(mcdjet, jetSplittingsMCDTable, mcdjet.eventWeight());
+        LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
 
       //}
     }
-  
+  }
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeighted, "matched mcp and mcd jets with weighted events", false);
 
