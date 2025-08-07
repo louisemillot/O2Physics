@@ -876,7 +876,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
         LOGF(info, "test2");
         // auto thetagMCD = jetReclustering<false, false>(jet, jetSplittingsMCDTable, jetweight);
         LOGF(info, "test3");
-        LOGF(info, "thetagMCD_process = %.4f", thetagMCD.value());
+        // LOGF(info, "thetagMCD_process = %.4f", thetagMCD.value());
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd"), jet.pt()); 
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
         // LOGF(info, "jetweight = %.4f",jetweight);
