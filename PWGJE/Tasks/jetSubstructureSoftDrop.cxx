@@ -1196,6 +1196,7 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
       }
     }
     if (hasHighPtConstituent) {
+      analyseCharged<false>(mcdjet, tracks, jetSplittingsMCDTable, jetweight);
       auto thetagMCD = jetReclustering<false, false>(mcdjet, jetSplittingsMCDTable, jetweight);
       LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
       //if (doprocessChargedJetsMCD || doprocessChargedJetsMCDWeighted){ //doprocessChargedJetsEventWiseSubMCD
