@@ -353,11 +353,13 @@ struct JetSubstructureTask {
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
   template <typename TBase, typename TTag >
 
-  void fillMatchedHistograms(TBase const& jetMCD,
+  void fillMatchedHistograms(soa::Join<aod::ChargedMCParticleLevelJets,
+                             aod::ChargedMCParticleLevelJetConstituents,
+                             aod::ChargedMCParticleLevelJetEventWeights,
+                             TBase> const& jetMCD
                             //  TableMCD& splittingTableMCD,
                             //  TableMCP& splittingTableMCP,
                             aod::JetParticles const& particles,
-                            soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents , aod::ChargedMCParticleLevelJetEventWeights> const& jetMCD,
                             float weight = 1.0)
   { 
     static int counter = 0;
