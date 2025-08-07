@@ -355,8 +355,8 @@ struct JetSubstructureTask {
 
   void fillMatchedHistograms(soa::Join<aod::ChargedMCParticleLevelJets,
                              aod::ChargedMCParticleLevelJetConstituents,
-                             aod::ChargedMCParticleLevelJetEventWeights,
-                             TBase> const& jetMCD,
+                             aod::ChargedMCParticleLevelJetEventWeights
+                             > const& jetMCD,
                             //  TableMCD& splittingTableMCD,
                             //  TableMCP& splittingTableMCP,
                             aod::JetParticles const& particles,
