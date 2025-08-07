@@ -872,12 +872,12 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
+        auto thetagMCD = jetReclustering<false, false>(jet, jetSplittingsMCDTable, jetweight);
+        LOGF(info, "thetagMCD_process = %.4f", thetagMCD.value());
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd"), jet.pt()); 
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
         // LOGF(info, "jetweight = %.4f",jetweight);
         analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
-        auto thetagMCD = jetReclustering<false, false>(jet, jetSplittingsMCDTable, jetweight);
-        LOGF(info, "thetagMCD_process = %.4f", thetagMCD.value());
         // LOGF(info, "processChargedJetsMCD: weight = %.4f",jetweight);
         // LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight, "2 : " , collision.mcCollision().weight());
       }
@@ -1177,7 +1177,8 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
     if (!isAcceptedJet<aod::JetTracks>(mcdjet)) {
       continue;
     }
-    float pTHat = 10. / (std::pow(mcdjet.eventWeight(), 1.0 / pTHatExponent));
+    float jetweight = jet.eventWeight();
+    float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
       if (mcdjet.pt() > pTHatMaxMCD * pTHat) {
         return;
       }
@@ -1190,11 +1191,11 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
       }
     }
     if (hasHighPtConstituent) {
+      auto thetagMCD = jetReclustering<false, false>(mcdjet, jetSplittingsMCDTable, mcdjet.eventWeight());
+      LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
       //if (doprocessChargedJetsMCD || doprocessChargedJetsMCDWeighted){ //doprocessChargedJetsEventWiseSubMCD
-        // fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,jetSplittingsMCDTable, jetSplittingsMCPTable, mcdjet.eventWeight());
-        fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet, mcdjet.eventWeight());
-        auto thetagMCD = jetReclustering<false, false>(mcdjet, jetSplittingsMCDTable, mcdjet.eventWeight());
-        LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
+      // fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,jetSplittingsMCDTable, jetSplittingsMCPTable, mcdjet.eventWeight());
+      fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet, mcdjet.eventWeight());
 
       //}
     }
