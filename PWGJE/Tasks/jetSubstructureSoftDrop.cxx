@@ -1186,7 +1186,7 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
     }
     if (hasHighPtConstituent) {
       //if (doprocessChargedJetsMCD || doprocessChargedJetsMCDWeighted){ //doprocessChargedJetsEventWiseSubMCD
-        fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,jetSplittingsMCDTable, mcdjet.eventWeight());
+        fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,jetSplittingsMCDTable, jetSplittingsMCPTable, mcdjet.eventWeight());
       //}
     }
   }
