@@ -356,7 +356,8 @@ struct JetSubstructureTask {
   void fillMatchedHistograms(TBase const& jetMCD,
                             //  TableMCD& splittingTableMCD,
                             //  TableMCP& splittingTableMCP,
-                             float weight = 1.0)
+                            aod::JetParticles const& particles,
+                            float weight = 1.0)
   { 
     static int counter = 0;
     int countMCP = 0;
