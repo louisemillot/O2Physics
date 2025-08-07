@@ -359,6 +359,7 @@ struct JetSubstructureTask {
                              float weight = 1.0)
   { 
     static int counter = 0;
+    int countMCP = 0;
     ++counter;
     LOGF(info, "fillMatchedHistograms called %d times", counter);
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
@@ -372,6 +373,7 @@ struct JetSubstructureTask {
         LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
         LOGF(info, "jetMCD: pt = %.3f", jetMCD.pt());
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
+          countMCP++;
           auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
           LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
           LOGF(info, "jetMCP: pt = %.3f", jetMCP.pt());
@@ -398,6 +400,8 @@ struct JetSubstructureTask {
         }
       }
     }
+    LOGF(info, "Nombre de MCP matchés à ce MCD : %d", countMCP);
+
     // fill pt matched histograms
     if (checkPtMatched) {
       if (jetMCD.has_matchedJetPt()) {
