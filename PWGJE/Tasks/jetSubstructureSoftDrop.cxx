@@ -371,15 +371,11 @@ struct JetSubstructureTask {
     // fill geometry matched histograms
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
-        // auto thetagMCD = jetReclustering<false, false>(jetMCD, jetSplittingsMCDTable, weight);
-        // LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
-        // LOGF(info, "jetMCD: pt = %.3f", jetMCD.pt());
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
-          countMCP++;
           auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
-          // LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
-          // LOGF(info, "jetMCP: pt = %.3f", jetMCP.pt());
+          LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
 
+          countMCP++;
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
