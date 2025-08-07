@@ -376,10 +376,10 @@ struct JetSubstructureTask {
           countMCP++;
           //début de analyseCharged version MCP
           jetConstituents.clear();
-          for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
+          for (auto& jetConstituent : jetMCD.tracks_as<aod::JetParticles>()) {
             fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
           }
-          jetReclustering<true, false>(jet, jetSplittingsMCPTable , weight);
+          jetReclustering<true, false>(jetMCD, jetSplittingsMCPTable , weight);
           //fin de analyseCharged version MCP
           auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
           LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
