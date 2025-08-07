@@ -365,11 +365,11 @@ struct JetSubstructureTask {
       if (jetMCD.has_matchedJetGeo()) {
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
             //attention a mettre false,true et true,false quand il y aura EventWiseSub !!!! 
-            auto thetagMCD = jetReclustering<false, false>(jetMCD, splittingTableMCD, weight);
-            LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
+            // auto thetagMCD = jetReclustering<false, false>(jetMCD, splittingTableMCD, weight);
+            // LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
             auto thetagMCP = jetReclustering<true, false>(jetMCP, splittingTableMCP, weight);
             LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
-            LOGF(info, "jetMCD: pt = %.3f, eta = %.3f, phi = %.3f", jetMCD.pt(), jetMCD.eta(), jetMCD.phi());
+            // LOGF(info, "jetMCD: pt = %.3f, eta = %.3f, phi = %.3f", jetMCD.pt(), jetMCD.eta(), jetMCD.phi());
             LOGF(info, "jetMCP: pt = %.3f, eta = %.3f, phi = %.3f", jetMCP.pt(), jetMCP.eta(), jetMCP.phi());
 
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
@@ -1123,6 +1123,9 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "
         fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
       }
       jetReclustering<true, false>(jet, jetSplittingsMCPTable , jetweight);
+      auto thetagMCP = jetReclustering<true, false>(jetMCP, splittingTableMCP, weight);
+      LOGF(info, "thetagMCP_process = %.4f", thetagMCP.value());
+      LOGF(info, "jetMCP_process: pt = %.3f, eta = %.3f, phi = %.3f", jetMCP.pt(), jetMCP.eta(), jetMCP.phi());
       //fin de analyseCharged version MCP
       LOGF(info, "processChargedJetsMCP: weight = %.4f",jetweight);
     }
