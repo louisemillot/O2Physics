@@ -353,14 +353,10 @@ struct JetSubstructureTask {
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
   template <typename TBase, typename TTag >
 
-  void fillMatchedHistograms(soa::Join<aod::ChargedMCParticleLevelJets,
-                             aod::ChargedMCParticleLevelJetConstituents,
-                             aod::ChargedMCParticleLevelJetEventWeights
-                             > const& jetMCD,
+  void fillMatchedHistograms(TBase const& jetMCD,
                             //  TableMCD& splittingTableMCD,
                             //  TableMCP& splittingTableMCP,
-                            aod::JetParticles const& particles,
-                            float weight = 1.0)
+                             float weight = 1.0)
   { 
     static int counter = 0;
     int countMCP = 0;
@@ -378,15 +374,8 @@ struct JetSubstructureTask {
         // LOGF(info, "jetMCD: pt = %.3f", jetMCD.pt());
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
           countMCP++;
-          //début de analyseCharged version MCP
-          jetConstituents.clear();
-          for (auto& jetConstituent : jetMCD.tracks_as<aod::JetParticles>()) {
-            fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
-          }
-          jetReclustering<true, false>(jetMCD, jetSplittingsMCPTable , weight);
-          //fin de analyseCharged version MCP
           auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
-          LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
+          // LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
           // LOGF(info, "jetMCP: pt = %.3f", jetMCP.pt());
 
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
@@ -1145,7 +1134,7 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCPWeighted, "charged jet 
 void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                               ChargedMCDMatchedJets const& mcdjets,
                               ChargedMCPMatchedJets const&,
-                              aod::JetTracks const&, aod::JetParticles const& particles)
+                              aod::JetTracks const&, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
@@ -1168,7 +1157,7 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
     }
     if (hasHighPtConstituent) {
       // fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet,jetSplittingsMCDTable,jetSplittingsMCPTable);
-      fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet,particles);
+      fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet);
 
     }
   }
@@ -1178,7 +1167,7 @@ PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and m
 void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                       ChargedMCDMatchedJetsWeighted const& mcdjets,
                                       ChargedMCPMatchedJetsWeighted const&,
-                                      aod::JetTracks const& tracks, aod::JetParticles const& particles)
+                                      aod::JetTracks const& tracks, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
@@ -1212,7 +1201,7 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
       LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
       //if (doprocessChargedJetsMCD || doprocessChargedJetsMCDWeighted){ //doprocessChargedJetsEventWiseSubMCD
       // fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,jetSplittingsMCDTable, jetSplittingsMCPTable, mcdjet.eventWeight());
-      fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,particles, jetweight);
+      fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet, jetweight);
 
       //}
     }
