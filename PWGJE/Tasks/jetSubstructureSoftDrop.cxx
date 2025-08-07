@@ -356,8 +356,8 @@ struct JetSubstructureTask {
   void fillMatchedHistograms(TBase const& jetMCD,
                             //  TableMCD& splittingTableMCD,
                             //  TableMCP& splittingTableMCP,
-                            float thetagMCD,
-                             float weight = 1.0)
+                            std::optional<float> thetagMCD,
+                            float weight = 1.0)
   { 
     static int counter = 0;
     int countMCP = 0;
