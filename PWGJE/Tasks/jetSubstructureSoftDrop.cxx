@@ -366,11 +366,11 @@ struct JetSubstructureTask {
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
             //attention a mettre false,true et true,false quand il y aura EventWiseSub !!!! 
             auto thetagMCD = jetReclustering<false, false>(jetMCD, splittingTableMCD, weight);
-            // LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
+            LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
             auto thetagMCP = jetReclustering<true, false>(jetMCP, splittingTableMCP, weight);
             LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
             // LOGF(info, "jetMCD: pt = %.3f, eta = %.3f, phi = %.3f", jetMCD.pt(), jetMCD.eta(), jetMCD.phi());
-            LOGF(info, "jetMCP: pt = %.3f, eta = %.3f, phi = %.3f", jetMCP.pt(), jetMCP.eta(), jetMCP.phi());
+            // LOGF(info, "jetMCP: pt = %.3f, eta = %.3f, phi = %.3f", jetMCP.pt(), jetMCP.eta(), jetMCP.phi());
 
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
@@ -851,9 +851,9 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
         continue;
       }
       float jetweight = jet.eventWeight();
-      LOGF(info, "jetweight = %.8f ",jetweight);
+      // LOGF(info, "jetweight = %.8f ",jetweight);
       float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
-      LOGF(info, "pTHat = %.8f ",pTHat);
+      // LOGF(info, "pTHat = %.8f ",pTHat);
       if (jet.pt() > pTHatMaxMCD * pTHat) {
         return;
       }
@@ -874,8 +874,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       if (hasHighPtConstituent) {
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd"), jet.pt()); 
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
-        LOGF(info, "MCD 7");
-        LOGF(info, "jetweight = %.4f",jetweight);
+        // LOGF(info, "jetweight = %.4f",jetweight);
         analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
         // LOGF(info, "processChargedJetsMCD: weight = %.4f",jetweight);
         // LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight, "2 : " , collision.mcCollision().weight());
@@ -940,9 +939,9 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       continue;
     }
     float jetweight = jet.eventWeight();
-    LOGF(info, "jetweight = %.8f ",jetweight);
+    // LOGF(info, "jetweight = %.8f ",jetweight);
     float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
-    LOGF(info, "pTHat = %.8f ",pTHat);
+    // LOGF(info, "pTHat = %.8f ",pTHat);
     if (jet.pt() > pTHatMaxMCD * pTHat) {
         return;
     }
@@ -1023,23 +1022,19 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "
       if (!isAcceptedJet<aod::JetParticles>(jet, mcLevelIsParticleLevel)) {
         continue;
       }
-      // LOGF(info, " Entering boucle_jets " );
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt()); 
       for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
-        // LOGF(info, " Entering boucle_jets_constituents " );
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           hasHighPtConstituent = true;
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
       if (hasHighPtConstituent) {
-        // LOGF(info, " leading track cut applied " );
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcp"), jet.pt()); 
         //début de analyseCharged version MCP
         jetConstituents.clear();
         for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
-          // LOGF(info, " AnalyseCharged for MCP " );
           fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
         }
         jetReclustering<true, false>(jet, jetSplittingsMCPTable , 1);
@@ -1095,39 +1090,35 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "
     if (!isAcceptedJet<aod::JetParticles>(jet, mcLevelIsParticleLevel)) {
       continue;
     }
-    // LOGF(info, " Entering boucle_jets " );
     bool hasHighPtConstituent = false;
     float jetweight = jet.eventWeight();
-    LOGF(info, "jetweight = %.8f",jetweight);
+    // LOGF(info, "jetweight = %.8f",jetweight);
     double pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
-    LOGF(info, "pTHat = %.8f ",pTHat);
+    // LOGF(info, "pTHat = %.8f ",pTHat);
     registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt());
     registry.fill(HIST("h_jet_pt_initial_mcp_weighted"), jet.pt(),jetweight);
     registry.fill(HIST("h_jet_phat_initial_mcp"), pTHat);
     registry.fill(HIST("h_jet_pthat_initial_mcp_weighted"), pTHat, jetweight); 
     for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
-      // LOGF(info, " Entering boucle_jets_constituents " );
       if (jetConstituent.pt() >= ptLeadingTrackCut) {
         hasHighPtConstituent = true;
         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
       }
     }
     if (hasHighPtConstituent) {
-      // LOGF(info, " leading track cut applied " );
       registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcp"), jet.pt());
       registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcp_weighted"), jet.pt(),jetweight);
       //début de analyseCharged version MCP
       jetConstituents.clear();
       for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
-        // LOGF(info, " AnalyseCharged for MCP " );
         fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
       }
       jetReclustering<true, false>(jet, jetSplittingsMCPTable , jetweight);
       auto thetagMCP = jetReclustering<true, false>(jet, jetSplittingsMCPTable, jetweight);
       LOGF(info, "thetagMCP_process = %.4f", thetagMCP.value());
-      LOGF(info, "jetMCP_process: pt = %.3f, eta = %.3f, phi = %.3f", jet.pt(), jet.eta(), jet.phi());
+      // LOGF(info, "jetMCP_process: pt = %.3f, eta = %.3f, phi = %.3f", jet.pt(), jet.eta(), jet.phi());
       //fin de analyseCharged version MCP
-      LOGF(info, "processChargedJetsMCP: weight = %.4f",jetweight);
+      // LOGF(info, "processChargedJetsMCP: weight = %.4f",jetweight);
     }
   }
 }
