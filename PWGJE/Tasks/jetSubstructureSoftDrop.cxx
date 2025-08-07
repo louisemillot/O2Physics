@@ -365,40 +365,27 @@ struct JetSubstructureTask {
     // fill geometry matched histograms
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
-        //attention a mettre false,true et true,false quand il y aura EventWiseSub !!!! 
         auto thetagMCD = jetReclustering<false, false>(jetMCD, jetSplittingsMCDTable, weight);
         LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
-        // LOGF(info, "jetMCD: pt = %.3f, eta = %.3f, phi = %.3f", jetMCD.pt(), jetMCD.eta(), jetMCD.phi());
-        // LOGF(info, "jetMCP: pt = %.3f, eta = %.3f, phi = %.3f", jetMCP.pt(), jetMCP.eta(), jetMCP.phi());
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
-          auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
-          LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             double dpt = jetMCP.pt() - jetMCD.pt();
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
-              if (thetagMCD.has_value() && thetagMCP.has_value()) {
-                registry.fill(HIST("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_mcdetaconstraint"), thetagMCD.value(), thetagMCP.value(), weight);
-              }
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_diff_matchedgeo"), jetMCD.pt(), dpt / jetMCD.pt(), weight);
               registry.fill(HIST("h2_jet_ntracks_mcd_jet_ntracks_mcp_matchedgeo"), jetMCD.tracksIds().size(), jetMCP.tracksIds().size(), weight);
             }
             if (jetfindingutilities::isInEtaAcceptance(jetMCP, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
-              if (thetagMCD.has_value() && thetagMCP.has_value()) {
-                registry.fill(HIST("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_mcpetaconstraint"), thetagMCD.value(), thetagMCP.value(), weight);
-              }
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcpetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcpetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
               registry.fill(HIST("h2_jet_pt_mcp_jet_pt_diff_matchedgeo"), jetMCP.pt(), dpt / jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_pt_mcp_jet_pt_ratio_matchedgeo"), jetMCP.pt(), jetMCD.pt() / jetMCP.pt(), weight);
             }
             registry.fill(HIST("h2_jet_eta_mcd_jet_eta_mcp_matchedgeo"), jetMCD.eta(), jetMCP.eta(), weight);
-            registry.fill(HIST("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo"), thetagMCD.value(), thetagMCP.value(), weight);
-
           }
         }
       }
