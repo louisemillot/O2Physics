@@ -1165,7 +1165,7 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
     }
     if (hasHighPtConstituent) {
       // fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet,jetSplittingsMCDTable,jetSplittingsMCPTable);
-      fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet);
+      fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet,particles);
 
     }
   }
@@ -1175,7 +1175,7 @@ PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and m
 void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                       ChargedMCDMatchedJetsWeighted const& mcdjets,
                                       ChargedMCPMatchedJetsWeighted const&,
-                                      aod::JetTracks const& tracks, aod::JetParticles particles const&)
+                                      aod::JetTracks const& tracks, aod::JetParticles const& particles)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
