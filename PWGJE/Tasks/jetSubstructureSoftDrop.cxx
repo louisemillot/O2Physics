@@ -374,8 +374,15 @@ struct JetSubstructureTask {
         // LOGF(info, "jetMCD: pt = %.3f", jetMCD.pt());
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
           countMCP++;
-          // auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
-          // LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
+          //début de analyseCharged version MCP
+          jetConstituents.clear();
+          for (auto& jetConstituent : jet.tracks_as<aod::JetParticles>()) {
+            fastjetutilities::fillTracks(jetConstituent, jetConstituents, jetConstituent.globalIndex(), static_cast<int>(JetConstituentStatus::track), pdg->Mass(jetConstituent.pdgCode()));
+          }
+          jetReclustering<true, false>(jet, jetSplittingsMCPTable , weight);
+          //fin de analyseCharged version MCP
+          auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
+          LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
           // LOGF(info, "jetMCP: pt = %.3f", jetMCP.pt());
 
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
