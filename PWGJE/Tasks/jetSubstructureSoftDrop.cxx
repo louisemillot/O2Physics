@@ -368,14 +368,14 @@ struct JetSubstructureTask {
         //attention a mettre false,true et true,false quand il y aura EventWiseSub !!!! 
         auto thetagMCD = jetReclustering<false, false>(jetMCD, jetSplittingsMCDTable, weight);
         LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
-        auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
-        LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
         // LOGF(info, "jetMCD: pt = %.3f, eta = %.3f, phi = %.3f", jetMCD.pt(), jetMCD.eta(), jetMCD.phi());
         // LOGF(info, "jetMCP: pt = %.3f, eta = %.3f, phi = %.3f", jetMCP.pt(), jetMCP.eta(), jetMCP.phi());
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
+          auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
+          LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             double dpt = jetMCP.pt() - jetMCD.pt();
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
