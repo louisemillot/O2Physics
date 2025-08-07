@@ -366,6 +366,9 @@ struct JetSubstructureTask {
             LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
             auto thetagMCP = jetReclustering<true, false>(jetMCP, splittingTable, weight);
             LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
+            LOGF(info, "jetMCD: pt = %.3f, eta = %.3f, phi = %.3f", jetMCD.pt(), jetMCD.eta(), jetMCD.phi());
+            LOGF(info, "jetMCP: pt = %.3f, eta = %.3f, phi = %.3f", jetMCP.pt(), jetMCP.eta(), jetMCP.phi());
+
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
