@@ -357,6 +357,7 @@ struct JetSubstructureTask {
                             //  TableMCD& splittingTableMCD,
                             //  TableMCP& splittingTableMCP,
                             aod::JetParticles const& particles,
+                            soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents , aod::ChargedMCParticleLevelJetEventWeights> const& jetMCD,
                             float weight = 1.0)
   { 
     static int counter = 0;
