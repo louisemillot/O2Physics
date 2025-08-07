@@ -870,9 +870,12 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
+      LOGF(info, "test1");
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
+        LOGF(info, "test2");
         auto thetagMCD = jetReclustering<false, false>(jet, jetSplittingsMCDTable, jetweight);
+        LOGF(info, "test3");
         LOGF(info, "thetagMCD_process = %.4f", thetagMCD.value());
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd"), jet.pt()); 
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
