@@ -362,7 +362,7 @@ struct JetSubstructureTask {
     static int counter = 0;
     int countMCP = 0;
     ++counter;
-    LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
+    LOGF(info, "thetagMCD_fillhisto = %.4f", thetagMCD.value());
     // LOGF(info, "fillMatchedHistograms called %d times", counter);
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCD.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
@@ -880,9 +880,9 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
         // LOGF(info, "jetweight = %.4f",jetweight);
         analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
-        LOGF(info, "test4");
-        auto thetagMCD = jetReclustering<false, false>(jet, jetSplittingsMCDTable, jetweight);
-        LOGF(info, "thetagMCD_process = %.4f", thetagMCD.value());
+        // LOGF(info, "test4");
+        // auto thetagMCD = jetReclustering<false, false>(jet, jetSplittingsMCDTable, jetweight);
+        // LOGF(info, "thetagMCD_process = %.4f", thetagMCD.value());
 
 
         // LOGF(info, "processChargedJetsMCD: weight = %.4f",jetweight);
