@@ -1171,9 +1171,16 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
     return;
   }
   for (const auto& mcdjet : mcdjets) {
+    if (!jetfindingutilities::isInEtaAcceptance(mcdjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+      continue;
+    }
     if (!isAcceptedJet<aod::JetTracks>(mcdjet)) {
       continue;
     }
+    float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
+      if (jet.pt() > pTHatMaxMCD * pTHat) {
+        return;
+      }
     bool hasHighPtConstituent = false;
     ///////////// leading track cut /////////////
     for (auto& jetConstituent : mcdjet.tracks_as<aod::JetTracks>()) {
