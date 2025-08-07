@@ -1167,7 +1167,7 @@ PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and m
 void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                       ChargedMCDMatchedJetsWeighted const& mcdjets,
                                       ChargedMCPMatchedJetsWeighted const&,
-                                      aod::JetTracks const&, aod::JetParticles const&)
+                                      aod::JetTracks const& tracks, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
