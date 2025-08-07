@@ -365,7 +365,7 @@ struct JetSubstructureTask {
       if (jetMCD.has_matchedJetGeo()) {
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
             //attention a mettre false,true et true,false quand il y aura EventWiseSub !!!! 
-            // auto thetagMCD = jetReclustering<false, false>(jetMCD, splittingTableMCD, weight);
+            auto thetagMCD = jetReclustering<false, false>(jetMCD, splittingTableMCD, weight);
             // LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
             auto thetagMCP = jetReclustering<true, false>(jetMCP, splittingTableMCP, weight);
             LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
