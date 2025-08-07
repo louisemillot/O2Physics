@@ -357,7 +357,10 @@ struct JetSubstructureTask {
                             //  TableMCD& splittingTableMCD,
                             //  TableMCP& splittingTableMCP,
                              float weight = 1.0)
-  {
+  { 
+    static int counter = 0;
+    ++counter;
+    LOGF(info, "fillMatchedHistograms called %d times", counter);
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCD.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
       return;
