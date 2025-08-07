@@ -350,10 +350,12 @@ struct JetSubstructureTask {
     return true;
   }
 
-  template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
+  // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
+  template <typename TBase, typename TTag >
+
   void fillMatchedHistograms(TBase const& jetMCD,
-                             TableMCD& splittingTableMCD,
-                             TableMCP& splittingTableMCP,
+                            //  TableMCD& splittingTableMCD,
+                            //  TableMCP& splittingTableMCP,
                              float weight = 1.0)
   {
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
@@ -365,9 +367,9 @@ struct JetSubstructureTask {
       if (jetMCD.has_matchedJetGeo()) {
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
             //attention a mettre false,true et true,false quand il y aura EventWiseSub !!!! 
-            auto thetagMCD = jetReclustering<false, false>(jetMCD, splittingTableMCD, weight);
+            auto thetagMCD = jetReclustering<false, false>(jetMCD, jetSplittingsMCDTable, weight);
             LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
-            auto thetagMCP = jetReclustering<true, false>(jetMCP, splittingTableMCP, weight);
+            auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
             LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
             // LOGF(info, "jetMCD: pt = %.3f, eta = %.3f, phi = %.3f", jetMCD.pt(), jetMCD.eta(), jetMCD.phi());
             // LOGF(info, "jetMCP: pt = %.3f, eta = %.3f, phi = %.3f", jetMCP.pt(), jetMCP.eta(), jetMCP.phi());
