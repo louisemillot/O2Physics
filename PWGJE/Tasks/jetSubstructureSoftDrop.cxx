@@ -1177,8 +1177,8 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
     if (!isAcceptedJet<aod::JetTracks>(mcdjet)) {
       continue;
     }
-    float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
-      if (jet.pt() > pTHatMaxMCD * pTHat) {
+    float pTHat = 10. / (std::pow(mcdjet.eventWeight(), 1.0 / pTHatExponent));
+      if (mcdjet.pt() > pTHatMaxMCD * pTHat) {
         return;
       }
     bool hasHighPtConstituent = false;
