@@ -57,8 +57,8 @@ struct JetSubstructureTask {
   using ChargedMCPMatchedJets = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedMCParticleLevelJetsMatchedToChargedMCDetectorLevelJets>;
   using ChargedMCDMatchedJetsWeighted = soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetsMatchedToChargedMCParticleLevelJets, aod::ChargedMCDetectorLevelJetEventWeights>;
   using ChargedMCPMatchedJetsWeighted = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedMCParticleLevelJetsMatchedToChargedMCDetectorLevelJets, aod::ChargedMCParticleLevelJetEventWeights>;
-  using ChargedJetSubstructureMCDMatchedJetsWeighted = soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetsMatchedToChargedMCParticleLevelJets, aod::ChargedMCDetectorLevelJetEventWeights,ChargedMCDetectorLevelSPsMatchedToChargedMCParticleLevelSPs,ChargedMCDetectorLevelPRsMatchedToChargedMCParticleLevelPRs,ChargedMCDetectorLevelSPs,ChargedMCDetectorLevelPRs>;
-  using ChargedJetSubstructureMCDPatchedJetsWeighted = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedMCParticleLevelJetsMatchedToChargedMCDetectorLevelJets, aod::ChargedMCParticleLevelJetEventWeights,ChargedMCParticleLevelSPsMatchedToChargedMCDetectorLevelSPs,ChargedMCParticleLevelPRsMatchedToChargedMCDetectorLevelPRs,ChargedMCParticleLevelSPs,ChargedMCParticleLevelPRs>;
+  // using ChargedJetSubstructureMCDMatchedJetsWeighted = soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetsMatchedToChargedMCParticleLevelJets, aod::ChargedMCDetectorLevelJetEventWeights,ChargedMCDetectorLevelSPsMatchedToChargedMCParticleLevelSPs,ChargedMCDetectorLevelPRsMatchedToChargedMCParticleLevelPRs,ChargedMCDetectorLevelSPs,ChargedMCDetectorLevelPRs>;
+  // using ChargedJetSubstructureMCDPatchedJetsWeighted = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedMCParticleLevelJetsMatchedToChargedMCDetectorLevelJets, aod::ChargedMCParticleLevelJetEventWeights,ChargedMCParticleLevelSPsMatchedToChargedMCDetectorLevelSPs,ChargedMCParticleLevelPRsMatchedToChargedMCDetectorLevelPRs,ChargedMCParticleLevelSPs,ChargedMCParticleLevelPRs>;
 
 
   Produces<aod::ChargedSPs> jetSplittingsDataTable;
@@ -1264,56 +1264,56 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeighted, "matched mcp and mcd jets with weighted events", false);
 
-void processJetsMCDMatchedMCPWeightedSubstructure(
-    soa::Filtered<aod::JetCollisions>::iterator const& collision,
-    ChargedJetSubstructureMCDMatchedJetsWeighted const& mcdjets,
-    ChargedJetSubstructureMCDPatchedJetsWeighted const&,
-    aod::JetTracks const& tracks, 
-    aod::JetParticles const&)
-{
-  if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
-    return;
-  }
+// void processJetsMCDMatchedMCPWeightedSubstructure(
+//     soa::Filtered<aod::JetCollisions>::iterator const& collision,
+//     ChargedJetSubstructureMCDMatchedJetsWeighted const& mcdjets,
+//     ChargedJetSubstructureMCDPatchedJetsWeighted const&,
+//     aod::JetTracks const& tracks, 
+//     aod::JetParticles const&)
+// {
+//   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+//     return;
+//   }
 
-  if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || 
-      trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
-    return;
-  }
+//   if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || 
+//       trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+//     return;
+//   }
 
-  for (const auto& mcdjet : mcdjets) {
-    if (!jetfindingutilities::isInEtaAcceptance(mcdjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
-      continue;
-    }
+//   for (const auto& mcdjet : mcdjets) {
+//     if (!jetfindingutilities::isInEtaAcceptance(mcdjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+//       continue;
+//     }
 
-    if (!isAcceptedJet<aod::JetTracks>(mcdjet)) {
-      continue;
-    }
+//     if (!isAcceptedJet<aod::JetTracks>(mcdjet)) {
+//       continue;
+//     }
 
-    float jetweight = mcdjet.eventWeight();
-    float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
-    if (mcdjet.pt() > pTHatMaxMCD * pTHat) {
-      return;
-    }
+//     float jetweight = mcdjet.eventWeight();
+//     float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
+//     if (mcdjet.pt() > pTHatMaxMCD * pTHat) {
+//       return;
+//     }
 
-    bool hasHighPtConstituent = false;
-    for (auto& jetConstituent : mcdjet.tracks_as<aod::JetTracks>()) {
-      if (jetConstituent.pt() >= ptLeadingTrackCut) {
-        hasHighPtConstituent = true;
-        break;
-      }
-    }
+//     bool hasHighPtConstituent = false;
+//     for (auto& jetConstituent : mcdjet.tracks_as<aod::JetTracks>()) {
+//       if (jetConstituent.pt() >= ptLeadingTrackCut) {
+//         hasHighPtConstituent = true;
+//         break;
+//       }
+//     }
 
-    if (hasHighPtConstituent) {
-      analyseCharged<false>(mcdjet, tracks, jetSplittingsMCDTable, jetweight);
-      auto thetagMCD = jetReclustering<false, false>(mcdjet, jetSplittingsMCDTable, jetweight);
-      LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
+//     if (hasHighPtConstituent) {
+//       analyseCharged<false>(mcdjet, tracks, jetSplittingsMCDTable, jetweight);
+//       auto thetagMCD = jetReclustering<false, false>(mcdjet, jetSplittingsMCDTable, jetweight);
+//       LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
 
-      // Appel à la fonction de remplissage spécifique sous-structure
-      fillMatchedSubstructureHistograms<ChargedJetSubstructureMCDMatchedJetsWeighted::iterator, ChargedJetSubstructureMCDPatchedJetsWeighted>(mcdjet, thetagMCD, jetweight);
-    }
-  }
-}
-PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeightedSubstructure, "matched mcp and mcd jets with weighted events (substructure)", false);
+//       // Appel à la fonction de remplissage spécifique sous-structure
+//       fillMatchedSubstructureHistograms<ChargedJetSubstructureMCDMatchedJetsWeighted::iterator, ChargedJetSubstructureMCDPatchedJetsWeighted>(mcdjet, thetagMCD, jetweight);
+//     }
+//   }
+// }
+// PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeightedSubstructure, "matched mcp and mcd jets with weighted events (substructure)", false);
 
 };
 
