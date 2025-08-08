@@ -295,6 +295,18 @@ struct JetSubstructureTask {
       }
     }
 
+    registry.add("h2_substructure_pt_mcd_substructure_pt_mcp_matchedgeo", 
+      "pT substructure MCD vs pT MCP;#it{p}_{T,substructure}^{mcd} (GeV/#it{c});#it{p}_{T,substructure}^{mcp} (GeV/#it{c})", 
+      {HistType::kTH2F, {jetPtAxisMCD, jetPtAxisMCP}});
+
+    registry.add("h2_substructure_eta_mcd_substructure_eta_mcp_matchedgeo", 
+      "Eta substructure MCD vs Eta MCP;#eta_{substructure}^{mcd};#eta_{substructure}^{mcp}", 
+      {HistType::kTH2F, {jetEtaAxis, jetEtaAxis}});
+
+    registry.add("h2_substructure_phi_mcd_substructure_phi_mcp_matchedgeo", 
+      "Phi substructure MCD vs Phi MCP;#varphi_{substructure}^{mcd};#varphi_{substructure}^{mcp}", 
+      {HistType::kTH2F, {phiAxis, phiAxis}});
+
 
     jetReclusterer.isReclustering = true;
     jetReclusterer.algorithm = fastjet::JetAlgorithm::cambridge_algorithm;
