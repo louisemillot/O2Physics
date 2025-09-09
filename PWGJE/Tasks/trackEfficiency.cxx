@@ -148,15 +148,15 @@ struct TrackEfficiency {
         continue;
       }
 
-      registry.fill(HIST("h2_centrality_track_pt"), collision.centFT0M(), track.pt(), weight);
-      registry.fill(HIST("h2_centrality_track_eta"), collision.centFT0M(), track.eta(), weight);
-      registry.fill(HIST("h2_centrality_track_phi"), collision.centFT0M(), track.phi(), weight);
-      registry.fill(HIST("h2_centrality_track_energy"), collision.centFT0M(), track.energy(), weight);
+      registry.fill(HIST("h2_centrality_track_pt"), collision.centFT0C(), track.pt(), weight);
+      registry.fill(HIST("h2_centrality_track_eta"), collision.centFT0C(), track.eta(), weight);
+      registry.fill(HIST("h2_centrality_track_phi"), collision.centFT0C(), track.phi(), weight);
+      registry.fill(HIST("h2_centrality_track_energy"), collision.centFT0C(), track.energy(), weight);
       registry.fill(HIST("h2_track_pt_track_sigma1overpt"), track.pt(), track.sigma1Pt(), weight);
       registry.fill(HIST("h2_track_pt_track_sigmapt"), track.pt(), track.sigma1Pt() * track.pt(), weight);
       registry.fill(HIST("h2_track_pt_high_track_sigma1overpt"), track.pt(), track.sigma1Pt(), weight);
       registry.fill(HIST("h2_track_pt_high_track_sigmapt"), track.pt(), track.sigma1Pt() * track.pt(), weight);
-      registry.fill(HIST("h3_intrate_centrality_track_pt"), collision.hadronicRate(), collision.centFT0M(), track.pt(), weight);
+      registry.fill(HIST("h3_intrate_centrality_track_pt"), collision.hadronicRate(), collision.centFT0C(), track.pt(), weight);
     }
   }
 
@@ -374,7 +374,7 @@ struct TrackEfficiency {
   // filters for processTracks QA functions only:
   Filter trackCuts = (aod::jtrack::pt >= trackQAPtMin && aod::jtrack::pt < trackQAPtMax && aod::jtrack::eta > trackQAEtaMin && aod::jtrack::eta < trackQAEtaMax);
   Filter particleCuts = (aod::jmcparticle::pt >= trackQAPtMin && aod::jmcparticle::pt < trackQAPtMax && aod::jmcparticle::eta > trackQAEtaMin && aod::jmcparticle::eta < trackQAEtaMax);
-  Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centFT0M >= centralityMin && aod::jcollision::centFT0M < centralityMax);
+  Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centFT0C >= centralityMin && aod::jcollision::centFT0C < centralityMax);
 
   void processEFficiencyPurity(soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs>::iterator const& mcCollision,
                                soa::Join<aod::McCollisions, aod::HepMCXSections> const&,
@@ -913,17 +913,17 @@ struct TrackEfficiency {
   void processCollisionsFromData(soa::Filtered<aod::JetCollisions>::iterator const& collision)
   {
     registry.fill(HIST("h_collisions"), 0.5);
-    registry.fill(HIST("h2_centrality_collisions"), collision.centFT0M(), 0.5);
+    registry.fill(HIST("h2_centrality_collisions"), collision.centFT0C(), 0.5);
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
     registry.fill(HIST("h_collisions"), 1.5);
-    registry.fill(HIST("h2_centrality_collisions"), collision.centFT0M(), 1.5);
+    registry.fill(HIST("h2_centrality_collisions"), collision.centFT0C(), 1.5);
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
     registry.fill(HIST("h_collisions"), 2.5);
-    registry.fill(HIST("h2_centrality_collisions"), collision.centFT0M(), 2.5);
+    registry.fill(HIST("h2_centrality_collisions"), collision.centFT0C(), 2.5);
   }
   PROCESS_SWITCH(TrackEfficiency, processCollisionsFromData, "QA for reconstructed collisions in data", false);
 
