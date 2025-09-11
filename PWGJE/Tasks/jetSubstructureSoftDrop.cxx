@@ -377,7 +377,7 @@ struct JetSubstructureTask {
     static int counter = 0;
     int countMCP = 0;
     ++counter;
-    LOGF(info, "thetagMCD_fillhisto = %.4f", thetagMCD.value());
+    // LOGF(info, "thetagMCD_fillhisto = %.4f", thetagMCD.value());
     // LOGF(info, "fillMatchedHistograms called %d times", counter);
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCD.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
@@ -388,7 +388,7 @@ struct JetSubstructureTask {
       if (jetMCD.has_matchedJetGeo()) {
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
           auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
-          LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
+          // LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
 
           countMCP++;
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
@@ -1257,7 +1257,7 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
     if (hasHighPtConstituent) {
       analyseCharged<false>(mcdjet, tracks, jetSplittingsMCDTable, jetweight);
       auto thetagMCD = jetReclustering<false, false>(mcdjet, jetSplittingsMCDTable, jetweight);
-      LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
+      // LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
       //if (doprocessChargedJetsMCD || doprocessChargedJetsMCDWeighted){ //doprocessChargedJetsEventWiseSubMCD
       // fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,jetSplittingsMCDTable, jetSplittingsMCPTable, mcdjet.eventWeight());
       fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet, thetagMCD, jetweight);
