@@ -607,6 +607,10 @@ struct JetSubstructureTask {
       registry.fill(HIST("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted"), jet.pt(), nsd, weight);
     }
     return -1.f;
+    for (const auto& theta : thetaVec) {
+      LOGF(info, "Theta: %.4f", theta);
+    }
+  
 
   }
 
