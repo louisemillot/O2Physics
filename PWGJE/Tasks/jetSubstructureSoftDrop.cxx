@@ -320,7 +320,7 @@ struct JetSubstructureTask {
   }
 
   // Filter trackCuts = (aod::jtrack::pt >= trackPtMin && aod::jtrack::pt < trackPtMax && aod::jtrack::eta > trackEtaMin && aod::jtrack::eta < trackEtaMax);
-  Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centFT0M >= centralityMin && aod::jcollision::centFT0M < centralityMax);
+  Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centFT0C >= centralityMin && aod::jcollision::centFT0C < centralityMax);
   Filter mcCollisionFilter = nabs(aod::jmccollision::posZ)< vertexZCut;
 
   Preslice<aod::JetTracks> TracksPerCollision = aod::jtrack::collisionId;
@@ -607,7 +607,7 @@ struct JetSubstructureTask {
       registry.fill(HIST("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted"), jet.pt(), nsd, weight);
     }
     return -1.f;
-    for (const auto& theta : thetaVec) {
+    for (const auto& theta : thetaVec) { // boucle a changer pour acceder a l'element quand tu veux ptleading aussi 
       LOGF(info, "Theta: %.4f", theta);
     }
   
@@ -643,7 +643,7 @@ struct JetSubstructureTask {
       return;
     }
     registry.fill(HIST("h_collisions"), 2.5);
-    registry.fill(HIST("h2_centrality_occupancy"), collision.centFT0M(), collision.trackOccupancyInTimeRange());
+    registry.fill(HIST("h2_centrality_occupancy"), collision.centFT0C(), collision.trackOccupancyInTimeRange());
     registry.fill(HIST("h_collisions_Zvertex"), collision.posZ());
   }
   PROCESS_SWITCH(JetSubstructureTask, processCollisions, "collisions Data and MCD", true);
@@ -667,7 +667,7 @@ struct JetSubstructureTask {
   }
   registry.fill(HIST("h_collisions"), 2.5);
   registry.fill(HIST("h_collisions_weighted"), 2.5, eventWeight);
-  registry.fill(HIST("h2_centrality_occupancy"), collision.centFT0M(), collision.trackOccupancyInTimeRange());
+  registry.fill(HIST("h2_centrality_occupancy"), collision.centFT0C(), collision.trackOccupancyInTimeRange());
   registry.fill(HIST("h_collisions_Zvertex"), collision.posZ(), eventWeight);
   }
   PROCESS_SWITCH(JetSubstructureTask, processCollisionsWeighted, "weighted collsions for Data and MCD", false);
@@ -695,7 +695,7 @@ struct JetSubstructureTask {
     if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       hasSel8Coll = true;
     }
-    if ((centralityMin < collision.centFT0M()) && (collision.centFT0M() < centralityMax)) {
+    if ((centralityMin < collision.centFT0C()) && (collision.centFT0C() < centralityMax)) {
       centralityIsGood = true;
     }
     if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
@@ -746,7 +746,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
         hasSel8Coll = true;
       }
-      if ((centralityMin < collision.centFT0M()) && (collision.centFT0M() < centralityMax)) {
+      if ((centralityMin < collision.centFT0C()) && (collision.centFT0C() < centralityMax)) {
         centralityIsGood = true;
       }
       if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
@@ -1066,7 +1066,7 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "
       if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
         hasSel8Coll = true;
       }
-      if ((centralityMin < collision.centFT0M()) && (collision.centFT0M() < centralityMax)) {
+      if ((centralityMin < collision.centFT0C()) && (collision.centFT0C() < centralityMax)) {
         centralityIsGood = true;
       }
       if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
@@ -1134,7 +1134,7 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "
     if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       hasSel8Coll = true;
     }
-    if ((centralityMin < collision.centFT0M()) && (collision.centFT0M() < centralityMax)) {
+    if ((centralityMin < collision.centFT0C()) && (collision.centFT0C() < centralityMax)) {
       centralityIsGood = true;
     }
     if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
