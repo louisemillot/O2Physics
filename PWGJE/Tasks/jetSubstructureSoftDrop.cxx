@@ -118,7 +118,7 @@ struct JetSubstructureTask {
   std::vector<float> ptSubLeadingVec;
   std::vector<float> thetagMCDVec;
   std::vector<float> thetagMCPVec;
-
+  std::vector<float> thetaVec;
   std::vector<float> nSub;
   
   HistogramRegistry registry;
@@ -619,9 +619,9 @@ struct JetSubstructureTask {
       registry.fill(HIST("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted"), jet.pt(), nsd, weight);
     }
 
-    for (const auto& theta : thetaVec) { // boucle a changer pour acceder a l'element quand tu veux ptleading aussi 
-      // LOGF(info, "Theta: %.4f", theta);
-    }
+    // for (const auto& theta : thetaVec) { // boucle a changer pour acceder a l'element quand tu veux ptleading aussi 
+    //   LOGF(info, "Theta: %.4f", theta);
+    // }
     return -1.f;
     
   
