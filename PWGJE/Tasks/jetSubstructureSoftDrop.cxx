@@ -578,7 +578,7 @@ struct JetSubstructureTask {
             registry.fill(HIST("h_jet_thetag"), thetag, weight);
             registry.fill(HIST("h_jet_zg"), zg, weight);
             thetagMCDVec.push_back(thetag);
-            LOGF(info, "thetagMCD: %.4f", thetag);
+            LOGF(info, "thetagMCD: %.4f", thetag, jet.pt() );
 
           }
           if constexpr (!isSubtracted && isMCP) { //MCP only no sub
@@ -588,7 +588,7 @@ struct JetSubstructureTask {
             registry.fill(HIST("h_jet_thetag_MCP"), thetag, weight);
             registry.fill(HIST("h_jet_zg_MCP"), zg, weight);
             thetagMCPVec.push_back(thetag);
-            LOGF(info, "thetagMCP: %.4f", thetag);
+            LOGF(info, "thetagMCP: %.4f", thetag, jet.pt());
 
           }
           if constexpr (isSubtracted && !isMCP) { //data & MCD sub
