@@ -117,6 +117,8 @@ struct JetSubstructureTask {
   std::vector<float> ptLeadingVec;
   std::vector<float> ptSubLeadingVec;
   std::vector<float> thetaVec;
+  std::vector<float> thetaGVec;
+
   std::vector<float> nSub;
   
   HistogramRegistry registry;
@@ -527,6 +529,7 @@ struct JetSubstructureTask {
     ptSubLeadingVec.clear();
     thetaVec.clear();
     jetReclustered.clear();
+
     fastjet::ClusterSequenceArea clusterSeq(jetReclusterer.findJets(jetConstituents, jetReclustered)); // jetConstituents is a vector of fastjet::PseudoJet containing (tracks/constituents)
     jetReclustered = sorted_by_pt(jetReclustered); //sort jets by pt decreasing order 
     fastjet::PseudoJet daughterSubJet = jetReclustered[0]; //order 0 of reclustering 
@@ -611,6 +614,7 @@ struct JetSubstructureTask {
     for (const auto& theta : thetaVec) { // boucle a changer pour acceder a l'element quand tu veux ptleading aussi 
       LOGF(info, "Theta: %.4f", theta);
     }
+    thetaGVec.push_back(thetag);
     return -1.f;
     
   
