@@ -116,7 +116,8 @@ struct JetSubstructureTask {
   std::vector<float> energyMotherVec;
   std::vector<float> ptLeadingVec;
   std::vector<float> ptSubLeadingVec;
-  std::vector<float> thetaVec;
+  std::vector<float> thetagMCDVec;
+  std::vector<float> thetagMCPVec;
   std::vector<float> thetaGVec;
 
   std::vector<float> nSub;
@@ -497,7 +498,7 @@ struct JetSubstructureTask {
                   // Exemple de cut similaire
                   if (ptSubMCP > pTHatMaxMCP) continue;
   
-                  // Remplissage histogrammes (à adapter selon tes besoins)
+                  // Remplissage histogrammes (à adapter selon les besoins)
                   registry.fill(HIST("h2_substructure_pt_mcd_substructure_pt_mcp_matchedgeo"), jetMCD.pt(), ptSubMCP, weight);
                   registry.fill(HIST("h2_substructure_eta_mcd_substructure_eta_mcp_matchedgeo"), jetMCD.eta(), etaSubMCP, weight);
                   registry.fill(HIST("h2_substructure_phi_mcd_substructure_phi_mcp_matchedgeo"), jetMCD.phi(), phiSubMCP, weight);
@@ -577,6 +578,9 @@ struct JetSubstructureTask {
             registry.fill(HIST("h2_jet_pt_jet_thetag"), jet.pt(), thetag, weight);
             registry.fill(HIST("h_jet_thetag"), thetag, weight);
             registry.fill(HIST("h_jet_zg"), zg, weight);
+            thetagMCDVec.push_back(thetag);
+            LOGF(info, "thetagMCD: %.4f", thetag);
+
           }
           if constexpr (!isSubtracted && isMCP) { //MCP only no sub
             registry.fill(HIST("h2_jet_pt_part_jet_zg_part"), jet.pt(), zg, weight);
@@ -584,8 +588,11 @@ struct JetSubstructureTask {
             registry.fill(HIST("h2_jet_pt_part_jet_thetag_part"), jet.pt(), thetag, weight);
             registry.fill(HIST("h_jet_thetag_MCP"), thetag, weight);
             registry.fill(HIST("h_jet_zg_MCP"), zg, weight);
+            thetagMCPVec.push_back(thetag);
+            LOGF(info, "thetagMCP: %.4f", thetag);
+
           }
-          if constexpr (isSubtracted && !isMCP) { //data & MDD sub
+          if constexpr (isSubtracted && !isMCP) { //data & MCD sub
             // LOGF(info, " Entering if statement for histograms :" );
             registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"),jet.pt(), zg, weight);
             registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"),jet.pt(), rg, weight);
@@ -594,8 +601,7 @@ struct JetSubstructureTask {
             registry.fill(HIST("h_jet_zg_eventwiseconstituentsubtracted"), zg, weight);
           }
           softDropped = true;//mark the splitting as true to avoid filling it again
-          thetaGVec.push_back(thetag);
-          LOGF(info, "Thetag: %.4f", thetag);
+          
           return thetag;
           
         }
