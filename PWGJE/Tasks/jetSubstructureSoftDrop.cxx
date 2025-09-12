@@ -369,7 +369,6 @@ struct JetSubstructureTask {
 
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
   template <typename TBase, typename TTag >
-
   void fillMatchedHistograms(TBase const& jetMCD,
                             //  TableMCD& splittingTableMCD,
                             //  TableMCP& splittingTableMCP,
@@ -377,11 +376,6 @@ struct JetSubstructureTask {
                             const std::vector<std::pair<float, float>>& thetagMCPVec,
                             float weight = 1.0)
   { 
-    static int counter = 0;
-    int countMCP = 0;
-    ++counter;
-    // LOGF(info, "thetagMCD_fillhisto = %.4f", thetagMCD.value());
-    // LOGF(info, "fillMatchedHistograms called %d times", counter);
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCD.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
       return;
@@ -390,10 +384,6 @@ struct JetSubstructureTask {
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
-          // auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
-          // LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
-
-          countMCP++;
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
