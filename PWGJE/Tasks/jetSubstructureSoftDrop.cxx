@@ -389,6 +389,27 @@ struct JetSubstructureTask {
           }
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             double dpt = jetMCP.pt() - jetMCD.pt();
+
+            /////
+            for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
+              // Vérifier si le pt correspond à jetMCD.pt()
+              if (std::abs(ptMCD - jetMCD.pt()) < 1e-3) { // tolérance pour float
+                  // Boucle sur les splittings MCP
+                  for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
+                      // Vérifier si le pt correspond à jetMCP.pt()
+                      if (std::abs(ptMCP - jetMCP.pt()) < 1e-3) { // tolérance pour float
+                          // Ici on a un matching complet MCD-MCP pour le splitting
+                          std::cout << "thetagMCD = " << thetagMCD 
+                                    << ", ptMCD = " << ptMCD
+                                    << ", thetagMCP = " << thetagMCP 
+                                    << ", ptMCP = " << ptMCP 
+                                    << std::endl;
+                      }
+                  }
+              }
+            }
+            /////
+            
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
@@ -402,6 +423,7 @@ struct JetSubstructureTask {
               registry.fill(HIST("h2_jet_pt_mcp_jet_pt_ratio_matchedgeo"), jetMCP.pt(), jetMCD.pt() / jetMCP.pt(), weight);
             }
             registry.fill(HIST("h2_jet_eta_mcd_jet_eta_mcp_matchedgeo"), jetMCD.eta(), jetMCP.eta(), weight);
+
           }
         }
       }
