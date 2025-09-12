@@ -273,6 +273,7 @@ struct JetSubstructureTask {
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_mcdetaconstraint","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_mcpetaconstraint","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
+        registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
 
 
       }
@@ -392,15 +393,16 @@ struct JetSubstructureTask {
 
             /////
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
-              // Vérifier si le pt correspond à jetMCD.pt()
               if (std::abs(ptMCD - jetMCD.pt()) < 1e-3) { // tolérance pour float
-                  // Boucle sur les splittings MCP
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
-                      // Vérifier si le pt correspond à jetMCP.pt()
                       if (std::abs(ptMCP - jetMCP.pt()) < 1e-3) { // tolérance pour float
-                          // Ici on a un matching complet MCD-MCP pour le splitting
-                          LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f",
-                            thetagMCD, ptMCD, thetagMCP, ptMCP);
+                        if (ptMCP >= 60.0 && ptMCP <= 80.0) {
+                          // Remplir histogramme 2D : thetagMCD vs thetagMCP
+                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt60_80"),
+                                        thetagMCD, thetagMCP, weight);
+                        }
+                        // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f",
+                        // thetagMCD, ptMCD, thetagMCP, ptMCP);
                       }
                   }
               }
