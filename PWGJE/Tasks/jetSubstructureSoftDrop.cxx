@@ -273,7 +273,7 @@ struct JetSubstructureTask {
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_mcdetaconstraint","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_mcpetaconstraint","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
-        registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
+        registry.add("h2_thetagMCD_vs_thetagMCP_pt60_80","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
 
 
       }
