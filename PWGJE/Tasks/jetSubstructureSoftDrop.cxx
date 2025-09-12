@@ -118,7 +118,6 @@ struct JetSubstructureTask {
   std::vector<float> ptSubLeadingVec;
   std::vector<float> thetagMCDVec;
   std::vector<float> thetagMCPVec;
-  std::vector<float> thetaGVec;
 
   std::vector<float> nSub;
   
