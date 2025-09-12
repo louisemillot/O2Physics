@@ -390,7 +390,7 @@ struct JetSubstructureTask {
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
-          auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
+          // auto thetagMCP = jetReclustering<true, false>(jetMCP, jetSplittingsMCPTable, weight);
           // LOGF(info, "thetagMCP = %.4f", thetagMCP.value());
 
           countMCP++;
