@@ -579,7 +579,7 @@ struct JetSubstructureTask {
             registry.fill(HIST("h2_jet_pt_jet_thetag"), jet.pt(), thetag, weight);
             registry.fill(HIST("h_jet_thetag"), thetag, weight);
             registry.fill(HIST("h_jet_zg"), zg, weight);
-            thetagMCDVec.push_back(thetag, jet.pt());
+            thetagMCDVec.push_back({thetag, jet.pt()});
             LOGF(info, "thetagMCD: %.4f et ptMCD: %.4f", thetag, jet.pt() );
 
           }
@@ -589,7 +589,7 @@ struct JetSubstructureTask {
             registry.fill(HIST("h2_jet_pt_part_jet_thetag_part"), jet.pt(), thetag, weight);
             registry.fill(HIST("h_jet_thetag_MCP"), thetag, weight);
             registry.fill(HIST("h_jet_zg_MCP"), zg, weight);
-            thetagMCPVec.push_back(thetag, jet.pt());
+            thetagMCPVec.push_back({thetag, jet.pt()});
             LOGF(info, "thetagMCP: %.4f et ptMCP: %.4f", thetag, jet.pt());
 
           }
