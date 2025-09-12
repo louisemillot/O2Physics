@@ -595,6 +595,7 @@ struct JetSubstructureTask {
           }
           softDropped = true;//mark the splitting as true to avoid filling it again
           return thetag;
+          thetaGVec.push_back(thetag);
         }
         nsd++;//step up the number of iterations
       }
@@ -614,7 +615,6 @@ struct JetSubstructureTask {
     for (const auto& theta : thetaVec) { // boucle a changer pour acceder a l'element quand tu veux ptleading aussi 
       LOGF(info, "Theta: %.4f", theta);
     }
-    thetaGVec.push_back(thetag);
     return -1.f;
     
   
