@@ -116,8 +116,8 @@ struct JetSubstructureTask {
   std::vector<float> energyMotherVec;
   std::vector<float> ptLeadingVec;
   std::vector<float> ptSubLeadingVec;
-  std::vector<float> thetagMCDVec;
-  std::vector<float> thetagMCPVec;
+  std::vector<std::pair<float,float>> thetagMCDVec;
+  std::vector<std::pair<float,float>> thetagMCPVec;
   std::vector<float> thetaVec;
   std::vector<float> nSub;
   
@@ -521,7 +521,8 @@ struct JetSubstructureTask {
   
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
-  std::optional<float> jetReclustering(T const& jet, U& splittingTable, double weight)
+  std::tuple<std::vector<std::pair<float, float>>, std::vector<std::pair<float, float>>>
+  jetReclustering(T const& jet, U& splittingTable, double weight)
   {
     // LOGF(info, " Entering jetReclustering " );
     energyMotherVec.clear(); //to be sure its empty before filling
@@ -577,7 +578,7 @@ struct JetSubstructureTask {
             registry.fill(HIST("h2_jet_pt_jet_thetag"), jet.pt(), thetag, weight);
             registry.fill(HIST("h_jet_thetag"), thetag, weight);
             registry.fill(HIST("h_jet_zg"), zg, weight);
-            thetagMCDVec.push_back(thetag);
+            thetagMCDVec.push_back(thetag, jet.pt());
             LOGF(info, "thetagMCD: %.4f et ptMCD: %.4f", thetag, jet.pt() );
 
           }
@@ -587,7 +588,7 @@ struct JetSubstructureTask {
             registry.fill(HIST("h2_jet_pt_part_jet_thetag_part"), jet.pt(), thetag, weight);
             registry.fill(HIST("h_jet_thetag_MCP"), thetag, weight);
             registry.fill(HIST("h_jet_zg_MCP"), zg, weight);
-            thetagMCPVec.push_back(thetag);
+            thetagMCPVec.push_back(thetag, jet.pt());
             LOGF(info, "thetagMCP: %.4f et ptMCP: %.4f", thetag, jet.pt());
 
           }
@@ -601,7 +602,7 @@ struct JetSubstructureTask {
           }
           softDropped = true;//mark the splitting as true to avoid filling it again
           
-          return thetag;
+          return {thetagMCDVec, thetagMCPVec};
           
         }
         nsd++;//step up the number of iterations
