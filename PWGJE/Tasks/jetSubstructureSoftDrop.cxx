@@ -601,9 +601,6 @@ struct JetSubstructureTask {
             registry.fill(HIST("h_jet_zg_eventwiseconstituentsubtracted"), zg, weight);
           }
           softDropped = true;//mark the splitting as true to avoid filling it again
-          
-          return {thetagMCDVec, thetagMCPVec};
-          
         }
         nsd++;//step up the number of iterations
       }
@@ -623,7 +620,7 @@ struct JetSubstructureTask {
     // for (const auto& theta : thetaVec) { // boucle a changer pour acceder a l'element quand tu veux ptleading aussi 
     //   LOGF(info, "Theta: %.4f", theta);
     // }
-    return -1.f;
+    return {thetagMCDVec, thetagMCPVec};
     
   
 
