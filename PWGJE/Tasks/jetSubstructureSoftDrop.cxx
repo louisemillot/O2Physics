@@ -399,17 +399,14 @@ struct JetSubstructureTask {
                       // Vérifier si le pt correspond à jetMCP.pt()
                       if (std::abs(ptMCP - jetMCP.pt()) < 1e-3) { // tolérance pour float
                           // Ici on a un matching complet MCD-MCP pour le splitting
-                          std::cout << "thetagMCD = " << thetagMCD 
-                                    << ", ptMCD = " << ptMCD
-                                    << ", thetagMCP = " << thetagMCP 
-                                    << ", ptMCP = " << ptMCP 
-                                    << std::endl;
+                          LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f",
+                            thetagMCD, ptMCD, thetagMCP, ptMCP);
                       }
                   }
               }
             }
             /////
-            
+
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
