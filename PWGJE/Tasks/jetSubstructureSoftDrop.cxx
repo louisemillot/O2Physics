@@ -636,7 +636,7 @@ struct JetSubstructureTask {
     //   LOGF(info, "Theta: %.4f", theta);
     // }
     for (const auto& [thetag, ptJet] : thetagMCDVec) {
-      LOGF(info, "thetagMCD = %.4f, ptJet = %.4f", thetag, ptJet);
+      LOGF(info, "thetagMCD = %.4f, ptJet = %.4f ", thetag, ptJet, jet.globalIndex());
     }
     return {thetagMCDVec, thetagMCPVec};
     
