@@ -394,7 +394,7 @@ struct JetSubstructureTask {
             /////
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
               if (std::abs(ptMCD - jetMCD.pt()) < 1e-3) { 
-                  LOGF(info, "thetagMCD = %.4f", thetagMCD);
+                  LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                       if (std::abs(ptMCP - jetMCP.pt()) < 1e-3) { 
                         if (ptMCP >= 60.0 && ptMCP <= 80.0) {
