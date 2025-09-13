@@ -377,7 +377,7 @@ struct JetSubstructureTask {
                             const std::vector<std::pair<float, float>>& thetagMCPVec,
                             float weight = 1.0)
   { 
-    LOGF(info, "==== Jet numéro %d ====", jet.globalIndex());
+    LOGF(info, "==== Jet numéro %d ====", jetMCD.globalIndex());
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCD.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
       return;
