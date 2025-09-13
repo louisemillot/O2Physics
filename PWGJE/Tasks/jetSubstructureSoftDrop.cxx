@@ -377,10 +377,12 @@ struct JetSubstructureTask {
                             const std::vector<std::pair<float, float>>& thetagMCPVec,
                             float weight = 1.0)
   { 
+    LOGF(info, "==== Jet numéro %d ====", jet.globalIndex());
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCD.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
       return;
     }
+    int count = 0; 
     // fill geometry matched histograms
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
@@ -390,7 +392,7 @@ struct JetSubstructureTask {
           }
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             double dpt = jetMCP.pt() - jetMCD.pt();
-
+            count++;
             /////
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
               if (std::abs(ptMCD - jetMCD.pt()) < 1e-3) { 
@@ -425,6 +427,7 @@ struct JetSubstructureTask {
 
           }
         }
+        std::cout << "nombre de MCP matchés : " << count << std::endl;
       }
     }
     // LOGF(info, "Nombre de MCP matchés à ce MCD : %d", countMCP);
@@ -552,7 +555,7 @@ struct JetSubstructureTask {
     auto nsd = 0.0;
     auto zg = -1.0;
     auto rg = -1.0;
-    LOGF(info, "==== Jet numéro %d ====", jet.globalIndex());
+    // LOGF(info, "==== Jet numéro %d ====", jet.globalIndex());
 
     while (daughterSubJet.has_parents(parentSubJet1, parentSubJet2)) {//while daughter has parents, until we reach the end of reclustering
       if (parentSubJet1.perp() < parentSubJet2.perp()) {
