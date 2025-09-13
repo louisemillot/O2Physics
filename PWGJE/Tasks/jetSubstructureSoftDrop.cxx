@@ -604,6 +604,7 @@ struct JetSubstructureTask {
             registry.fill(HIST("h_jet_thetag_MCP"), thetag, weight);
             registry.fill(HIST("h_jet_zg_MCP"), zg, weight);
             thetagMCPVec.push_back({thetag, jet.pt()});
+            LOGF(info, "thetagMCD = %.4f, ptJet = %.4f , Jet numéro %d ", thetag, jet.pt(), jet.globalIndex());
             // LOGF(info, "thetagMCP: %.4f et ptMCP: %.4f", thetag, jet.pt());
 
           }
@@ -635,9 +636,9 @@ struct JetSubstructureTask {
     // for (const auto& theta : thetaVec) { // boucle a changer pour acceder a l'element quand tu veux ptleading aussi 
     //   LOGF(info, "Theta: %.4f", theta);
     // }
-    for (const auto& [thetag, ptJet] : thetagMCDVec) {
-      LOGF(info, "thetagMCD = %.4f, ptJet = %.4f , Jet numéro %d ", thetag, ptJet, jet.globalIndex());
-    }
+    // for (const auto& [thetag, ptJet] : thetagMCDVec) {
+    //   LOGF(info, "thetagMCD = %.4f, ptJet = %.4f , Jet numéro %d ", thetag, ptJet, jet.globalIndex());
+    // }
     return {thetagMCDVec, thetagMCPVec};
     
   
