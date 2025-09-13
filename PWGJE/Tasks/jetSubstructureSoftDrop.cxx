@@ -635,6 +635,9 @@ struct JetSubstructureTask {
     // for (const auto& theta : thetaVec) { // boucle a changer pour acceder a l'element quand tu veux ptleading aussi 
     //   LOGF(info, "Theta: %.4f", theta);
     // }
+    for (const auto& [thetag, ptJet] : thetagMCDVec) {
+      LOGF(info, "thetagMCD = %.4f, ptJet = %.4f", thetag, ptJet);
+    }
     return {thetagMCDVec, thetagMCPVec};
     
   
