@@ -377,7 +377,7 @@ struct JetSubstructureTask {
                             const std::vector<std::pair<float, float>>& thetagMCPVec,
                             float weight = 1.0)
   { 
-    LOGF(info, "==== Jet numéro %d ====", jetMCD.globalIndex());
+    // LOGF(info, "==== Jet numéro %d ====", jetMCD.globalIndex());
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCD.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
       return;
@@ -494,45 +494,45 @@ struct JetSubstructureTask {
 
 
 
-  template <typename TBase, typename TTag>
-  void fillMatchedSubstructureHistograms(TBase const& jetMCD, std::optional<float> thetagMCD, float weight = 1.0)
-  {
-      // On vérifie que le jet possède des sous-structures
-      if (!jetMCD.has_substructure()) return;
+  // template <typename TBase, typename TTag>
+  // void fillMatchedSubstructureHistograms(TBase const& jetMCD, std::optional<float> thetagMCD, float weight = 1.0)
+  // {
+  //     // On vérifie que le jet possède des sous-structures
+  //     if (!jetMCD.has_substructure()) return;
   
-      // Parcours des sous-structures appariées géométriquement (si ça existe)
-      if (checkGeoMatched) {
-          if (jetMCD.has_matchedSubstructureGeo()) {
-              for (const auto& subMCP : jetMCD.template matchedSubstructureGeo_as<std::decay_t<TTag>>()) {
-                  // Accès aux propriétés de la sous-structure
-                  float ptSubMCP = subMCP.pt();
-                  float etaSubMCP = subMCP.eta();
-                  float phiSubMCP = subMCP.phi();
+  //     // Parcours des sous-structures appariées géométriquement (si ça existe)
+  //     if (checkGeoMatched) {
+  //         if (jetMCD.has_matchedSubstructureGeo()) {
+  //             for (const auto& subMCP : jetMCD.template matchedSubstructureGeo_as<std::decay_t<TTag>>()) {
+  //                 // Accès aux propriétés de la sous-structure
+  //                 float ptSubMCP = subMCP.pt();
+  //                 float etaSubMCP = subMCP.eta();
+  //                 float phiSubMCP = subMCP.phi();
   
-                  // Exemple de cut similaire
-                  if (ptSubMCP > pTHatMaxMCP) continue;
+  //                 // Exemple de cut similaire
+  //                 if (ptSubMCP > pTHatMaxMCP) continue;
   
-                  // Remplissage histogrammes (à adapter selon les besoins)
-                  registry.fill(HIST("h2_substructure_pt_mcd_substructure_pt_mcp_matchedgeo"), jetMCD.pt(), ptSubMCP, weight);
-                  registry.fill(HIST("h2_substructure_eta_mcd_substructure_eta_mcp_matchedgeo"), jetMCD.eta(), etaSubMCP, weight);
-                  registry.fill(HIST("h2_substructure_phi_mcd_substructure_phi_mcp_matchedgeo"), jetMCD.phi(), phiSubMCP, weight);
-                  // etc.
-              }
-          }
-      }
+  //                 // Remplissage histogrammes (à adapter selon les besoins)
+  //                 registry.fill(HIST("h2_substructure_pt_mcd_substructure_pt_mcp_matchedgeo"), jetMCD.pt(), ptSubMCP, weight);
+  //                 registry.fill(HIST("h2_substructure_eta_mcd_substructure_eta_mcp_matchedgeo"), jetMCD.eta(), etaSubMCP, weight);
+  //                 registry.fill(HIST("h2_substructure_phi_mcd_substructure_phi_mcp_matchedgeo"), jetMCD.phi(), phiSubMCP, weight);
+  //                 // etc.
+  //             }
+  //         }
+  //     }
   
-      // Idem pour matching pt
-      if (checkPtMatched) {
-          if (jetMCD.has_matchedSubstructurePt()) {
-              for (const auto& subMCP : jetMCD.template matchedSubstructurePt_as<std::decay_t<TTag>>()) {
-                  if (subMCP.pt() > pTHatMaxMCP) continue;
+  //     // Idem pour matching pt
+  //     if (checkPtMatched) {
+  //         if (jetMCD.has_matchedSubstructurePt()) {
+  //             for (const auto& subMCP : jetMCD.template matchedSubstructurePt_as<std::decay_t<TTag>>()) {
+  //                 if (subMCP.pt() > pTHatMaxMCP) continue;
   
-                  registry.fill(HIST("h2_substructure_pt_mcd_substructure_pt_mcp_matchedpt"), jetMCD.pt(), subMCP.pt(), weight);
-                  // etc.
-              }
-          }
-      }
-  }
+  //                 registry.fill(HIST("h2_substructure_pt_mcd_substructure_pt_mcp_matchedpt"), jetMCD.pt(), subMCP.pt(), weight);
+  //                 // etc.
+  //             }
+  //         }
+  //     }
+  // }
   
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
@@ -555,7 +555,7 @@ struct JetSubstructureTask {
     auto nsd = 0.0;
     auto zg = -1.0;
     auto rg = -1.0;
-    // LOGF(info, "==== Jet numéro %d ====", jet.globalIndex());
+     LOGF(info, "==== Jet numéro %d ====", jet.globalIndex());
 
     while (daughterSubJet.has_parents(parentSubJet1, parentSubJet2)) {//while daughter has parents, until we reach the end of reclustering
       if (parentSubJet1.perp() < parentSubJet2.perp()) {
