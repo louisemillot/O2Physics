@@ -647,14 +647,14 @@ struct JetSubstructureTask {
     std::ofstream logFile1("thetagMCDVec.log"); // ouvre/crée le fichier
     logFile1 << "thetag\tpt\n"; // optionnel : écrire les en-têtes de colonnes
     for (const auto& [thetag, pt] : thetagMCDVec) {
-      logFile << thetag << "\t" << pt << "\n"; // valeurs séparées par tabulation
+      logFile1 << thetag << "\t" << pt << "\n"; // valeurs séparées par tabulation
     }
     logFile1.close();
 
     std::ofstream logFile2("thetagMCPVec.log"); // ouvre/crée le fichier
     logFile2 << "thetag\tpt\n"; // optionnel : écrire les en-têtes de colonnes
     for (const auto& [thetag, pt] : thetagMCPVec) {
-      logFile << thetag << "\t" << pt << "\n"; // valeurs séparées par tabulation
+      logFile2 << thetag << "\t" << pt << "\n"; // valeurs séparées par tabulation
     }
     logFile2.close();
 
