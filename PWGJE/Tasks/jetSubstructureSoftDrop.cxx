@@ -1246,7 +1246,7 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCPWeighted, "charged jet 
 void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                               ChargedMCDMatchedJets const& mcdjets,
                               ChargedMCPMatchedJets const&,
-                              aod::JetTracks const&, aod::JetParticles const&)
+                              aod::JetTracks const& tracks, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
@@ -1256,6 +1256,9 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
   }
 
   for (const auto& mcdjet : mcdjets) {
+    if (!jetfindingutilities::isInEtaAcceptance(mcdjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+      continue;
+    }
     if (!isAcceptedJet<aod::JetTracks>(mcdjet)) {
       continue;
     }
