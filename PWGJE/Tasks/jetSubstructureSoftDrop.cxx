@@ -368,7 +368,7 @@ struct JetSubstructureTask {
     }
     return true;
   }
-
+  int count = 0;
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
   template <typename TBase, typename TTag >
   void fillMatchedHistograms(TBase const& jetMCD,
@@ -384,7 +384,6 @@ struct JetSubstructureTask {
     if (jetMCD.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
       return;
     }
-    int count = 0; 
     // fill geometry matched histograms
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
@@ -432,8 +431,6 @@ struct JetSubstructureTask {
         // std::cout << "nombre de MCP matchés : " << count << std::endl;
         // std::cout << "Nombre de valeurs dans thetag (colonne 1) = " << thetagMCDVec.size() << std::endl;
       }
-      std::cout << "nombre de MCP matchés : " << count << std::endl;
-      std::cout << "Nombre de valeurs dans thetag (colonne 1) = " << thetagMCDVec.size() << std::endl;
     }
     // LOGF(info, "Nombre de MCP matchés à ce MCD : %d", countMCP);
 
