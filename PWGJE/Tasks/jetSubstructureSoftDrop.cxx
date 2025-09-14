@@ -404,8 +404,7 @@ struct JetSubstructureTask {
                           registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt60_80"),
                                         thetagMCD, thetagMCP, weight);
                         }
-                        // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f",
-                        // thetagMCD, ptMCD, thetagMCP, ptMCP);
+                         LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                       }
                   }
               }
