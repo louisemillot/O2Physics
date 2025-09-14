@@ -429,9 +429,11 @@ struct JetSubstructureTask {
 
           }
         }
-        std::cout << "nombre de MCP matchés : " << count << std::endl;
-        std::cout << "Nombre de valeurs dans thetag (colonne 1) = " << thetagMCDVec.size() << std::endl;
+        // std::cout << "nombre de MCP matchés : " << count << std::endl;
+        // std::cout << "Nombre de valeurs dans thetag (colonne 1) = " << thetagMCDVec.size() << std::endl;
       }
+      std::cout << "nombre de MCP matchés : " << count << std::endl;
+      std::cout << "Nombre de valeurs dans thetag (colonne 1) = " << thetagMCDVec.size() << std::endl;
     }
     // LOGF(info, "Nombre de MCP matchés à ce MCD : %d", countMCP);
 
