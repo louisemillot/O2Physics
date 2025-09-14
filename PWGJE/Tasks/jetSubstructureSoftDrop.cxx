@@ -402,8 +402,7 @@ struct JetSubstructureTask {
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                       if (std::abs(ptMCP - jetMCP.pt()) < 1e-3) { 
                         if (ptMCP >= 60.0 && ptMCP <= 80.0) {
-                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt60_80"),
-                                        thetagMCD, thetagMCP, weight);
+                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt60_80"), thetagMCD, thetagMCP, weight);
                         }
                          LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                       }
@@ -428,11 +427,11 @@ struct JetSubstructureTask {
 
           }
         }
-        // std::cout << "nombre de MCP matchés : " << count << std::endl;
-        // std::cout << "Nombre de valeurs dans thetag (colonne 1) = " << thetagMCDVec.size() << std::endl;
       }
       std::cout << "nombre de MCP matchés : " << count << std::endl;
-      std::cout << "Nombre de valeurs dans thetag (colonne 1) = " << thetagMCDVec.size() << std::endl;
+      std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
+      std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
+
       
     }
     // LOGF(info, "Nombre de MCP matchés à ce MCD : %d", countMCP);
@@ -648,6 +647,13 @@ struct JetSubstructureTask {
     std::ofstream logFile("thetagMCDVec.log"); // ouvre/crée le fichier
     logFile << "thetag\tpt\n"; // optionnel : écrire les en-têtes de colonnes
     for (const auto& [thetag, pt] : thetagMCDVec) {
+      logFile << thetag << "\t" << pt << "\n"; // valeurs séparées par tabulation
+    }
+    logFile.close();
+
+    std::ofstream logFile("thetagMCPVec.log"); // ouvre/crée le fichier
+    logFile << "thetag\tpt\n"; // optionnel : écrire les en-têtes de colonnes
+    for (const auto& [thetag, pt] : thetagMCPVec) {
       logFile << thetag << "\t" << pt << "\n"; // valeurs séparées par tabulation
     }
     logFile.close();
