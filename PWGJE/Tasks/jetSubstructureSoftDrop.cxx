@@ -274,7 +274,7 @@ struct JetSubstructureTask {
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_mcdetaconstraint","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_mcpetaconstraint","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
-        registry.add("h2_thetagMCD_vs_thetagMCP_pt60_80","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
+        registry.add("h2_thetagMCD_vs_thetagMCP_pt20_80","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
 
 
       }
@@ -401,8 +401,8 @@ struct JetSubstructureTask {
                   // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                       if (std::abs(ptMCP - jetMCP.pt()) < 1e-3) { 
-                        if (ptMCP >= 60.0 && ptMCP <= 80.0) {
-                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt60_80"), thetagMCD, thetagMCP, weight);
+                        if (ptMCP >= 20.0 && ptMCP <= 80.0) {
+                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt20_80"), thetagMCD, thetagMCP, weight);
                         }
                          LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                       }
