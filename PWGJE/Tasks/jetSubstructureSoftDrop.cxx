@@ -928,7 +928,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
                                      aod::JetTracks const& tracks)
   { 
     LOGF(info, "processChargedJetsMCDWeighted ");
-    LOGF(info, "collision index", collision.globalIndex());
+    LOGF(info, "collision index = %d ", collision.globalIndex());
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
