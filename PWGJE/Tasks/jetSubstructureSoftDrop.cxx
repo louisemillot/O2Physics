@@ -926,7 +926,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
                                      soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetEventWeights> const& jets,
                                      aod::JetTracks const& tracks)
   { 
-    // LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight);
+    LOGF(info, "processChargedJetsMCDWeighted ");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
@@ -1149,6 +1149,7 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "
                                       soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents , aod::ChargedMCParticleLevelJetEventWeights> const& jets,
                                       aod::JetParticles const& particles)
   {
+  LOGF(info, "processChargedJetsMCPWeighted ");
   //meme criteres que JetSpectra:
   bool mcLevelIsParticleLevel = true;
   float eventWeight = mcCollision.weight();
