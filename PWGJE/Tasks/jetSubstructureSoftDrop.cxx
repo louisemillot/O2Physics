@@ -388,13 +388,14 @@ struct JetSubstructureTask {
     // fill geometry matched histograms
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
+        count++;
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             double dpt = jetMCP.pt() - jetMCD.pt();
-            count++;
+            // count++;
             /////
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
               if (std::abs(ptMCD - jetMCD.pt()) < 1e-3) { 
@@ -428,7 +429,8 @@ struct JetSubstructureTask {
 
           }
         }
-        // std::cout << "nombre de MCP matchés : " << count << std::endl;
+        std::cout << "nombre de MCP matchés : " << count << std::endl;
+        std::cout << "Nombre de valeurs dans thetag (colonne 1) = " << thetagMCDVec.size() << std::endl;
       }
     }
     // LOGF(info, "Nombre de MCP matchés à ce MCD : %d", countMCP);
