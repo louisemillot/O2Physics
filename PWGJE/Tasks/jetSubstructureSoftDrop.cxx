@@ -15,6 +15,7 @@
 //
 
 #include <vector>
+#include <fstream>
 #include <utility>
 
 #include "fastjet/PseudoJet.hh"
@@ -640,6 +641,13 @@ struct JetSubstructureTask {
     // for (const auto& [thetag, ptJet] : thetagMCDVec) {
     //   LOGF(info, "thetagMCD = %.4f, ptJet = %.4f , Jet numéro %d ", thetag, ptJet, jet.globalIndex());
     // }
+    std::ofstream logFile("thetagMCDVec.log"); // ouvre/crée le fichier
+    logFile << "thetag\tpt\n"; // optionnel : écrire les en-têtes de colonnes
+    for (const auto& [thetag, pt] : thetagMCDVec) {
+      logFile << thetag << "\t" << pt << "\n"; // valeurs séparées par tabulation
+    }
+    logFile.close();
+
     return {thetagMCDVec, thetagMCPVec};
     
   
