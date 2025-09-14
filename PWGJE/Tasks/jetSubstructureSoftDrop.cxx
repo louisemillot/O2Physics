@@ -539,7 +539,7 @@ struct JetSubstructureTask {
   std::tuple<std::vector<std::pair<float, float>>, std::vector<std::pair<float, float>>>
   jetReclustering(T const& jet, U& splittingTable, double weight)
   {
-    // LOGF(info, " Entering jetReclustering " );
+    LOGF(info, " Entering jetReclustering " );
     energyMotherVec.clear(); //to be sure its empty before filling
     ptLeadingVec.clear();
     ptSubLeadingVec.clear();
