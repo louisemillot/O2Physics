@@ -203,6 +203,8 @@ struct JetSubstructureTask {
         registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(4, "recoEvtSel");
         registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(5, "centralitycut");
         registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(6, "occupancycut");
+        registry.get<TH1>(HIST("h_mcColl_counts_weight"))->GetXaxis()->SetBinLabel(7, "centrality20to60");
+
         registry.add("h_mc_zvertex_weight", "position of collision ;#it{Z} (cm)", {HistType::kTH1F, {{300, -15.0, 15.0}}});
       }
     }
@@ -799,6 +801,9 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       if ((centralityMin < collision.centFT0C()) && (collision.centFT0C() < centralityMax)) {
         centralityIsGood = true;
       }
+      if ((centralityMin < collision.centFT0C()) && (collision.centFT0C() < centralityMax)) {
+        centralityIsGood = true;
+      }
       if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
         occupancyIsGood = true;
       }
@@ -814,6 +819,10 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     }
     registry.fill(HIST("h_mcColl_counts"), 4.5);
     registry.fill(HIST("h_mcColl_counts_weight"), 4.5, eventWeight);
+
+    if (collision.centFT0C() > 20 && collision.centFT0C() < 60) {
+      registry.fill(HIST("h_mcColl_counts_weight"), 6.5, eventWeight);
+    }
 
     if (!occupancyIsGood) {
       return;
