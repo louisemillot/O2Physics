@@ -807,6 +807,9 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
         occupancyIsGood = true;
       }
+      if (collision.centFT0C() > 20 && collision.centFT0C() < 60) {
+        registry.fill(HIST("h_mcColl_counts_weight"), 6.5, eventWeight);
+      }
     }
     if (!hasSel8Coll) {
       return;
@@ -819,10 +822,6 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     }
     registry.fill(HIST("h_mcColl_counts"), 4.5);
     registry.fill(HIST("h_mcColl_counts_weight"), 4.5, eventWeight);
-
-    if (collision.centFT0C() > 20 && collision.centFT0C() < 60) {
-      registry.fill(HIST("h_mcColl_counts_weight"), 6.5, eventWeight);
-    }
 
     if (!occupancyIsGood) {
       return;
