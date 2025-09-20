@@ -743,7 +743,6 @@ struct JetSubstructureTask {
   bool hasSel8Coll = false;
   bool centralityIsGood = false;
   bool occupancyIsGood = false;
-  bool centrality20to60 = false;
   for (auto const& collision : collisions) {
     if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       hasSel8Coll = true;
@@ -795,12 +794,11 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     bool hasSel8Coll = false;
     bool centralityIsGood = false;
     bool occupancyIsGood = false;
+    bool centrality20to60 = false;
+
     for (auto const& collision : collisions) {
       if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
         hasSel8Coll = true;
-      }
-      if ((centralityMin < collision.centFT0C()) && (collision.centFT0C() < centralityMax)) {
-        centralityIsGood = true;
       }
       if ((centralityMin < collision.centFT0C()) && (collision.centFT0C() < centralityMax)) {
         centralityIsGood = true;
