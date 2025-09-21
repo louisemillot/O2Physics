@@ -887,6 +887,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
+    LOGF(info, "test0 ");
     // Leading track cut 
     for (auto& jet : jets){
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
@@ -901,14 +902,14 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           // LOGF(info, "Jet with leading constituent pt = %.2f found", jetConstituent.pt());
-          // LOGF(info, "test1 ");
+          LOGF(info, "test1 ");
           hasHighPtConstituent = true;
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
-        // LOGF(info, "test2 ");
+        LOGF(info, "test2 ");
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_data_eventwise"), jet.pt()); 
         analyseCharged<true>(jet, tracksOfCollisions, jetSplittingsDataSubTable);
         // registry.fill(HIST("h_jet_pt_after_grooming"), jet.pt()); //rajouter weight pour MC
