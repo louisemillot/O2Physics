@@ -896,6 +896,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       if (!isAcceptedJet<aod::JetTracks>(jet)) {
         continue;
       }
+      LOGF(info, "test1.5 ");
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial_data_eventwise"), jet.pt());
       // auto & jetConstituent0 = jet.tracks_as<aod::JetTracksSub>().iteratorAt(0)
