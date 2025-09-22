@@ -952,7 +952,7 @@ struct JetSpectraCharged {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
       }
-      if (!isAcceptedJet<aod::JetParticles>(jet, mcLevelIsParticleLevel)) {
+      if (!isAcceptedJet<aod::JetTracks>(jet)) {
         continue;
       }
       fillMCPHistograms(jet);
