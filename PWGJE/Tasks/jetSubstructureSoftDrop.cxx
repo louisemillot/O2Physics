@@ -846,22 +846,27 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
+    LOGF(info, "test0 ");
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
+    LOGF(info, "test1 ");
     ///////////// leading track cut try : (because filter doesnt work)
     for (auto& jet : jets){
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
       }
+      LOGF(info, "test3 ");
       if (!isAcceptedJet<aod::JetTracks>(jet)) {
         continue;
       }
+      LOGF(info, "test4 ");
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial_data"), jet.pt()); 
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           hasHighPtConstituent = true;
+          LOGF(info, "test5 ");
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
