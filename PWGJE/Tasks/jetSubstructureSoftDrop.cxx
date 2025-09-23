@@ -851,6 +851,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       return;
     }
     LOGF(info, "test1 ");
+    LOGF(info, "Number of jets in event = %d", jets.size());
     ///////////// leading track cut try : (because filter doesnt work)
     for (auto& jet : jets){
       LOGF(info, "test2 ");
