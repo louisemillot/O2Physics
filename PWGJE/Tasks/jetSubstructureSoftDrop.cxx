@@ -853,6 +853,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     LOGF(info, "test1 ");
     ///////////// leading track cut try : (because filter doesnt work)
     for (auto& jet : jets){
+      LOGF(info, "test2 ");
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
       }
