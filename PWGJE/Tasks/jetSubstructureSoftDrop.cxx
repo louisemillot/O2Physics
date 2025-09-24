@@ -136,7 +136,7 @@ struct JetSubstructureTask {
     AxisSpec jetEtaAxis = {nBinsEta, -1.0, 1.0, "#eta"};
     AxisSpec phiAxis = {160, -1.0, 7.0, "#varphi"};
     AxisSpec thetagAxisMCD = {200, 0.0, 1.1, "#it{\\theta}_{g}^{mcd}"}; 
-    AxisSpec thetagAxisMCP = {200, 0.0, 1.1, "#it{\\theta}_{g}^{mcd}"}; 
+    AxisSpec thetagAxisMCP = {200, 0.0, 1.1, "#it{\\theta}_{g}^{mcp}"}; 
 
 
 
@@ -213,6 +213,8 @@ struct JetSubstructureTask {
     if (doprocessChargedJetsData) {
       registry.add("h_jet_pt_initial_data", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
       registry.add("h_jet_pt_after_leadingtrackcut_data", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
+      registry.add("h2_centrality_jet_pt", "centrality vs. jet pT;centrality; #it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH2F, {centralityAxis, jetPtAxis}});
+
       // registry.add("h_jet_pt_after_grooming", "jet pT;#it{p}_{T,jet} (GeV/#it{c}); counts", {HistType::kTH1F, {jetPtAxis}});
     }
 
