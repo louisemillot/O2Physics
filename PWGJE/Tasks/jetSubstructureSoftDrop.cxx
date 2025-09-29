@@ -1089,7 +1089,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
   //   if (jet.pt() > pTHatMaxMCD * pTHat) {
   //       return;
   //   }
-  //   bool hasHighPtConstituent = false;
+    bool hasHighPtConstituent = false;
   //   registry.fill(HIST("h_jet_pthat_initial_mcd_eventwise"), pTHat); 
   //   registry.fill(HIST("h_jet_pthat_initial_mcd_eventwise_weighted"), pTHat,jetweight); 
   //   registry.fill(HIST("h_jet_pt_initial_mcd_eventwise"), jet.pt()); 
