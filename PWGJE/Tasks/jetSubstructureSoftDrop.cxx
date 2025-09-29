@@ -1097,7 +1097,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       
   
     ///////////// leading track cut /////////////
-    for (auto& jetConstituent : jet.tracks_as<aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents>()) {
+    for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
       if (jetConstituent.pt() >= ptLeadingTrackCut) {
         hasHighPtConstituent = true;
         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
@@ -1107,7 +1107,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     if (hasHighPtConstituent) {
       registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_eventwise"), jet.pt()); 
       registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_eventwise_weighted"), jet.pt(),jetweight); 
-      // analyseCharged<true>(jet, tracks, jetSplittingsMCDSubTable);
+      analyseCharged<true>(jet, tracks, jetSplittingsMCDSubTable);
     }
   }
 }
