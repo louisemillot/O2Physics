@@ -1109,7 +1109,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_eventwise_weighted"), jet.pt(),jetweight); 
       analyseCharged<true>(jet, tracks, jetSplittingsMCDSubTable);
     }
-  // }
+  }
 }
 PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "Weighted eventwise-constituent subtracted MCD charged jet substructure ", false);
 
