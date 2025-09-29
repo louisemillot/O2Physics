@@ -1097,7 +1097,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       
   
     ///////////// leading track cut /////////////
-    for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
+    for (auto& jetConstituent : jet.tracks_as<aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents>()) {
       if (jetConstituent.pt() >= ptLeadingTrackCut) {
         hasHighPtConstituent = true;
         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
