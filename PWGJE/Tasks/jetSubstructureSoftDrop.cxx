@@ -971,8 +971,8 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
 
   void processChargedJetsMCDWeighted(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                                     //  aod::JetMcCollisions const&, //join the weight
-                                     soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetEventWeights> const& jets)
-                                    //  aod::JetTracks const& tracks)
+                                     soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetEventWeights> const& jets,
+                                     aod::JetTracks const& tracks)
   { 
     LOGF(info, "processChargedJetsMCDWeighted ");
     LOGF(info, "collision index = %d ", collision.globalIndex());
@@ -1017,8 +1017,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd"), jet.pt()); 
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
         // LOGF(info, "jetweight = %.4f",jetweight);
-
-        // analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
+        analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
         
         // LOGF(info, "thetagMCD_process = %.4f", thetagMCD.value());
         // LOGF(info, "processChargedJetsMCD: weight = %.4f",jetweight);
@@ -1065,8 +1064,8 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
 
   void processChargedJetsEventWiseSubMCDWeighted(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
-                                                soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents, aod::ChargedMCDetectorLevelEventWiseSubtractedJetEventWeights > const& jets,
-                                                aod::JetTracksSub const& tracks)
+                                                soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents, aod::ChargedMCDetectorLevelEventWiseSubtractedJetEventWeights > const& jets)
+                                                // aod::JetTracksSub const& tracks)
 { 
   //rajouter les cuts de jetspectra
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
@@ -1108,7 +1107,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     if (hasHighPtConstituent) {
       registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_eventwise"), jet.pt()); 
       registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_eventwise_weighted"), jet.pt(),jetweight); 
-      analyseCharged<true>(jet, tracks, jetSplittingsMCDSubTable);
+      // analyseCharged<true>(jet, tracks, jetSplittingsMCDSubTable);
     }
   }
 }
