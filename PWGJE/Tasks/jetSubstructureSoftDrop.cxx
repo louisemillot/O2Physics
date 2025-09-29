@@ -971,8 +971,8 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
 
   void processChargedJetsMCDWeighted(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                                     //  aod::JetMcCollisions const&, //join the weight
-                                     soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetEventWeights> const& jets,
-                                     aod::JetTracks const& tracks)
+                                     soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetEventWeights> const& jets)
+                                    //  aod::JetTracks const& tracks)
   { 
     LOGF(info, "processChargedJetsMCDWeighted ");
     LOGF(info, "collision index = %d ", collision.globalIndex());
@@ -1017,12 +1017,10 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd"), jet.pt()); 
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_weighted"), jet.pt(), jetweight); 
         // LOGF(info, "jetweight = %.4f",jetweight);
-        analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
-        // LOGF(info, "test4");
-        // auto thetagMCD = jetReclustering<false, false>(jet, jetSplittingsMCDTable, jetweight);
+
+        // analyseCharged<false>(jet, tracks, jetSplittingsMCDTable, jetweight);
+        
         // LOGF(info, "thetagMCD_process = %.4f", thetagMCD.value());
-
-
         // LOGF(info, "processChargedJetsMCD: weight = %.4f",jetweight);
         // LOGF(info, "processChargedJetsMCD: weight = %.4f", "1 : " ,jetweight, "2 : " , collision.mcCollision().weight());
       }
@@ -1103,7 +1101,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
       if (jetConstituent.pt() >= ptLeadingTrackCut) {
         hasHighPtConstituent = true;
-      break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+        break; // Sortir de la boucle dès qu'un constituant valide est trouvé
       }
     }
     // Si un jet contient un constituant avec un pt > au critère, on l'analyse
