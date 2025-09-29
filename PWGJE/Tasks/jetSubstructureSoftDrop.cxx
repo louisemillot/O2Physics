@@ -1075,7 +1075,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
   //   return;
   // }
   // ///////////// leading track cut /////////////
-  // for (auto& jet : jets){
+  for (auto& jet : jets){
   //   if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
   //     continue;
   //   }
@@ -1108,7 +1108,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
   //     registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_eventwise"), jet.pt()); 
   //     registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_eventwise_weighted"), jet.pt(),jetweight); 
   //     analyseCharged<true>(jet, tracks, jetSplittingsMCDSubTable);
-  //   }
+    }
   // }
 }
 PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "Weighted eventwise-constituent subtracted MCD charged jet substructure ", false);
