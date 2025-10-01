@@ -58,7 +58,7 @@ struct JetSubstructureTask {
   using ChargedMCPMatchedJets = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedMCParticleLevelJetsMatchedToChargedMCDetectorLevelJets>;
   using ChargedMCDMatchedJetsWeighted = soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetsMatchedToChargedMCParticleLevelJets, aod::ChargedMCDetectorLevelJetEventWeights>;
   using ChargedMCPMatchedJetsWeighted = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedMCParticleLevelJetsMatchedToChargedMCDetectorLevelJets, aod::ChargedMCParticleLevelJetEventWeights>;
-  // using ChargedMCDMatchedJetsEventWise = soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> //pour MCP pas de eventWise 
+  using ChargedMCDMatchedJetsEventWise = soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents, aod::ChargedEventWiseSubtractedJetsMatchedToChargedJets>; //pour MCP pas de eventWise 
 
 
   Produces<aod::ChargedSPs> jetSplittingsDataTable;
@@ -1350,51 +1350,38 @@ PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeighted, "matched m
 
 
 
-// void processJetsMCDMatchedMCPEventWise(soa::Filtered<aod::JetCollisions>::iterator const& collision,
-//                                        ChargedMCDMatchedJetsWeighted const& mcdjets,
-//                                        ChargedMCPMatchedJetsWeighted const&,
-//                                        aod::JetTracks const& tracks, aod::JetParticles const&)
-// {
-//   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
-//     return;
-//   }
-//   if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
-//     return;
-//   }
-//   for (const auto& mcdjet : mcdjets) {
-//     if (!jetfindingutilities::isInEtaAcceptance(mcdjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
-//       continue;
-//     }
-//     if (!isAcceptedJet<aod::JetTracks>(mcdjet)) {
-//       continue;
-//     }
-//     float jetweight = mcdjet.eventWeight();
-//     float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
-//       if (mcdjet.pt() > pTHatMaxMCD * pTHat) {
-//         return;
-//       }
-//     bool hasHighPtConstituent = false;
-//     ///////////// leading track cut /////////////
-//     for (auto& jetConstituent : mcdjet.tracks_as<aod::JetTracks>()) {
-//       if (jetConstituent.pt() >= ptLeadingTrackCut) {
-//         hasHighPtConstituent = true;
-//         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
-//       }
-//     }
-//     if (hasHighPtConstituent) {
-//       // analyseCharged<false>(mcdjet, tracks, jetSplittingsMCDTable, jetweight);
-//       // auto thetagMCD = jetReclustering<false, false>(mcdjet, jetSplittingsMCDTable, jetweight);
-//       // LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
-//       //if (doprocessChargedJetsMCD || doprocessChargedJetsMCDWeighted){ //doprocessChargedJetsEventWiseSubMCD
-//       // fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,jetSplittingsMCDTable, jetSplittingsMCPTable, mcdjet.eventWeight());
-//       fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet, thetagMCDVec, thetagMCPVec, jetweight);
-
-
-//       //}
-//     }
-//   }
-// }
-// PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPEventWiseWeighted, "matched mcp and mcd jets eventwise", false);
+void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const& collision,
+                                       ChargedMCDMatchedJetsEventWise const& mcdjets,
+                                       ChargedMCPMatchedJets const&,
+                                       aod::JetTracks const& tracks, aod::JetParticles const&)
+{
+  if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+    return;
+  }
+  if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+    return;
+  }
+  for (const auto& mcdjet : mcdjets) {
+    if (!jetfindingutilities::isInEtaAcceptance(mcdjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+      continue;
+    }
+    if (!isAcceptedJet<aod::JetTracks>(mcdjet)) {
+      continue;
+    }
+    bool hasHighPtConstituent = false;
+    ///////////// leading track cut /////////////
+    for (auto& jetConstituent : mcdjet.tracks_as<aod::JetTracks>()) {
+      if (jetConstituent.pt() >= ptLeadingTrackCut) {
+        hasHighPtConstituent = true;
+        break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+      }
+    }
+    if (hasHighPtConstituent) {
+      fillMatchedHistograms<ChargedMCDMatchedJetsEventWise::iterator, ChargedMCPMatchedJets>(mcdjet, thetagMCDVec, thetagMCPVec);
+    }
+  }
+}
+PROCESS_SWITCH(JetSubstructureTask, processJetsMCDEventWiseMatchedMCP, "matched mcp and mcd jets eventwise", false);
 
 };
 
