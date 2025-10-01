@@ -59,6 +59,7 @@ struct JetSubstructureTask {
   using ChargedMCDMatchedJetsWeighted = soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetsMatchedToChargedMCParticleLevelJets, aod::ChargedMCDetectorLevelJetEventWeights>;
   using ChargedMCPMatchedJetsWeighted = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedMCParticleLevelJetsMatchedToChargedMCDetectorLevelJets, aod::ChargedMCParticleLevelJetEventWeights>;
   using ChargedMCDMatchedJetsEventWise = soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents, aod::ChargedEventWiseSubtractedJetsMatchedToChargedJets>; //pour MCP pas de eventWise 
+  using ChargedMCPMatchedJetsForEventWise = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedEventWiseSubtractedJetsMatchedToChargedJets>; //pour MCP pas de eventWise 
 
 
   Produces<aod::ChargedSPs> jetSplittingsDataTable;
@@ -1352,7 +1353,7 @@ PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeighted, "matched m
 
 void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                        ChargedMCDMatchedJetsEventWise const& mcdjets,
-                                       ChargedMCPMatchedJets const&,
+                                       ChargedMCPMatchedJetsForEventWise const&,
                                        aod::JetTracks const& tracks, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
@@ -1377,7 +1378,7 @@ void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterat
       }
     }
     if (hasHighPtConstituent) {
-      fillMatchedHistograms<ChargedMCDMatchedJetsEventWise::iterator, ChargedMCPMatchedJets>(mcdjet, thetagMCDVec, thetagMCPVec);
+      fillMatchedHistograms<ChargedMCDMatchedJetsEventWise::iterator, ChargedMCPMatchedJetsForEventWise>(mcdjet, thetagMCDVec, thetagMCPVec);
     }
   }
 }
