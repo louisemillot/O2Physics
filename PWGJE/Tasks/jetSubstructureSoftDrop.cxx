@@ -1356,6 +1356,7 @@ void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterat
                                        ChargedMCPMatchedJetsForEventWise const&,
                                        aod::JetTracks const& tracks, aod::JetParticles const&)
 {
+  LOGF(info, "entrering processJetsMCDEventWiseMatchedMCP");
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
   }
