@@ -489,7 +489,7 @@ struct JetSubstructureTask {
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCDEventWise.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCDEventWise.phi(), jetMCP.phi(), weight);
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_diff_matchedgeo"), jetMCDEventWise.pt(), dpt / jetMCDEventWise.pt(), weight);
-              registry.fill(HIST("h2_jet_ntracks_mcd_jet_ntracks_mcp_matchedgeo"), v.tracksIds().size(), jetMCP.tracksIds().size(), weight);
+              registry.fill(HIST("h2_jet_ntracks_mcd_jet_ntracks_mcp_matchedgeo"), jetMCDEventWise.tracksIds().size(), jetMCP.tracksIds().size(), weight);
             }
             if (jetfindingutilities::isInEtaAcceptance(jetMCP, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcpetaconstraint"), jetMCDEventWise.pt(), jetMCP.pt(), weight);
