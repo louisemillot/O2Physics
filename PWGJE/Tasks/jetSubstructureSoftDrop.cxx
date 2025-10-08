@@ -449,8 +449,7 @@ struct JetSubstructureTask {
   }
   
 
-
-  template <typename TMCDEventWise, typename TMCDtoMCP, typename TMCP > // TBase : ChargedMCDMatchedtoMCDEventWise et TTag : ChargedMCDEventWiseMatchedtoMCD
+  template <typename TMCDEventWise, typename TMCDtoMCP, typename TMCP > // TMCDEventWise : ChargedMCDEventWiseMatchedtoMCD ; TMCDtoMCP : ChargedMCDMatchedJets ; TMCP : ChargedMCPMatchedJets
   void fillMatchedHistogramsEventWise(TMCDEventWise const& jetMCDEventWise, //le jetMCDEventWise est ici le TTag : ChargedMCDEventWiseMatchedtoMCD //iterator
                                       TMCP const&, //le jetMCD ici est le TBase : ChargedMCDMatchedtoMCDEventWise
                                       const std::vector<std::pair<float, float>>& thetagMCDVec,
@@ -464,44 +463,44 @@ struct JetSubstructureTask {
     }
     // fill geometry matched histograms
     if (checkGeoMatched) { //true or false
-      if (jetMCDEventWise.has_matchedJetGeo()) { //si il y a un match geometric entre MCD et MCDEventWise - car jetMCD est le TBase : ChargedMCDMatchedtoMCDEventWise
-        // for (const auto& jetMCP : (jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()).template matchedJetGeo_as<std::decay_t<TMCP>>()) { // - alors on boucle sur MCP qui ont un matching: MCDEventWise - MCD - MCP 
-        for (const auto& jetMCD : jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()){
-        for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TMCP>>()){
-          if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
-            continue;
-          }
-          if (jetMCDEventWise.r() == round(selectedJetsRadius * 100.0f)) {
-            double dpt = jetMCP.pt() - jetMCDEventWise.pt();
-            for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
-              if (std::abs(ptMCD - jetMCDEventWise.pt()) < 1e-3) { 
-                  // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
-                  for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
-                      if (std::abs(ptMCP - jetMCP.pt()) < 1e-3) { 
-                        registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
-                        LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
-                        if (ptMCP >= 20.0 && ptMCP <= 80.0) {
-                         registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
-                        } 
-                      }
-                  }
+      if (jetMCDEventWise.has_matchedJetGeo()) { //si il y a un match geometric entre MCD et MCDEventWise - 
+        // for (const auto& jetMCP : (jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()).template matchedJetGeo_as<std::decay_t<TMCP>>()) { // - alors on boucle sur MCP qui ont un matching: MCDEventWise - MCD - MCP !!!! 2 ETAPES car sinon on ne peut pas build !!!!
+        for (const auto& jetMCD : jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()){ // - alors on boucle sur les MCD qui ont un matching avec EventWiseMCD: MCDEventWise - MCD
+          for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TMCP>>()){ // - puis on boucle sur MCD qui ont un matching avec MCP: MCD - MCP  !!!! 2 ETAPES car sinon on ne peut pas build !!!!
+            if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
+              continue;
+            }
+            if (jetMCDEventWise.r() == round(selectedJetsRadius * 100.0f)) {
+              double dpt = jetMCP.pt() - jetMCDEventWise.pt();
+              for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
+                if (std::abs(ptMCD - jetMCDEventWise.pt()) < 1e-3) { 
+                    // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
+                    for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
+                        if (std::abs(ptMCP - jetMCP.pt()) < 1e-3) { 
+                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
+                          LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
+                          if (ptMCP >= 20.0 && ptMCP <= 80.0) {
+                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
+                          } 
+                        }
+                    }
+                }
+              } 
+              if (jetfindingutilities::isInEtaAcceptance(jetMCDEventWise, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+                registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCDEventWise.pt(), jetMCP.pt(), weight);
+                registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCDEventWise.phi(), jetMCP.phi(), weight);
+                registry.fill(HIST("h2_jet_pt_mcd_jet_pt_diff_matchedgeo"), jetMCDEventWise.pt(), dpt / jetMCDEventWise.pt(), weight);
+                registry.fill(HIST("h2_jet_ntracks_mcd_jet_ntracks_mcp_matchedgeo"), jetMCDEventWise.tracksIds().size(), jetMCP.tracksIds().size(), weight);
               }
-            } 
-            if (jetfindingutilities::isInEtaAcceptance(jetMCDEventWise, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
-              registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCDEventWise.pt(), jetMCP.pt(), weight);
-              registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCDEventWise.phi(), jetMCP.phi(), weight);
-              registry.fill(HIST("h2_jet_pt_mcd_jet_pt_diff_matchedgeo"), jetMCDEventWise.pt(), dpt / jetMCDEventWise.pt(), weight);
-              registry.fill(HIST("h2_jet_ntracks_mcd_jet_ntracks_mcp_matchedgeo"), jetMCDEventWise.tracksIds().size(), jetMCP.tracksIds().size(), weight);
+              if (jetfindingutilities::isInEtaAcceptance(jetMCP, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+                registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcpetaconstraint"), jetMCDEventWise.pt(), jetMCP.pt(), weight);
+                registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcpetaconstraint"), jetMCDEventWise.phi(), jetMCP.phi(), weight);
+                registry.fill(HIST("h2_jet_pt_mcp_jet_pt_diff_matchedgeo"), jetMCP.pt(), dpt / jetMCP.pt(), weight);
+                registry.fill(HIST("h2_jet_pt_mcp_jet_pt_ratio_matchedgeo"), jetMCP.pt(), jetMCDEventWise.pt() / jetMCP.pt(), weight);
+              }
+              registry.fill(HIST("h2_jet_eta_mcd_jet_eta_mcp_matchedgeo"), jetMCDEventWise.eta(), jetMCP.eta(), weight);
             }
-            if (jetfindingutilities::isInEtaAcceptance(jetMCP, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
-              registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcpetaconstraint"), jetMCDEventWise.pt(), jetMCP.pt(), weight);
-              registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcpetaconstraint"), jetMCDEventWise.phi(), jetMCP.phi(), weight);
-              registry.fill(HIST("h2_jet_pt_mcp_jet_pt_diff_matchedgeo"), jetMCP.pt(), dpt / jetMCP.pt(), weight);
-              registry.fill(HIST("h2_jet_pt_mcp_jet_pt_ratio_matchedgeo"), jetMCP.pt(), jetMCDEventWise.pt() / jetMCP.pt(), weight);
-            }
-            registry.fill(HIST("h2_jet_eta_mcd_jet_eta_mcp_matchedgeo"), jetMCDEventWise.eta(), jetMCP.eta(), weight);
           }
-        }
         }
       }
       std::cout << "nombre de MCP matchés : " << count << std::endl;
