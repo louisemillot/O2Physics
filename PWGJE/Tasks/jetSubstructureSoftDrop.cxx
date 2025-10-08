@@ -561,7 +561,6 @@ struct JetSubstructureTask {
         if (!softDropped) {//if the splitting hasent been already softdropped softdrop=false
           zg = z;
           rg = theta;
-          LOGF(info, "test1");
 
           if constexpr (!isSubtracted && !isMCP) { //data & MCD no sub
             // LOGF(info, " Entering if statement for histograms :" );
@@ -610,8 +609,6 @@ struct JetSubstructureTask {
     if constexpr (isSubtracted && !isMCP) {
       registry.fill(HIST("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted"), jet.pt(), nsd, weight);
     }
-    LOGF(info, "test2");
-
     // for (const auto& theta : thetaVec) { // boucle a changer pour acceder a l'element quand tu veux ptleading aussi 
     //   LOGF(info, "Theta: %.4f", theta);
     // }
@@ -905,7 +902,6 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
                              soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
                              aod::JetTracks const& tracks)
   { 
-    LOGF(info, "processChargedJetsMCD");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
@@ -914,7 +910,6 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     }
 
     for (auto& jet : jets){
-      LOGF(info, "processChargedJetsMCD2");
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
       }
@@ -1002,6 +997,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
                                            aod::JetTracksSub const& tracks)
   { 
     //rajouter les cuts de jetspectra
+    LOGF(info, "processChargedJetsEventWiseSubMCD");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
