@@ -1355,6 +1355,7 @@ void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterat
       }
     }
     if (hasHighPtConstituent) {
+      LOGF(info, "entrering fillMatchedHistogramsEventWise in processJetsMCDEventWiseMatchedMCD");
       fillMatchedHistogramsEventWise<ChargedMCDEventWiseMatchedtoMCD::iterator, ChargedMCDMatchedJets, ChargedMCPMatchedJets>(jetMCDEventWise, jetsMCP, thetagMCDEventWiseVec, thetagMCPVec);
     }
   }
