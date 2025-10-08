@@ -513,7 +513,7 @@ struct JetSubstructureTask {
   }
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
-  std::tuple<std::vector<std::pair<float, float>>, std::vector<std::pair<float, float>>,std::vector<std::pair<float, float>> >
+  std::tuple<std::vector<std::pair<float, float>>, std::vector<std::pair<float, float>> >
   jetReclustering(T const& jet, U& splittingTable, double weight)
   {
     LOGF(info, " Entering jetReclustering " );
@@ -594,7 +594,6 @@ struct JetSubstructureTask {
             registry.fill(HIST("h2_jet_pt_jet_thetag_eventwiseconstituentsubtracted"),jet.pt(), thetag, weight);
             registry.fill(HIST("h_jet_thetag_eventwiseconstituentsubtracted"), thetag, weight);
             registry.fill(HIST("h_jet_zg_eventwiseconstituentsubtracted"), zg, weight);
-            thetagMCDEventWiseVec.push_back({thetag, jet.pt()});
             LOGF(info, "thetagMCDEventWiseVec = %.4f, ptJet = %.4f , Jet numéro %d ", thetag, jet.pt(), jet.globalIndex());
 
 
@@ -637,15 +636,9 @@ struct JetSubstructureTask {
     }
     logFile2.close();
 
-    std::ofstream logFile3("thetagMCDEventWiseVec.log"); // ouvre/crée le fichier
-    logFile3 << "thetag\tpt\n"; // optionnel : écrire les en-têtes de colonnes
-    for (const auto& [thetag, pt] : thetagMCDEventWiseVec) {
-      logFile3 << thetag << "\t" << pt << "\n"; // valeurs séparées par tabulation
-    }
-    logFile3.close();
 
 
-    return {thetagMCDVec, thetagMCDEventWiseVec, thetagMCPVec};
+    return {thetagMCDVec, thetagMCPVec};
     
   
 
