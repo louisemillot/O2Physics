@@ -588,7 +588,7 @@ struct JetSubstructureTask {
 
           }
           if constexpr (isSubtracted && !isMCP) { //data & MCD sub
-            // LOGF(info, " Entering if statement for histograms :" );
+            LOGF(info, " test2.1" );
             registry.fill(HIST("h2_jet_pt_jet_zg_eventwiseconstituentsubtracted"),jet.pt(), zg, weight);
             registry.fill(HIST("h2_jet_pt_jet_rg_eventwiseconstituentsubtracted"),jet.pt(), rg, weight);
             registry.fill(HIST("h2_jet_pt_jet_thetag_eventwiseconstituentsubtracted"),jet.pt(), thetag, weight);
