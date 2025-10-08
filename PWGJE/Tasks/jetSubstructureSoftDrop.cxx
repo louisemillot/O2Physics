@@ -513,7 +513,7 @@ struct JetSubstructureTask {
   }
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
-  std::tuple<std::vector<std::pair<float, float>>, std::vector<std::pair<float, float>>>
+  std::tuple<std::vector<std::pair<float, float>>, std::vector<std::pair<float, float>>,std::vector<std::pair<float, float>> >
   jetReclustering(T const& jet, U& splittingTable, double weight)
   {
     LOGF(info, " Entering jetReclustering " );
