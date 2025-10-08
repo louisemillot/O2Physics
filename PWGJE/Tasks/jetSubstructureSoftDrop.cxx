@@ -562,7 +562,8 @@ struct JetSubstructureTask {
         if (!softDropped) {//if the splitting hasent been already softdropped softdrop=false
           zg = z;
           rg = theta;
-          
+          LOGF(info, "test1");
+
           if constexpr (!isSubtracted && !isMCP) { //data & MCD no sub
             // LOGF(info, " Entering if statement for histograms :" );
             registry.fill(HIST("h2_jet_pt_jet_zg"), jet.pt(), zg, weight);
@@ -614,6 +615,7 @@ struct JetSubstructureTask {
     if constexpr (isSubtracted && !isMCP) {
       registry.fill(HIST("h2_jet_pt_jet_nsd_eventwiseconstituentsubtracted"), jet.pt(), nsd, weight);
     }
+    LOGF(info, "test2");
 
     // for (const auto& theta : thetaVec) { // boucle a changer pour acceder a l'element quand tu veux ptleading aussi 
     //   LOGF(info, "Theta: %.4f", theta);
@@ -1336,10 +1338,14 @@ void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterat
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
   }
+  LOGF(info, "test3");
+
   if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
     return;
   }
+  LOGF(info, "test4");
   for (const auto& jetMCDEventWise : jetsMCDEventWise) {
+    LOGF(info, "test5");
     if (!jetfindingutilities::isInEtaAcceptance(jetMCDEventWise, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
       continue;
     }
