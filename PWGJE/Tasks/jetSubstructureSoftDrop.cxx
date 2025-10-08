@@ -594,6 +594,8 @@ struct JetSubstructureTask {
             registry.fill(HIST("h_jet_thetag_eventwiseconstituentsubtracted"), thetag, weight);
             registry.fill(HIST("h_jet_zg_eventwiseconstituentsubtracted"), zg, weight);
             thetagMCDEventWiseVec.push_back({thetag, jet.pt()});
+            LOGF(info, "thetagMCDEventWiseVec = %.4f, ptJet = %.4f , Jet numéro %d ", thetag, jet.pt(), jet.globalIndex());
+
 
           }
           softDropped = true;//mark the splitting as true to avoid filling it again
