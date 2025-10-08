@@ -467,7 +467,7 @@ struct JetSubstructureTask {
       if (jetMCDEventWise.has_matchedJetGeo()) { //si il y a un match geometric entre MCD et MCDEventWise - car jetMCD est le TBase : ChargedMCDMatchedtoMCDEventWise
         // for (const auto& jetMCP : (jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()).template matchedJetGeo_as<std::decay_t<TMCP>>()) { // - alors on boucle sur MCP qui ont un matching: MCDEventWise - MCD - MCP 
         for (const auto& jetMCD : jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()){
-        for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()){
+        for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TMCP>>()){
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
