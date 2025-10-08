@@ -1332,6 +1332,7 @@ PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeighted, "matched m
 void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                        ChargedMCDEventWiseMatchedtoMCD const& jetsMCDEventWise, 
                                        ChargedMCPMatchedJets const& jetsMCP,
+                                       ChargedMCDMatchedJets const&,
                                        aod::JetTracksSub const& tracks)
 {
   LOGF(info, "entrering processJetsMCDEventWiseMatchedMCD");
