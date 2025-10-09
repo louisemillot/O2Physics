@@ -999,16 +999,16 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
                                            aod::JetTracksSub const& tracks)
   { 
     //rajouter les cuts de jetspectra
-    LOGF(info, "processChargedJetsEventWiseSubMCD");
-    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
-      return;
-    }
-    LOGF(info, "test1");
-    if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
-      return;
-    }
-    LOGF(info, "test2");
-    LOGF(info, "collision index = %d ", collision.globalIndex());
+    // LOGF(info, "processChargedJetsEventWiseSubMCD");
+    // if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+    //   return;
+    // }
+    // LOGF(info, "test1");
+    // if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+    //   return;
+    // }
+    // LOGF(info, "test2");
+    // LOGF(info, "collision index = %d ", collision.globalIndex());
     LOGF(info, "Nombre de jets dans cet événement : %d", jets.size());
     ///////////// leading track cut /////////////
     for (auto& jet : jets){
