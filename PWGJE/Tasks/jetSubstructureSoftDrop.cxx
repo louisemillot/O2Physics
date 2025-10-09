@@ -65,6 +65,8 @@ struct JetSubstructureTask {
   using ChargedMCPMatchedJetsWeighted = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedMCParticleLevelJetsMatchedToChargedMCDetectorLevelJets, aod::ChargedMCParticleLevelJetEventWeights>;
 
 
+  using ChargedMCDEventWise = soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents>;
+
   Produces<aod::ChargedSPs> jetSplittingsDataTable;
   Produces<aod::ChargedEventWiseSubtractedSPs> jetSplittingsDataSubTable;
   Produces<aod::ChargedMCDetectorLevelSPs> jetSplittingsMCDTable;
@@ -993,7 +995,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCDWeighted, "charged jet MCD substructure weighted", false);
 
     void processChargedJetsEventWiseSubMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
-                                           soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
+                                           ChargedMCDEventWise const& jets,
                                            aod::JetTracksSub const& tracks)
   { 
     //rajouter les cuts de jetspectra
