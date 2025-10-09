@@ -1006,7 +1006,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
       return;
     }
     LOGF(info, "test2");
-    LOGF(info, "Collision ID: %d, nTracks: %d, trackOccupancyInTimeRange: %f",collision.globalIndex(), collision.numContrib(), collision.trackOccupancyInTimeRange());
+    LOGF(info, "Collision ID: %d, trackOccupancyInTimeRange: %f",collision.globalIndex(), collision.trackOccupancyInTimeRange());
 
     LOGF(info, "Nombre de jets dans cet événement : %d", jets.size());
     ///////////// leading track cut /////////////
