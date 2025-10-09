@@ -995,7 +995,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
   PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCDWeighted, "charged jet MCD substructure weighted", false);
 
     void processChargedJetsEventWiseSubMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
-                                           ChargedMCDEventWise const& jets,
+                                           soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
                                            aod::JetTracksSub const& tracks)
   { 
     //rajouter les cuts de jetspectra
