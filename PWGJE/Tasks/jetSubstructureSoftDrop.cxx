@@ -819,29 +819,29 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
-    LOGF(info, "test0 ");
+    // LOGF(info, "test0 ");
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
-    LOGF(info, "test1 ");
+    // LOGF(info, "test1 ");
     LOGF(info, "Number of jets in event = %d", jets.size());
     ///////////// leading track cut try : (because filter doesnt work)
     for (auto& jet : jets){
-      LOGF(info, "test2 ");
+      // LOGF(info, "test2 ");
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
       }
-      LOGF(info, "test3 ");
+      // LOGF(info, "test3 ");
       if (!isAcceptedJet<aod::JetTracks>(jet)) {
         continue;
       }
-      LOGF(info, "test4 ");
+      // LOGF(info, "test4 ");
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial_data"), jet.pt()); 
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           hasHighPtConstituent = true;
-          LOGF(info, "test5 ");
+          // LOGF(info, "test5 ");
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
@@ -999,7 +999,7 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
                                            aod::JetTracksSub const& tracks)
   { 
     //rajouter les cuts de jetspectra
-    LOGF(info, "processChargedJetsEventWiseSubMCD");
+    // LOGF(info, "processChargedJetsEventWiseSubMCD");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
@@ -1009,10 +1009,10 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
     }
     // LOGF(info, "test2");
     // LOGF(info, "collision index = %d ", collision.globalIndex());
-    LOGF(info, "Nombre de jets dans cet événement : %d", jets.size());
+    // LOGF(info, "Nombre de jets dans cet événement : %d", jets.size());
     ///////////// leading track cut /////////////
     for (auto& jet : jets){
-      LOGF(info, "test3");
+      // LOGF(info, "test3");
 
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
@@ -1334,14 +1334,14 @@ void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterat
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
   }
-  LOGF(info, "test3");
+  // LOGF(info, "test3");
 
   if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
     return;
   }
-  LOGF(info, "test4");
+  // LOGF(info, "test4");
   for (const auto& jetMCDEventWise : jetsMCDEventWise) {
-    LOGF(info, "test5");
+    // LOGF(info, "test5");
     if (!jetfindingutilities::isInEtaAcceptance(jetMCDEventWise, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
       continue;
     }
@@ -1357,7 +1357,7 @@ void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterat
       }
     }
     if (hasHighPtConstituent) {
-      LOGF(info, "entrering fillMatchedHistogramsEventWise in processJetsMCDEventWiseMatchedMCD");
+      // LOGF(info, "entrering fillMatchedHistogramsEventWise in processJetsMCDEventWiseMatchedMCD");
       fillMatchedHistogramsEventWise<ChargedMCDEventWiseMatchedtoMCD::iterator, ChargedMCDMatchedJets, ChargedMCPMatchedJets>(jetMCDEventWise, jetsMCP, thetagMCDVec, thetagMCPVec);
     }
   }
