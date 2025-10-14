@@ -399,6 +399,7 @@ struct JetSubstructureTask {
     // fill geometry matched histograms
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
+      LOGF(info, " has_matchedGeo " );
         count++;
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
@@ -409,6 +410,7 @@ struct JetSubstructureTask {
             // count++;
             /////
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
+              LOGF(info, " for loop over thetaVec " );
               if (std::abs(ptMCD - jetMCD.pt()) < 1e-3) { 
                   LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
