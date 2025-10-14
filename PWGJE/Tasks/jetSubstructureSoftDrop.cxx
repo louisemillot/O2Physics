@@ -402,6 +402,7 @@ struct JetSubstructureTask {
       LOGF(info, " has_matchedGeo " );
         count++;
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
+          LOGF(info, " for loop over matched jets" );
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
