@@ -406,7 +406,9 @@ struct JetSubstructureTask {
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
+          LOGF(info, " after if statement on pTHat" );
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
+            LOGF(info, " after if statement jet radius" );
             double dpt = jetMCP.pt() - jetMCD.pt();
             // count++;
             /////
