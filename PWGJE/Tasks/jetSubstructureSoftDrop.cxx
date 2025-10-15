@@ -469,7 +469,7 @@ struct JetSubstructureTask {
   template <typename TMCDEventWise, typename TMCDtoMCP, typename TMCP > // TMCDEventWise : ChargedMCDEventWiseMatchedtoMCD ; TMCDtoMCP : ChargedMCDMatchedJets ; TMCP : ChargedMCPMatchedJets
   void fillMatchedHistogramsEventWise(TMCDEventWise const& jetMCDEventWise, //le jetMCDEventWise est ici le TTag : ChargedMCDEventWiseMatchedtoMCD //iterator
                                       TMCP const&, //le jetMCD ici est le TBase : ChargedMCDMatchedtoMCDEventWise
-                                      const std::vector<std::pair<float, float>>& thetagMCDVec,
+                                      const std::vector<std::pair<float, float>>& thetagMCDEventWiseVec,
                                       const std::vector<std::pair<float, float>>& thetagMCPVec,
                                       float weight = 1.0)
   { 
@@ -489,7 +489,7 @@ struct JetSubstructureTask {
             }
             if (jetMCDEventWise.r() == round(selectedJetsRadius * 100.0f)) {
               double dpt = jetMCP.pt() - jetMCDEventWise.pt();
-              for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
+              for (const auto& [thetagMCD, ptMCD] : thetagMCDEventWiseVec) {
                 if (std::abs(ptMCD - jetMCDEventWise.pt()) < 1e-3) { 
                     // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
                     for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
@@ -520,7 +520,7 @@ struct JetSubstructureTask {
           }
         }
       }
-      std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
+      std::cout << "Nombre de valeurs dans thetagMCDEventWiseVec (colonne 1) = " << thetagMCDEventWiseVec.size() << std::endl;
       std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
     }
     // fill pt matched histograms (a faire)
@@ -1379,7 +1379,7 @@ void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterat
     }
     if (hasHighPtConstituent) {
       // LOGF(info, "entrering fillMatchedHistogramsEventWise in processJetsMCDEventWiseMatchedMCD");
-      fillMatchedHistogramsEventWise<ChargedMCDEventWiseMatchedtoMCD::iterator, ChargedMCDMatchedJets, ChargedMCPMatchedJets>(jetMCDEventWise, jetsMCP, thetagMCDVec, thetagMCPVec);
+      fillMatchedHistogramsEventWise<ChargedMCDEventWiseMatchedtoMCD::iterator, ChargedMCDMatchedJets, ChargedMCPMatchedJets>(jetMCDEventWise, jetsMCP, thetagMCDEventWiseVec, thetagMCPVec);
     }
   }
 }
