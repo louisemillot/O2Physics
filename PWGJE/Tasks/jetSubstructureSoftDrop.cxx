@@ -143,6 +143,7 @@ struct JetSubstructureTask {
     AxisSpec phiAxis = {160, -1.0, 7.0, "#varphi"};
     AxisSpec thetagAxisMCD = {200, 0.0, 1.1, "{#theta}_{g}^{mcd}"}; 
     AxisSpec thetagAxisMCP = {200, 0.0, 1.1, "{#theta}_{g}^{mcp}"}; 
+    AxisSpec thetagAxisMCDEventWise = {200, 0.0, 1.1, "{#theta}_{g}^{mcd_eventwise}"}; 
 
 
 
@@ -294,9 +295,9 @@ struct JetSubstructureTask {
         registry.add("h2_jet_pt_mcp_jet_pt_diff_matchedgeo_eventwise", "jet mcp pT vs. delta pT / jet mcp pt;#it{p}_{T,jet}^{mcp} (GeV/#it{c}); (#it{p}_{T,jet}^{mcp} (GeV/#it{c}) - #it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c})) / #it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxis, {1000, -5.0, 2.0}}});
         registry.add("h2_jet_pt_mcd_jet_pt_diff_matchedgeo_eventwise", "jet mcdeventwise pT vs. delta pT / jet mcdeventwise pt;#it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c}); (#it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c}) - #it{p}_{T,jet}^{mcp} (GeV/#it{c})) / #it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxis, {1000, -5.0, 2.0}}});
         registry.add("h2_jet_pt_mcp_jet_pt_ratio_matchedgeo_eventwise", "jet mcp pT vs. jet mcdeventwise pT / jet mcp pt;#it{p}_{T,jet}^{mcp} (GeV/#it{c}); #it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c}) / #it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxis, {1000, -5.0, 5.0}}});
-        registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_eventwise","#theta_{g}^{mcdeventwise} vs. #theta_{g}^{mcp};#theta_{g}^{mcdeventwise};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
-        registry.add("h2_thetagMCD_vs_thetagMCP_pt_norange_eventwise","#theta_{g}^{mcdeventwise} vs. #theta_{g}^{mcp};#theta_{g}^{mcdeventwise};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
-        registry.add("h2_thetagMCD_vs_thetagMCP_pt_60_80_eventwise","#theta_{g}^{mcdeventwise} vs. #theta_{g}^{mcp};#theta_{g}^{mcdeventwise};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
+        registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_eventwise","#theta_{g}^{mcdeventwise} vs. #theta_{g}^{mcp};#theta_{g}^{mcdeventwise};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCDEventWise, thetagAxisMCP}});
+        registry.add("h2_thetagMCD_vs_thetagMCP_pt_norange_eventwise","#theta_{g}^{mcdeventwise} vs. #theta_{g}^{mcp};#theta_{g}^{mcdeventwise};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCDEventWise, thetagAxisMCP}});
+        registry.add("h2_thetagMCD_vs_thetagMCP_pt_60_80_eventwise","#theta_{g}^{mcdeventwise} vs. #theta_{g}^{mcp};#theta_{g}^{mcdeventwise};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCDEventWise, thetagAxisMCP}});
 
 
       }
@@ -471,7 +472,7 @@ struct JetSubstructureTask {
 
   template <typename TMCDEventWise, typename TMCDtoMCP, typename TMCP > // TMCDEventWise : ChargedMCDEventWiseMatchedtoMCD ; TMCDtoMCP : ChargedMCDMatchedJets ; TMCP : ChargedMCPMatchedJets
   void fillMatchedHistogramsEventWise(TMCDEventWise const& jetMCDEventWise, //le jetMCDEventWise est ici le TTag : ChargedMCDEventWiseMatchedtoMCD //iterator
-                                      TMCP const&, //le jetMCD ici est le TBase : ChargedMCDMatchedtoMCDEventWise
+                                      TMCP const&, //le jetMCP ici est le TBase : ChargedMCDMatchedtoMCDEventWise
                                       const std::vector<std::pair<float, float>>& thetagMCDEventWiseVec,
                                       const std::vector<std::pair<float, float>>& thetagMCPVec,
                                       float weight = 1.0)
@@ -486,6 +487,7 @@ struct JetSubstructureTask {
       if (jetMCDEventWise.has_matchedJetGeo()) { //si il y a un match geometric entre MCD et MCDEventWise - 
         // for (const auto& jetMCP : (jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()).template matchedJetGeo_as<std::decay_t<TMCP>>()) { // - alors on boucle sur MCP qui ont un matching: MCDEventWise - MCD - MCP !!!! 2 ETAPES car sinon on ne peut pas build !!!!
         for (const auto& jetMCD : jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()){ // - alors on boucle sur les MCD qui ont un matching avec EventWiseMCD: MCDEventWise - MCD
+          if (jetMCD.has_matchedJetGeo()) {
           for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TMCP>>()){ // - puis on boucle sur MCD qui ont un matching avec MCP: MCD - MCP  !!!! 2 ETAPES car sinon on ne peut pas build !!!!
             if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
               continue;
