@@ -418,7 +418,8 @@ struct JetSubstructureTask {
           }
           LOGF(info, " after if statement on pTHat" );
           LOGF(info, " weight = %.4f", weight);
-          LOGF(info, "jetMCD.r() = %.4f, selectedJetsRadius = %.4f", jetMCD.r(), selectedJetsRadius);
+          // LOGF(info, "jetMCD.r() = %.4f, selectedJetsRadius = %.4f", jetMCD.r(), selectedJetsRadius);
+        
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             LOGF(info, " after if statement jet radius" );
             double dpt = jetMCP.pt() - jetMCD.pt();
