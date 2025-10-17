@@ -1397,7 +1397,7 @@ void processJetsMCDEventWiseMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>
                                        ChargedMCDMatchedJetsWeighted const&,
                                        aod::JetTracksSub const& tracks)
 {
-  LOGF(info, "entrering processJetsMCDEventWiseMatchedMCD");
+  LOGF(info, "entrering processJetsMCDEventWiseMatchedMCDWeighted");
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
   }
@@ -1426,11 +1426,11 @@ void processJetsMCDEventWiseMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>
     }
     if (hasHighPtConstituent) {
       // LOGF(info, "entrering fillMatchedHistogramsEventWise in processJetsMCDEventWiseMatchedMCD");
-      fillMatchedHistogramsEventWise<ChargedMCDEventWiseMatchedtoMCD::iterator, ChargedMCDMatchedJets, ChargedMCPMatchedJets>(jetMCDEventWise, jetsMCP, thetagMCDEventWiseVec, thetagMCPVec, jetweight);
+      fillMatchedHistogramsEventWise<ChargedMCDEventWiseMatchedtoMCDWeighted::iterator, ChargedMCDMatchedJetsWeighted, ChargedMCPMatchedJetsWeighted>(jetMCDEventWise, jetsMCP, thetagMCDEventWiseVec, thetagMCPVec, jetweight);
     }
   }
 }
-PROCESS_SWITCH(JetSubstructureTask, processJetsMCDEventWiseMatchedMCP, "matched mcp and mcd jets eventwise", false);
+PROCESS_SWITCH(JetSubstructureTask, processJetsMCDEventWiseMatchedMCPWeighted, "matched mcp and mcd jets eventwise weighted", false);
 };
 
 
