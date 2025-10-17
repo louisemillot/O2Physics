@@ -477,7 +477,7 @@ struct JetSubstructureTask {
                                       const std::vector<std::pair<float, float>>& thetagMCPVec,
                                       float weight = 1.0)
   { 
-    LOGF(info, " fillMatchedHistogramsEventWise " );
+    // LOGF(info, " fillMatchedHistogramsEventWise " );
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCDEventWise.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
       return;
@@ -525,8 +525,8 @@ struct JetSubstructureTask {
           }
         }
       }
-      std::cout << "Nombre de valeurs dans thetagMCDEventWiseVec (colonne 1) = " << thetagMCDEventWiseVec.size() << std::endl;
-      std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
+      // std::cout << "Nombre de valeurs dans thetagMCDEventWiseVec (colonne 1) = " << thetagMCDEventWiseVec.size() << std::endl;
+      // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
       }
     // fill pt matched histograms (a faire)
     // fill geometry and pt histograms (a faire)
@@ -537,7 +537,7 @@ struct JetSubstructureTask {
   std::tuple<std::vector<std::pair<float, float>>, std::vector<std::pair<float, float>>, std::vector<std::pair<float, float>> >
   jetReclustering(T const& jet, U& splittingTable, double weight)
   {
-    LOGF(info, " Entering jetReclustering " );
+    // LOGF(info, " Entering jetReclustering " );
     energyMotherVec.clear(); //to be sure its empty before filling
     ptLeadingVec.clear();
     ptSubLeadingVec.clear();
@@ -1397,7 +1397,7 @@ void processJetsMCDEventWiseMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>
                                        ChargedMCDMatchedJetsWeighted const&,
                                        aod::JetTracksSub const& tracks)
 {
-  LOGF(info, "entrering processJetsMCDEventWiseMatchedMCDWeighted");
+  // LOGF(info, "entrering processJetsMCDEventWiseMatchedMCDWeighted");
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
     return;
   }
