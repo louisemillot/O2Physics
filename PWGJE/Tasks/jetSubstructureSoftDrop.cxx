@@ -58,11 +58,11 @@ struct JetSubstructureTask {
   using ChargedMCPMatchedJets = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedMCParticleLevelJetsMatchedToChargedMCDetectorLevelJets>; //2
   using ChargedMCDMatchedtoMCDEventWise = soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetsMatchedToChargedMCDetectorLevelEventWiseSubtractedJets>; //3 matching MCD to MCD eventwise
   using ChargedMCDEventWiseMatchedtoMCD = soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents, aod::ChargedMCDetectorLevelEventWiseSubtractedJetsMatchedToChargedMCDetectorLevelJets>; //4 matching MCD eventwise to MCD
-                                      //  ChargedMCDMatchedtoMCDEventWise,     ChargedMCDEventWiseMatchedtoMCD , ChargedMCPMatchedJets
 
 
   using ChargedMCDMatchedJetsWeighted = soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetsMatchedToChargedMCParticleLevelJets, aod::ChargedMCDetectorLevelJetEventWeights>;
   using ChargedMCPMatchedJetsWeighted = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedMCParticleLevelJetsMatchedToChargedMCDetectorLevelJets, aod::ChargedMCParticleLevelJetEventWeights>;
+  using ChargedMCDEventWiseMatchedtoMCDWeighted = soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents, aod::ChargedMCDetectorLevelEventWiseSubtractedJetsMatchedToChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetEventWeights>; //4 matching MCD eventwise to MCD weighted
 
 
   using ChargedMCDEventWise = soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents>;
@@ -1324,9 +1324,9 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
     }
     float jetweight = mcdjet.eventWeight();
     float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
-      if (mcdjet.pt() > pTHatMaxMCD * pTHat) {
-        return;
-      }
+    if (mcdjet.pt() > pTHatMaxMCD * pTHat) {
+      return;
+    }
     bool hasHighPtConstituent = false;
     ///////////// leading track cut /////////////
     for (auto& jetConstituent : mcdjet.tracks_as<aod::JetTracks>()) {
@@ -1391,7 +1391,48 @@ void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterat
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDEventWiseMatchedMCP, "matched mcp and mcd jets eventwise", false);
 
+void processJetsMCDEventWiseMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
+                                       ChargedMCDEventWiseMatchedtoMCDWeighted const& jetsMCDEventWise, 
+                                       ChargedMCPMatchedJetsWeighted const& jetsMCP,
+                                       ChargedMCDMatchedJetsWeighted const&,
+                                       aod::JetTracksSub const& tracks)
+{
+  LOGF(info, "entrering processJetsMCDEventWiseMatchedMCD");
+  if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+    return;
+  }
+  if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+    return;
+  }
+  for (const auto& jetMCDEventWise : jetsMCDEventWise) {
+    if (!jetfindingutilities::isInEtaAcceptance(jetMCDEventWise, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+      continue;
+    }
+    if (!isAcceptedJet<aod::JetTracksSub>(jetMCDEventWise)) {
+      continue;
+    }
+    float jetweight = jetMCDEventWise.eventWeight();
+    float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
+    if (jetMCDEventWise.pt() > pTHatMaxMCD * pTHat) {
+      return;
+    }
+    bool hasHighPtConstituent = false;
+    ///////////// leading track cut /////////////
+    for (auto& jetConstituent : jetMCDEventWise.tracks_as<aod::JetTracksSub>()) {
+      if (jetConstituent.pt() >= ptLeadingTrackCut) {
+        hasHighPtConstituent = true;
+        break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+      }
+    }
+    if (hasHighPtConstituent) {
+      // LOGF(info, "entrering fillMatchedHistogramsEventWise in processJetsMCDEventWiseMatchedMCD");
+      fillMatchedHistogramsEventWise<ChargedMCDEventWiseMatchedtoMCD::iterator, ChargedMCDMatchedJets, ChargedMCPMatchedJets>(jetMCDEventWise, jetsMCP, thetagMCDEventWiseVec, thetagMCPVec, jetweight);
+    }
+  }
+}
+PROCESS_SWITCH(JetSubstructureTask, processJetsMCDEventWiseMatchedMCP, "matched mcp and mcd jets eventwise", false);
 };
+
 
 
 
