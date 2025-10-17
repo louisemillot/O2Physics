@@ -410,16 +410,16 @@ struct JetSubstructureTask {
     // fill geometry matched histograms
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
-      LOGF(info, " has_matchedGeo " );
+      // LOGF(info, " has_matchedGeo " );
         count++;
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
-          LOGF(info, " for loop over matched jets" );
+          // LOGF(info, " for loop over matched jets" );
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
-          LOGF(info, " after if statement on pTHat" );
+          // LOGF(info, " after if statement on pTHat" );
           LOGF(info, " weight = %.4f", weight);
-          LOGF(info, "jetMCD.r() = %.4f, selectedJetsRadius = %.4f", static_cast<float>(jetMCD.r()), static_cast<float>(selectedJetsRadius));
+          // LOGF(info, "jetMCD.r() = %.4f, selectedJetsRadius = %.4f", static_cast<float>(jetMCD.r()), static_cast<float>(selectedJetsRadius));
         
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             LOGF(info, " after if statement jet radius" );
