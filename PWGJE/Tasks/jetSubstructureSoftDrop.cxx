@@ -432,46 +432,46 @@ struct JetSubstructureTask {
             double dpt = jetMCP.pt() - jetMCD.pt();
             count++;
             ///// debut ancienne version
-            // for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
-            //   // LOGF(info, " for loop over thetaVec " );
-            //   // if (std::abs(ptMCD - jetMCD.pt()) < 1e-5) { 
-            //   if (ptMCD == jetMCD.pt()) {
-            //     countthetagMCD++;
-            //       // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
-            //       for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
-            //           // if (std::abs(ptMCP - jetMCP.pt()) < 1e-5) { 
-            //           if (ptMCP == jetMCP.pt()) {
-            //             countthetagMCP++;
-            //             registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
-            //             registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
-            //             // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
-            //             if (ptMCP >= 20.0 && ptMCP <= 80.0) {
-            //              registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
-            //             } 
-            //           }
-            //       }
-            //   }
-            // } 
-            /////fin ancienne version
-            for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) { 
+            for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
+              // LOGF(info, " for loop over thetaVec " );
+              // if (std::abs(ptMCD - jetMCD.pt()) < 1e-5) { 
               if (ptMCD == jetMCD.pt()) {
                 countthetagMCD++;
-                thetagMCDVecMatched.push_back(thetagMCD);
-                break; // on a trouvé le bon match, inutile de continuer
+                  // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
+                  for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
+                      // if (std::abs(ptMCP - jetMCP.pt()) < 1e-5) { 
+                      if (ptMCP == jetMCP.pt()) {
+                        countthetagMCP++;
+                        registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
+                        registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
+                        // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
+                        if (ptMCP >= 20.0 && ptMCP <= 80.0) {
+                         registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
+                        } 
+                      }
+                  }
               }
-            }
-            for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
-              if (ptMCP == jetMCP.pt()) {
-                countthetagMCP++;
-                thetagMCPVecMatched.push_back(thetagMCP);
-                break;
-              }
-            }
-            for (const auto& thetagMCD : thetagMCDVecMatched) {
-              for (const auto& thetagMCP : thetagMCPVecMatched) {
-                  registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
-                } 
-            }
+            } 
+            /////fin ancienne version
+            // for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) { 
+            //   if (ptMCD == jetMCD.pt()) {
+            //     countthetagMCD++;
+            //     thetagMCDVecMatched.push_back(thetagMCD);
+            //     break; // on a trouvé le bon match, inutile de continuer
+            //   }
+            // }
+            // for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
+            //   if (ptMCP == jetMCP.pt()) {
+            //     countthetagMCP++;
+            //     thetagMCPVecMatched.push_back(thetagMCP);
+            //     break;
+            //   }
+            // }
+            // for (const auto& thetagMCD : thetagMCDVecMatched) {
+            //   for (const auto& thetagMCP : thetagMCPVecMatched) {
+            //       registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
+            //     } 
+            // }
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
