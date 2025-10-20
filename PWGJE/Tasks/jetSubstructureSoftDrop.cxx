@@ -475,8 +475,8 @@ struct JetSubstructureTask {
                                       TMCP const&, //le jetMCP ici est le TBase : ChargedMCDMatchedtoMCDEventWise
                                       const std::vector<std::pair<float, float>>& thetagMCDEventWiseVec,
                                       const std::vector<std::pair<float, float>>& thetagMCPVec,
-                                      float weight = 1.0)
-  { 
+                                      float weight = 1.0) 
+    {
     // LOGF(info, " fillMatchedHistogramsEventWise " );
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCDEventWise.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
@@ -493,8 +493,8 @@ struct JetSubstructureTask {
             if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
               continue;
             }
-            if (jetMCDEventWise.r() == round(selectedJetsRadius * 100.0f)) 
-            countMCD_MCP++;
+            if (jetMCDEventWise.r() == round(selectedJetsRadius * 100.0f)) { 
+              countMCD_MCP++;
               double dpt = jetMCP.pt() - jetMCDEventWise.pt();
               for (const auto& [thetagMCD, ptMCD] : thetagMCDEventWiseVec) {
                 if (std::abs(ptMCD - jetMCDEventWise.pt()) < 1e-3) { 
@@ -525,8 +525,8 @@ struct JetSubstructureTask {
               registry.fill(HIST("h2_jet_eta_mcd_jet_eta_mcp_matchedgeo_eventwise"), jetMCDEventWise.eta(), jetMCP.eta(), weight);
             }
           }
+          }
         }
-      }
       // std::cout << "Nombre de valeurs dans thetagMCDEventWiseVec (colonne 1) = " << thetagMCDEventWiseVec.size() << std::endl;
       // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
       }
@@ -535,6 +535,7 @@ struct JetSubstructureTask {
 
     // fill pt matched histograms (a faire)
     // fill geometry and pt histograms (a faire)
+    
     }
   }
 
