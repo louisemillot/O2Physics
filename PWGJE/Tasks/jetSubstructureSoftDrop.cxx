@@ -402,7 +402,7 @@ struct JetSubstructureTask {
                             float weight = 1.0)
   { 
     // LOGF(info, "==== Jet numéro %d ====", jetMCD.globalIndex());
-    LOGF(info, " fillMatchedHistograms " );
+    // LOGF(info, " fillMatchedHistograms " );
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCD.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
       return;
@@ -411,29 +411,29 @@ struct JetSubstructureTask {
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
       // LOGF(info, " has_matchedGeo " );
-        count++;
+        // count++;
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
           // LOGF(info, " for loop over matched jets" );
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
           // LOGF(info, " after if statement on pTHat" );
-          LOGF(info, " weight = %.4f", weight);
+          // LOGF(info, " weight = %.4f", weight);
           // LOGF(info, "jetMCD.r() = %.4f, selectedJetsRadius = %.4f", static_cast<float>(jetMCD.r()), static_cast<float>(selectedJetsRadius));
         
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
-            LOGF(info, " after if statement jet radius" );
+            // LOGF(info, " after if statement jet radius" );
             double dpt = jetMCP.pt() - jetMCD.pt();
-            // count++;
+            count++;
             /////
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
-              LOGF(info, " for loop over thetaVec " );
+              // LOGF(info, " for loop over thetaVec " );
               if (std::abs(ptMCD - jetMCD.pt()) < 1e-3) { 
-                  LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
+                  // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                       if (std::abs(ptMCP - jetMCP.pt()) < 1e-3) { 
                         registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
-                        LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
+                        // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                         if (ptMCP >= 20.0 && ptMCP <= 80.0) {
                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
                         } 
@@ -459,17 +459,17 @@ struct JetSubstructureTask {
           }
         }
       }
-      std::cout << "nombre de MCP matchés : " << count << std::endl;
+      std::cout << "nombre de MCD-MCP matchés : " << count << std::endl;
       std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
       std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
     }
-    // LOGF(info, "Nombre de MCP matchés à ce MCD : %d", countMCP);
 
     // fill pt matched histograms (a faire)
     // fill geometry and pt histograms (a faire)
   }
   
-
+  int countMCDEW_MCD = 0;
+  int countMCD_MCP = 0;
   template <typename TMCDEventWise, typename TMCDtoMCP, typename TMCP > // TMCDEventWise : ChargedMCDEventWiseMatchedtoMCD ; TMCDtoMCP : ChargedMCDMatchedJets ; TMCP : ChargedMCPMatchedJets
   void fillMatchedHistogramsEventWise(TMCDEventWise const& jetMCDEventWise, //le jetMCDEventWise est ici le TTag : ChargedMCDEventWiseMatchedtoMCD //iterator
                                       TMCP const&, //le jetMCP ici est le TBase : ChargedMCDMatchedtoMCDEventWise
@@ -487,12 +487,14 @@ struct JetSubstructureTask {
       if (jetMCDEventWise.has_matchedJetGeo()) { //si il y a un match geometric entre MCD et MCDEventWise - 
         // for (const auto& jetMCP : (jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()).template matchedJetGeo_as<std::decay_t<TMCP>>()) { // - alors on boucle sur MCP qui ont un matching: MCDEventWise - MCD - MCP !!!! 2 ETAPES car sinon on ne peut pas build !!!!
         for (const auto& jetMCD : jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()){ // - alors on boucle sur les MCD qui ont un matching avec EventWiseMCD: MCDEventWise - MCD
+          countMCDEW_MCD++;
           if (jetMCD.has_matchedJetGeo()) {
           for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TMCP>>()){ // - puis on boucle sur MCD qui ont un matching avec MCP: MCD - MCP  !!!! 2 ETAPES car sinon on ne peut pas build !!!!
             if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
               continue;
             }
-            if (jetMCDEventWise.r() == round(selectedJetsRadius * 100.0f)) {
+            if (jetMCDEventWise.r() == round(selectedJetsRadius * 100.0f)) 
+            countMCD_MCP++;
               double dpt = jetMCP.pt() - jetMCDEventWise.pt();
               for (const auto& [thetagMCD, ptMCD] : thetagMCDEventWiseVec) {
                 if (std::abs(ptMCD - jetMCDEventWise.pt()) < 1e-3) { 
@@ -500,7 +502,7 @@ struct JetSubstructureTask {
                     for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                         if (std::abs(ptMCP - jetMCP.pt()) < 1e-3) { 
                           registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange_eventwise"), thetagMCD, thetagMCP, weight);
-                          LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
+                          // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                           if (ptMCP >= 20.0 && ptMCP <= 80.0) {
                           registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80_eventwise"), thetagMCD, thetagMCP, weight);
                           } 
@@ -528,6 +530,9 @@ struct JetSubstructureTask {
       // std::cout << "Nombre de valeurs dans thetagMCDEventWiseVec (colonne 1) = " << thetagMCDEventWiseVec.size() << std::endl;
       // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
       }
+    std::cout << "nombre de MCDEW-MCD matchés : " << countMCDEW_MCD << std::endl;
+    std::cout << "nombre de MCD-MCP matchés aprês MCDEW-MCD: " << countMCD_MCP << std::endl;
+
     // fill pt matched histograms (a faire)
     // fill geometry and pt histograms (a faire)
     }
