@@ -285,6 +285,8 @@ struct JetSubstructureTask {
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h2_thetagMCD_vs_thetagMCP_pt_norange","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h2_thetagMCD_vs_thetagMCP_pt_60_80","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
+        registry.add("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange","p_{T}^{MCD} vs p_{T}^{MCP} vs #theta_{g}^{MCD} vs #theta_{g}^{MCP};p_{T}^{MCD} (GeV/#it{c});p_{T}^{MCP} (GeV/#it{c});#theta_{g}^{MCD};#theta_{g}^{MCP}",{HistType::kTHnSparseF, {jetPtAxisMCD, jetPtAxisMCP, thetagAxisMCD, thetagAxisMCP}});
+
 
         registry.add("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint_eventwise", "pT mcdeventwise vs. pT mcp;#it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c});#it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxisMCD, jetPtAxisMCP}});
         registry.add("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcpetaconstraint_eventwise", "pT mcdeventwise vs. pT mcp;#it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c});#it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxisMCD, jetPtAxisMCP}});
@@ -438,6 +440,7 @@ struct JetSubstructureTask {
                       if (std::abs(ptMCP - jetMCP.pt()) < 1e-5) { 
                         countthetagMCP++;
                         registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
+                        registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                         // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                         if (ptMCP >= 20.0 && ptMCP <= 80.0) {
                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
@@ -467,7 +470,7 @@ struct JetSubstructureTask {
     }
     std::cout << "nombre de MCD-MCP matchés : " << count << std::endl;
     std::cout << "nombre de thetagMCD trouvés : " << countthetagMCD << std::endl;
-    std::cout << "nombre de thetagMCP trouvés : " << countthetagMCP << std::endl;
+    std::cout << "nombre de thetagMCP trouvés : " << countthetagMCP << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves 
 
     // std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
     // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
