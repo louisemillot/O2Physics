@@ -457,24 +457,23 @@ struct JetSubstructureTask {
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) { 
               if (ptMCD == jetMCD.pt()) {
                 countthetagMCD++;
-                thetagMCDVecMatched = thetagMCD;
+                thetagMCDVecMatched.push_back(thetagMCD);
                 break; // on a trouvé le bon match, inutile de continuer
               }
             }
             for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
               if (ptMCP == jetMCP.pt()) {
                 countthetagMCP++;
-                thetagMCPVecMatched = thetagMCP;
+                thetagMCPVecMatched.push_back(thetagMCP);
                 break;
               }
             }
-            if (thetagMCDVecMatched.has_value() && thetagMCPVecMatched.has_value()) {
-              float thetagMCD = *thetagMCDVecMatched;
-              float thetagMCP = *thetagMCPVecMatched;
-
-              registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
-            }              
-
+            for (const auto& thetagMCD : thetagMCDVecMatched) {
+              for (const auto& thetagMCP : thetagMCPVecMatched) {
+                  registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
+                } 
+              } 
+            } 
 
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
