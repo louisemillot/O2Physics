@@ -392,6 +392,9 @@ struct JetSubstructureTask {
     return true;
   }
   int count = 0;
+  int countthetagMCD = 0;
+  int countthetagMCP = 0;
+
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
   template <typename TBase, typename TTag >
   void fillMatchedHistograms(TBase const& jetMCD,
@@ -428,10 +431,12 @@ struct JetSubstructureTask {
             /////
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
               // LOGF(info, " for loop over thetaVec " );
-              if (std::abs(ptMCD - jetMCD.pt()) < 1e-3) { 
+              if (std::abs(ptMCD - jetMCD.pt()) < 1e-5) { 
+                countthetagMCD++;
                   // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
-                      if (std::abs(ptMCP - jetMCP.pt()) < 1e-3) { 
+                      if (std::abs(ptMCP - jetMCP.pt()) < 1e-5) { 
+                        countthetagMCP++;
                         registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
                         // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                         if (ptMCP >= 20.0 && ptMCP <= 80.0) {
@@ -460,9 +465,12 @@ struct JetSubstructureTask {
         }
       }
     }
-    std::cout << "nombre de MCD-MCP matchés : " << count << std::endl;
-    std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
-    std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
+    std::cout << "nombre de MCD-MCP matchés : " << countMCD_MCP << std::endl;
+    std::cout << "nombre de thetagMCD trouvés : " << countthetagMCD << std::endl;
+    std::cout << "nombre de thetagMCP trouvés : " << countthetagMCP << std::endl;
+
+    // std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
+    // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
     // fill pt matched histograms (a faire)
     // fill geometry and pt histograms (a faire)
   }
