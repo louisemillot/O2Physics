@@ -433,11 +433,13 @@ struct JetSubstructureTask {
             /////
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
               // LOGF(info, " for loop over thetaVec " );
-              if (std::abs(ptMCD - jetMCD.pt()) < 1e-5) { 
+              // if (std::abs(ptMCD - jetMCD.pt()) < 1e-5) { 
+              if (ptMCD == jetMCD.pt()) {
                 countthetagMCD++;
                   // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
-                      if (std::abs(ptMCP - jetMCP.pt()) < 1e-5) { 
+                      // if (std::abs(ptMCP - jetMCP.pt()) < 1e-5) { 
+                      if (ptMCP == jetMCP.pt()) {
                         countthetagMCP++;
                         registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
                         registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
