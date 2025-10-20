@@ -459,11 +459,10 @@ struct JetSubstructureTask {
           }
         }
       }
-      std::cout << "nombre de MCD-MCP matchés : " << count << std::endl;
-      std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
-      std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
     }
-
+    std::cout << "nombre de MCD-MCP matchés : " << count << std::endl;
+    std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
+    std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
     // fill pt matched histograms (a faire)
     // fill geometry and pt histograms (a faire)
   }
