@@ -454,21 +454,26 @@ struct JetSubstructureTask {
             // } 
             /////fin ancienne version
 
-            for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
+            for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) { 
               if (ptMCD == jetMCD.pt()) {
                 countthetagMCD++;
-                thetagMCDVecMatched.push_back(thetagMCD);
-
-              } 
-            } 
+                thetagMCDVecMatched = thetagMCD;
+                break; // on a trouvé le bon match, inutile de continuer
+              }
+            }
             for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
               if (ptMCP == jetMCP.pt()) {
                 countthetagMCP++;
-                thetagMCPVecMatched.push_back(thetagMCP);
+                thetagMCPVecMatched = thetagMCP;
+                break;
               }
             }
-            registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCDVecMatched, thetagMCPVecMatched, weight);
-              
+            if (thetagMCDVecMatched.has_value() && thetagMCPVecMatched.has_value()) {
+              float thetagMCD = *thetagMCDVecMatched;
+              float thetagMCP = *thetagMCPVecMatched;
+
+              registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
+            }              
 
 
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
