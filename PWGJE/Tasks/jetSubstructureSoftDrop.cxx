@@ -471,9 +471,7 @@ struct JetSubstructureTask {
               for (const auto& thetagMCP : thetagMCPVecMatched) {
                   registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                 } 
-            } 
-            } 
-
+            }
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
@@ -490,6 +488,7 @@ struct JetSubstructureTask {
           }
         }
       }
+    }
     
     std::cout << "nombre de MCD-MCP matchés : " << count << std::endl;
     std::cout << "nombre de thetagMCD trouvés : " << countthetagMCD << std::endl;
