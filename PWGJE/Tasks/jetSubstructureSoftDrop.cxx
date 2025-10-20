@@ -476,7 +476,7 @@ struct JetSubstructureTask {
                                       const std::vector<std::pair<float, float>>& thetagMCDEventWiseVec,
                                       const std::vector<std::pair<float, float>>& thetagMCPVec,
                                       float weight = 1.0) 
-    {
+  {
     // LOGF(info, " fillMatchedHistogramsEventWise " );
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCDEventWise.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
@@ -559,7 +559,7 @@ struct JetSubstructureTask {
     auto nsd = 0.0;
     auto zg = -1.0;
     auto rg = -1.0;
-    LOGF(info, "==== Jet numéro %d ====", jet.globalIndex());
+    // LOGF(info, "==== Jet numéro %d ====", jet.globalIndex());
 
     while (daughterSubJet.has_parents(parentSubJet1, parentSubJet2)) {//while daughter has parents, until we reach the end of reclustering
       if (parentSubJet1.perp() < parentSubJet2.perp()) {
@@ -599,7 +599,7 @@ struct JetSubstructureTask {
             registry.fill(HIST("h_jet_zg"), zg, weight);
             thetagMCDVec.push_back({thetag, jet.pt()});
             // LOGF(info, "thetagMCD: %.4f et ptMCD: %.4f", thetag, jet.pt() );
-            LOGF(info, "thetagMCD = %.4f, ptJet = %.4f , Jet numéro %d ", thetag, jet.pt(), jet.globalIndex());
+            // LOGF(info, "thetagMCD = %.4f, ptJet = %.4f , Jet numéro %d ", thetag, jet.pt(), jet.globalIndex());
 
 
           }
@@ -741,7 +741,7 @@ struct JetSubstructureTask {
   }
   registry.fill(HIST("h_mcColl_counts"), 1.5);
 
-  if (collisions.size() < 1) {
+  if (collisions.size() < 1) { 
     return;
   }
   registry.fill(HIST("h_mcColl_counts"), 2.5);
@@ -974,8 +974,8 @@ PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "Mc collisions ", false
                                      soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetEventWeights> const& jets,
                                      aod::JetTracks const& tracks)
   { 
-    LOGF(info, "processChargedJetsMCDWeighted ");
-    LOGF(info, "collision index = %d ", collision.globalIndex());
+    // LOGF(info, "processChargedJetsMCDWeighted ");
+    // LOGF(info, "collision index = %d ", collision.globalIndex());
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
@@ -1201,7 +1201,7 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "
                                       soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
                                       soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents , aod::ChargedMCParticleLevelJetEventWeights> const& jets,
                                       aod::JetParticles const& particles)
-  {
+{
   LOGF(info, "processChargedJetsMCPWeighted ");
   //meme criteres que JetSpectra:
   bool mcLevelIsParticleLevel = true;
