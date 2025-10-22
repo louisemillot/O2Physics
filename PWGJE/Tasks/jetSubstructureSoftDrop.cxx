@@ -1419,9 +1419,9 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
 
-void processJetsMCDMatchedMCPForBoucle(soa::Filtered<aod::JetCollisions>::iterator const& collision,
-                              ChargedMCDMatchedJets const&,
-                              ChargedMCPMatchedJets const& mcpjets,
+void processJetsMCDMatchedMCPForBoucleWeight(soa::Filtered<aod::JetCollisions>::iterator const& collision,
+                              ChargedMCDMatchedJetsWeighted const&,
+                              ChargedMCPMatchedJetsWeighted const& mcpjets,
                               aod::JetTracks const& track, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
@@ -1438,6 +1438,11 @@ void processJetsMCDMatchedMCPForBoucle(soa::Filtered<aod::JetCollisions>::iterat
     if (!isAcceptedJet<aod::JetTracks>(mcpjet)) {
       continue;
     }
+    float jetweight = mcpjet.eventWeight();
+    float pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
+    if (mcpjet.pt() > pTHatMaxMCD * pTHat) {
+      return;
+    }
     bool hasHighPtConstituent = false;
     ///////////// leading track cut /////////////
     for (auto& jetConstituent : mcpjet.tracks_as<aod::JetTracks>()) {
@@ -1447,11 +1452,11 @@ void processJetsMCDMatchedMCPForBoucle(soa::Filtered<aod::JetCollisions>::iterat
       }
     }
     if (hasHighPtConstituent) {
-      fillMatchedHistogramsForBoucle<ChargedMCPMatchedJets::iterator, ChargedMCDMatchedJets>(mcpjet, thetagMCDVec, thetagMCPVec);
+      fillMatchedHistogramsForBoucle<ChargedMCPMatchedJetsWeighted::iterator, ChargedMCDMatchedJetsWeighted>(mcpjet, thetagMCDVec, thetagMCPVec, jetweight);
     }
   }
 }
-PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPForBoucle, "matched mcp and mcd jets- for boucle", false);
+PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPForBoucleWeight, "matched mcp and mcd jets- for boucle", false);
 
 void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                       ChargedMCDMatchedJetsWeighted const& mcdjets,
