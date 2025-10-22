@@ -509,7 +509,7 @@ struct JetSubstructureTask {
         }
       }
     }
-  }
+  
     
     std::cout << "nombre de MCD-MCP matchés : " << count << std::endl;
     std::cout << "nombre de thetagMCD trouvés boucle for sur MCD : " << countthetagMCD_MCD << std::endl;
