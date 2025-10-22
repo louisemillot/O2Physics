@@ -1426,16 +1426,16 @@ void processJetsMCDMatchedMCPForBoucleWeight(soa::Filtered<aod::JetMcCollisions>
                                               aod::JetTracks const& track, aod::JetParticles const&)
 {
 bool mcLevelIsParticleLevel = true;
-float eventWeight = mcCollision.weight();
+// float eventWeight = mcCollision.weight();
 
-  for (auto const& collision : collisions) {
-    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
-      return;
-    }
-    if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
-      return;
-    }
-  }
+  // for (auto const& collision : collisions) {
+  //   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+  //     return;
+  //   }
+  //   if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+  //     return;
+  //   }
+  // }
   for (const auto& mcpjet : mcpjets) {
     if (!jetfindingutilities::isInEtaAcceptance(mcpjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
       continue;
@@ -1469,12 +1469,12 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
                                       ChargedMCPMatchedJetsWeighted const&,
                                       aod::JetTracks const& tracks, aod::JetParticles const&)
 {
-  if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
-    return;
-  }
-  if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
-    return;
-  }
+  // if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+  //   return;
+  // }
+  // if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+  //   return;
+  // }
   for (const auto& mcdjet : mcdjets) {
     if (!jetfindingutilities::isInEtaAcceptance(mcdjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
       continue;
