@@ -1420,19 +1420,21 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
 
 void processJetsMCDMatchedMCPForBoucleWeight(soa::Filtered<aod::JetMcCollisions>::iterator const& mcCollision,
-                                              soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
+                                              // soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
                                               ChargedMCPMatchedJetsWeighted const& mcpjets,
                                               ChargedMCDMatchedJetsWeighted const& mcdjets,
                                               aod::JetTracks const& track, aod::JetParticles const&)
 {
 bool mcLevelIsParticleLevel = true;
-for (auto const& collision : collisions) {
-  if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
-    return;
-  }
-  if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
-    return;
-  }
+float eventWeight = mcCollision.weight();
+
+// for (auto const& collision : collisions) {
+  // if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+  //   return;
+  // }
+  // if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+  //   return;
+  // }
   for (const auto& mcpjet : mcpjets) {
     if (!jetfindingutilities::isInEtaAcceptance(mcpjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
       continue;
@@ -1457,7 +1459,7 @@ for (auto const& collision : collisions) {
       fillMatchedHistogramsForBoucle<ChargedMCPMatchedJetsWeighted::iterator, ChargedMCDMatchedJetsWeighted>(mcpjet, thetagMCDVec, thetagMCPVec, jetweight);
     }
   }
-}
+
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPForBoucleWeight, "matched mcp and mcd jets- for boucle", false);
 
