@@ -398,18 +398,12 @@ struct JetSubstructureTask {
   int countthetagMCP_MCD_surMCD = 0;
   int countthetagMCD_MCP_surMCD = 0;
   int countthetagMCP_MCP_surMCD = 0;
-  int count_surMCP = 0;
-  int countthetagMCD_MCD_surMCP = 0;
-  int countthetagMCP_MCD_surMCP = 0;
-  int countthetagMCD_MCP_surMCP = 0;
-  int countthetagMCP_MCP_surMCP = 0;
 
   std::vector<float> thetagMCDVecMatched;
   std::vector<float> thetagMCPVecMatched;
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
   template <typename TBase, typename TTag >
   void fillMatchedHistograms(TBase const& jetMCD,
-                            TTag const& jetMCP,
                             //  TableMCD& splittingTableMCD,
                             //  TableMCP& splittingTableMCP,
                             const std::vector<std::pair<float, float>>& thetagMCDVec,
@@ -513,7 +507,39 @@ struct JetSubstructureTask {
             registry.fill(HIST("h2_jet_eta_mcd_jet_eta_mcp_matchedgeo"), jetMCD.eta(), jetMCP.eta(), weight);
           } 
         }
-        for (const auto& jetMCD : jetMCP.template matchedJetGeo_as<std::decay_t<TBase>>()) {
+      }
+    }
+    std::cout << "nombre de MCD-MCP matchés - sur MCD : " << count_surMCD << std::endl;
+    std::cout << "nombre de thetagMCD trouvés boucle for sur MCD - sur MCD : " << countthetagMCD_MCD_surMCD << std::endl;
+    std::cout << "nombre de thetagMCP trouvés boucle for sur MCD - sur MCD : " << countthetagMCP_MCD_surMCD << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves 
+    std::cout << "nombre de thetagMCP trouvés boucle for sur MCP - sur MCD : " << countthetagMCP_MCP_surMCD << std::endl;  
+    std::cout << "nombre de thetagMCD trouvés boucle for sur MCP - sur MCD : " << countthetagMCD_MCP_surMCD << std::endl; //nombre de thetagMCD trouvés parmis les thetagMCP trouves
+
+    // std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
+    // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
+    // fill pt matched histograms (a faire)
+    // fill geometry and pt histograms (a faire)
+  }
+
+  int count_surMCP = 0;
+  int countthetagMCD_MCD_surMCP = 0;
+  int countthetagMCP_MCD_surMCP = 0;
+  int countthetagMCD_MCP_surMCP = 0;
+  int countthetagMCP_MCP_surMCP = 0;
+  template <typename TBase, typename TTag >
+  void fillMatchedHistogramsForBoucle(TBase const& jetMCP,
+                                      const std::vector<std::pair<float, float>>& thetagMCDVec,
+                                      const std::vector<std::pair<float, float>>& thetagMCPVec,
+                                      float weight = 1.0)
+  { 
+    float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
+    if (jetMCP.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
+      return;
+    }
+    // fill geometry matched histograms
+    if (checkGeoMatched) {
+      if (jetMCP.has_matchedJetGeo()) {
+        for (const auto& jetMCD : jetMCP.template matchedJetGeo_as<std::decay_t<TTag>>()) {
           if (jetMCD.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
               continue;
           }
@@ -543,22 +569,11 @@ struct JetSubstructureTask {
         }
       }
     }
-    std::cout << "nombre de MCD-MCP matchés - sur MCD : " << count_surMCD << std::endl;
-    std::cout << "nombre de thetagMCD trouvés boucle for sur MCD - sur MCD : " << countthetagMCD_MCD_surMCD << std::endl;
-    std::cout << "nombre de thetagMCP trouvés boucle for sur MCD - sur MCD : " << countthetagMCP_MCD_surMCD << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves 
-    std::cout << "nombre de thetagMCP trouvés boucle for sur MCP - sur MCD : " << countthetagMCP_MCP_surMCD << std::endl;  
-    std::cout << "nombre de thetagMCD trouvés boucle for sur MCP - sur MCD : " << countthetagMCD_MCP_surMCD << std::endl; //nombre de thetagMCD trouvés parmis les thetagMCP trouves
-
     std::cout << "nombre de MCD-MCP matchés sur MCP : " << count_surMCP << std::endl;
     std::cout << "nombre de thetagMCD trouvés boucle for sur MCD - sur MCP : " << countthetagMCD_MCD_surMCP << std::endl;
     std::cout << "nombre de thetagMCP trouvés boucle for sur MCD - sur MCP : " << countthetagMCP_MCD_surMCP << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves 
-    std::cout << "nombre de thetagMCP trouvés boucle for sur MCP - sur MCP : " << countthetagMCP_MCP_surMCP << std::endl;  
-    std::cout << "nombre de thetagMCD trouvés boucle for sur MCP - sur MCP : " << countthetagMCD_MCP_surMCP << std::endl;
-
-    // std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
-    // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
-    // fill pt matched histograms (a faire)
-    // fill geometry and pt histograms (a faire)
+    std::cout << "nombre de thetagMCP trouvés boucle for sur MCP - sur MCP : " << countthetagMCP_MCP_surMCP << std::endl; 
+    std::cout << "nombre de thetagMCD trouvés boucle for sur MCP - sur MCP : " << countthetagMCD_MCP_surMCP << std::endl; //nombre de thetagMCD trouvés parmis les thetagMCP trouves
   }
   
   int countMCDEW_MCD = 0;
@@ -1372,7 +1387,7 @@ PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCPWeighted, "charged jet 
 
 void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                               ChargedMCDMatchedJets const& mcdjets,
-                              ChargedMCPMatchedJets const& mdpjets,
+                              ChargedMCPMatchedJets const& mcpjets,
                               aod::JetTracks const& track, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
@@ -1398,7 +1413,8 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
       }
     }
     if (hasHighPtConstituent) {
-      fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet,mdpjets, thetagMCDVec, thetagMCPVec);
+      fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet, thetagMCDVec, thetagMCPVec);
+      fillMatchedHistogramsForBoucle<ChargedMCPMatchedJets::iterator, ChargedMCDMatchedJets>(mcpjets, thetagMCDVec, thetagMCPVec);
     }
   }
 }
@@ -1406,7 +1422,7 @@ PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and m
 
 void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                       ChargedMCDMatchedJetsWeighted const& mcdjets,
-                                      ChargedMCPMatchedJetsWeighted const& mdpjets,
+                                      ChargedMCPMatchedJetsWeighted const&,
                                       aod::JetTracks const& tracks, aod::JetParticles const&)
 {
   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
@@ -1441,7 +1457,7 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
       // LOGF(info, "thetagMCD = %.4f", thetagMCD.value());
       //if (doprocessChargedJetsMCD || doprocessChargedJetsMCDWeighted){ //doprocessChargedJetsEventWiseSubMCD
       // fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,jetSplittingsMCDTable, jetSplittingsMCPTable, mcdjet.eventWeight());
-      fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet,mdpjets, thetagMCDVec, thetagMCPVec, jetweight);
+      fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet, thetagMCDVec, thetagMCPVec, jetweight);
 
 
       //}
