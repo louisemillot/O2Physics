@@ -539,7 +539,6 @@ struct JetSubstructureTask {
     // fill geometry matched histograms
     if (checkGeoMatched) {
       if (jetMCP.has_matchedJetGeo()) {
-        LOGF(info, " checkGeoMatched" );
         for (const auto& jetMCD : jetMCP.template matchedJetGeo_as<std::decay_t<TTag>>()) {
           if (jetMCD.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
               continue;
@@ -548,11 +547,9 @@ struct JetSubstructureTask {
             count_surMCD++;
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
               if (ptMCD == jetMCD.pt()) {
-                LOGF(info, " boucle sur thetagMCD" );
                 countthetagMCD_MCD_surMCD++;
                 for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                   if (ptMCP == jetMCP.pt()) {
-                    LOGF(info, " boucle sur thetagMCP" );
                     countthetagMCP_MCD_surMCD++;
                   } 
                 }
@@ -560,11 +557,9 @@ struct JetSubstructureTask {
             }
             for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) { 
               if (ptMCP == jetMCP.pt()) {
-                LOGF(info, " boucle sur thetagMCP" );
                 countthetagMCP_MCP_surMCD++;
                 for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
                   if (ptMCD == jetMCD.pt()) {
-                    LOGF(info, " boucle sur thetagMCD" );
                     countthetagMCD_MCP_surMCD++;
                   } 
                 }
