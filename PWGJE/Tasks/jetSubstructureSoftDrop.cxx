@@ -1425,13 +1425,12 @@ void processJetsMCDMatchedMCPForBoucleWeight(soa::Filtered<aod::JetMcCollisions>
                                               ChargedMCDMatchedJetsWeighted const& mcdjets,
                                               aod::JetTracks const& track, aod::JetParticles const&)
 {
-for (auto const& collision : collisions) {
-  if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
-    return;
-  }
-  if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
-    return;
-  }
+  // if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+  //   return;
+  // }
+  // if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+  //   return;
+  // }
 
   for (const auto& mcpjet : mcdjets) {
     if (!jetfindingutilities::isInEtaAcceptance(mcpjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
@@ -1457,7 +1456,6 @@ for (auto const& collision : collisions) {
       fillMatchedHistogramsForBoucle<ChargedMCPMatchedJetsWeighted::iterator, ChargedMCDMatchedJetsWeighted>(mcpjet, thetagMCDVec, thetagMCPVec, jetweight);
     }
   }
-}
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPForBoucleWeight, "matched mcp and mcd jets- for boucle", false);
 
