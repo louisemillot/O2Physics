@@ -469,7 +469,7 @@ struct JetSubstructureTask {
                   }
               }
             }
-          } 
+          
             //test qui marche pas :
             // for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) { 
             //   if (ptMCD == jetMCD.pt()) {
@@ -506,6 +506,7 @@ struct JetSubstructureTask {
               registry.fill(HIST("h2_jet_pt_mcp_jet_pt_ratio_matchedgeo"), jetMCP.pt(), jetMCD.pt() / jetMCP.pt(), weight);
             }
             registry.fill(HIST("h2_jet_eta_mcd_jet_eta_mcp_matchedgeo"), jetMCD.eta(), jetMCP.eta(), weight);
+          } 
         }
       }
     }
