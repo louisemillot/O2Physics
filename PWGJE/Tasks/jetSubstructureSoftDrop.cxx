@@ -1432,22 +1432,22 @@ void processJetsMCDMatchedMCPForBoucle(soa::Filtered<aod::JetCollisions>::iterat
   }
 
   for (const auto& mcpjet : mcpjets) {
-    if (!jetfindingutilities::isInEtaAcceptance(mcpjets, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+    if (!jetfindingutilities::isInEtaAcceptance(mcpjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
       continue;
     }
-    if (!isAcceptedJet<aod::JetTracks>(mcpjets)) {
+    if (!isAcceptedJet<aod::JetTracks>(mcpjet)) {
       continue;
     }
     bool hasHighPtConstituent = false;
     ///////////// leading track cut /////////////
-    for (auto& jetConstituent : mcpjets.tracks_as<aod::JetTracks>()) {
+    for (auto& jetConstituent : mcpjet.tracks_as<aod::JetTracks>()) {
       if (jetConstituent.pt() >= ptLeadingTrackCut) {
         hasHighPtConstituent = true;
         break; // Sortir de la boucle dès qu'un constituant valide est trouvé
       }
     }
     if (hasHighPtConstituent) {
-      fillMatchedHistogramsForBoucle<ChargedMCPMatchedJets::iterator, ChargedMCDMatchedJets>(mcpjets, thetagMCDVec, thetagMCPVec);
+      fillMatchedHistogramsForBoucle<ChargedMCPMatchedJets::iterator, ChargedMCDMatchedJets>(mcpjet, thetagMCDVec, thetagMCPVec);
     }
   }
 }
