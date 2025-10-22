@@ -394,8 +394,10 @@ struct JetSubstructureTask {
     return true;
   }
   int count = 0;
-  int countthetagMCD = 0;
-  int countthetagMCP = 0;
+  int countthetagMCD_MCD = 0;
+  int countthetagMCP_MCD = 0;
+  int countthetagMCD_MCP = 0;
+  int countthetagMCP_MCP = 0;
   std::vector<float> thetagMCDVecMatched;
   std::vector<float> thetagMCPVecMatched;
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
@@ -436,43 +438,38 @@ struct JetSubstructureTask {
               // LOGF(info, " for loop over thetaVec " );
               // if (std::abs(ptMCD - jetMCD.pt()) < 1e-5) { 
               if (ptMCD == jetMCD.pt()) {
-                countthetagMCD++;
+                countthetagMCD_MCD++;
                   // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                       // if (std::abs(ptMCP - jetMCP.pt()) < 1e-5) { 
                       if (ptMCP == jetMCP.pt()) {
-                        countthetagMCP++;
-                        registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
-                        registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
+                        countthetagMCP_MCD++;
+                        // registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
+                        // registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                         // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
-                        if (ptMCP >= 20.0 && ptMCP <= 80.0) {
-                         registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
-                        } 
-                      }
+                        // if (ptMCP >= 20.0 && ptMCP <= 80.0) {
+                        //  registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
+                      } 
                   }
               }
-            } 
+            }
+          
             /////
-            // for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
-            //   // LOGF(info, " for loop over thetaVec " );
-            //   // if (std::abs(ptMCD - jetMCD.pt()) < 1e-5) { 
-            //   if (ptMCP == jetMCP.pt()) {
-            //     countthetagMCP++;
-            //       // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
-            //       for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
-            //           // if (std::abs(ptMCP - jetMCP.pt()) < 1e-5) { 
-            //           if (ptMCD == jetMCD.pt()) {
-            //             countthetagMCD++;
-            //             registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
-            //             registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
-            //             // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
-            //             if (ptMCP >= 20.0 && ptMCP <= 80.0) {
-            //              registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
-            //             } 
-            //           }
-            //       }
-            //   }
-            // }
+            for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) { 
+              if (ptMCP == jetMCP.pt()) {
+                countthetagMCP_MCP++;
+                  for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
+                      if (ptMCD == jetMCD.pt()) {
+                        countthetagMCD_MCP++;
+                        // registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
+                        // registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
+                        // if (ptMCP >= 20.0 && ptMCP <= 80.0) {
+                        //  registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
+                      } 
+                  }
+              }
+            }
+          } 
             //test qui marche pas :
             // for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) { 
             //   if (ptMCD == jetMCD.pt()) {
@@ -509,14 +506,17 @@ struct JetSubstructureTask {
               registry.fill(HIST("h2_jet_pt_mcp_jet_pt_ratio_matchedgeo"), jetMCP.pt(), jetMCD.pt() / jetMCP.pt(), weight);
             }
             registry.fill(HIST("h2_jet_eta_mcd_jet_eta_mcp_matchedgeo"), jetMCD.eta(), jetMCP.eta(), weight);
-          }
         }
       }
     }
+  }
     
     std::cout << "nombre de MCD-MCP matchés : " << count << std::endl;
-    std::cout << "nombre de thetagMCD trouvés : " << countthetagMCD << std::endl;
-    std::cout << "nombre de thetagMCP trouvés : " << countthetagMCP << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves 
+    std::cout << "nombre de thetagMCD trouvés boucle for sur MCD : " << countthetagMCD_MCD << std::endl;
+    std::cout << "nombre de thetagMCP trouvés boucle for sur MCD : " << countthetagMCP_MCD << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves 
+    std::cout << "nombre de thetagMCP trouvés boucle for sur MCP : " << countthetagMCP_MCP << std::endl;  
+    std::cout << "nombre de thetagMCD trouvés boucle for sur MCP : " << countthetagMCD_MCP << std::endl; //nombre de thetagMCD trouvés parmis les thetagMCP trouves
+
 
     // std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
     // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
