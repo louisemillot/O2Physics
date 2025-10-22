@@ -1414,6 +1414,39 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
     }
     if (hasHighPtConstituent) {
       fillMatchedHistograms<ChargedMCDMatchedJets::iterator, ChargedMCPMatchedJets>(mcdjet, thetagMCDVec, thetagMCPVec);
+    }
+  }
+}
+PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
+
+void processJetsMCDMatchedMCPForBoucle(soa::Filtered<aod::JetCollisions>::iterator const& collision,
+                              ChargedMCDMatchedJets const&,
+                              ChargedMCPMatchedJets const& mcpjets,
+                              aod::JetTracks const& track, aod::JetParticles const&)
+{
+  if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+    return;
+  }
+  if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+    return;
+  }
+
+  for (const auto& mcpjet : mcpjets) {
+    if (!jetfindingutilities::isInEtaAcceptance(mcpjets, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+      continue;
+    }
+    if (!isAcceptedJet<aod::JetTracks>(mcpjets)) {
+      continue;
+    }
+    bool hasHighPtConstituent = false;
+    ///////////// leading track cut /////////////
+    for (auto& jetConstituent : mcpjets.tracks_as<aod::JetTracks>()) {
+      if (jetConstituent.pt() >= ptLeadingTrackCut) {
+        hasHighPtConstituent = true;
+        break; // Sortir de la boucle dès qu'un constituant valide est trouvé
+      }
+    }
+    if (hasHighPtConstituent) {
       fillMatchedHistogramsForBoucle<ChargedMCPMatchedJets::iterator, ChargedMCDMatchedJets>(mcpjets, thetagMCDVec, thetagMCPVec);
     }
   }
