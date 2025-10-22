@@ -393,11 +393,13 @@ struct JetSubstructureTask {
     }
     return true;
   }
-  int count_surMCD = 0;
-  int countthetagMCD_MCD_surMCD = 0;
-  int countthetagMCP_MCD_surMCD = 0;
-  int countthetagMCD_MCP_surMCD = 0;
-  int countthetagMCP_MCP_surMCD = 0;
+
+
+  int count_surMCP = 0;
+  int countthetagMCD_MCD_surMCP = 0;
+  int countthetagMCP_MCD_surMCP = 0;
+  int countthetagMCD_MCP_surMCP = 0;
+  int countthetagMCP_MCP_surMCP = 0;
 
   std::vector<float> thetagMCDVecMatched;
   std::vector<float> thetagMCPVecMatched;
@@ -521,11 +523,11 @@ struct JetSubstructureTask {
     // fill geometry and pt histograms (a faire)
   }
 
-  int count_surMCP = 0;
-  int countthetagMCD_MCD_surMCP = 0;
-  int countthetagMCP_MCD_surMCP = 0;
-  int countthetagMCD_MCP_surMCP = 0;
-  int countthetagMCP_MCP_surMCP = 0;
+  int count_surMCD = 0;
+  int countthetagMCD_MCD_surMCD = 0;
+  int countthetagMCP_MCD_surMCD = 0;
+  int countthetagMCD_MCP_surMCD = 0;
+  int countthetagMCP_MCP_surMCD = 0;
   template <typename TBase, typename TTag >
   void fillMatchedHistogramsForBoucle(TBase const& jetMCP,
                                       const std::vector<std::pair<float, float>>& thetagMCDVec,
