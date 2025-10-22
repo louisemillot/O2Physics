@@ -393,16 +393,23 @@ struct JetSubstructureTask {
     }
     return true;
   }
-  int count = 0;
-  int countthetagMCD_MCD = 0;
-  int countthetagMCP_MCD = 0;
-  int countthetagMCD_MCP = 0;
-  int countthetagMCP_MCP = 0;
+  int count_surMCD = 0;
+  int countthetagMCD_MCD_surMCD = 0;
+  int countthetagMCP_MCD_surMCD = 0;
+  int countthetagMCD_MCP_surMCD = 0;
+  int countthetagMCP_MCP_surMCD = 0;
+  int count_surMCP = 0;
+  int countthetagMCD_MCD_surMCP = 0;
+  int countthetagMCP_MCD_surMCP = 0;
+  int countthetagMCD_MCP_surMCP = 0;
+  int countthetagMCP_MCP_surMCP = 0;
+
   std::vector<float> thetagMCDVecMatched;
   std::vector<float> thetagMCPVecMatched;
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
   template <typename TBase, typename TTag >
   void fillMatchedHistograms(TBase const& jetMCD,
+                            TTag const& jetMCP,
                             //  TableMCD& splittingTableMCD,
                             //  TableMCP& splittingTableMCP,
                             const std::vector<std::pair<float, float>>& thetagMCDVec,
@@ -432,18 +439,18 @@ struct JetSubstructureTask {
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             // LOGF(info, " after if statement jet radius" );
             double dpt = jetMCP.pt() - jetMCD.pt();
-            count++;
+            count_surMCP++;
             /////
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
               // LOGF(info, " for loop over thetaVec " );
               // if (std::abs(ptMCD - jetMCD.pt()) < 1e-5) { 
               if (ptMCD == jetMCD.pt()) {
-                countthetagMCD_MCD++;
+                countthetagMCD_MCD_surMCP++;
                   // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                       // if (std::abs(ptMCP - jetMCP.pt()) < 1e-5) { 
                       if (ptMCP == jetMCP.pt()) {
-                        countthetagMCP_MCD++;
+                        countthetagMCP_MCD_surMCP++;
                         // registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
                         // registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                         // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
@@ -457,10 +464,10 @@ struct JetSubstructureTask {
             /////
             for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) { 
               if (ptMCP == jetMCP.pt()) {
-                countthetagMCP_MCP++;
+                countthetagMCP_MCP_surMCP++;
                   for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
                       if (ptMCD == jetMCD.pt()) {
-                        countthetagMCD_MCP++;
+                        countthetagMCD_MCP_surMCP++;
                         // registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
                         // registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                         // if (ptMCP >= 20.0 && ptMCP <= 80.0) {
@@ -491,8 +498,6 @@ struct JetSubstructureTask {
             //     } 
             // }
 
-
-
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
@@ -508,16 +513,47 @@ struct JetSubstructureTask {
             registry.fill(HIST("h2_jet_eta_mcd_jet_eta_mcp_matchedgeo"), jetMCD.eta(), jetMCP.eta(), weight);
           } 
         }
+        for (const auto& jetMCD : jetMCP.template matchedJetGeo_as<std::decay_t<TBase>>()) {
+          if (jetMCD.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
+              continue;
+          }
+          if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
+            count_surMCD++;
+            for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
+              if (ptMCD == jetMCD.pt()) {
+                countthetagMCD_MCD_surMCD++;
+                for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
+                  if (ptMCP == jetMCP.pt()) {
+                    countthetagMCP_MCD_surMCD++;
+                  } 
+                }
+              }
+            }
+            for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) { 
+              if (ptMCP == jetMCP.pt()) {
+                countthetagMCP_MCP_surMCD++;
+                for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
+                  if (ptMCD == jetMCD.pt()) {
+                    countthetagMCD_MCP_surMCD++;
+                  } 
+                }
+              }
+            }
+          }
+        }
       }
     }
-  
-    
-    std::cout << "nombre de MCD-MCP matchés : " << count << std::endl;
-    std::cout << "nombre de thetagMCD trouvés boucle for sur MCD : " << countthetagMCD_MCD << std::endl;
-    std::cout << "nombre de thetagMCP trouvés boucle for sur MCD : " << countthetagMCP_MCD << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves 
-    std::cout << "nombre de thetagMCP trouvés boucle for sur MCP : " << countthetagMCP_MCP << std::endl;  
-    std::cout << "nombre de thetagMCD trouvés boucle for sur MCP : " << countthetagMCD_MCP << std::endl; //nombre de thetagMCD trouvés parmis les thetagMCP trouves
+    std::cout << "nombre de MCD-MCP matchés - sur MCD : " << count_surMCD << std::endl;
+    std::cout << "nombre de thetagMCD trouvés boucle for sur MCD - sur MCD : " << countthetagMCD_MCD_surMCD << std::endl;
+    std::cout << "nombre de thetagMCP trouvés boucle for sur MCD - sur MCD : " << countthetagMCP_MCD_surMCD << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves 
+    std::cout << "nombre de thetagMCP trouvés boucle for sur MCP - sur MCD : " << countthetagMCP_MCP_surMCD << std::endl;  
+    std::cout << "nombre de thetagMCD trouvés boucle for sur MCP - sur MCD : " << countthetagMCD_MCP_surMCD << std::endl; //nombre de thetagMCD trouvés parmis les thetagMCP trouves
 
+    std::cout << "nombre de MCD-MCP matchés sur MCP : " << count_surMCP << std::endl;
+    std::cout << "nombre de thetagMCD trouvés boucle for sur MCD - sur MCP : " << countthetagMCD_MCD_surMCP << std::endl;
+    std::cout << "nombre de thetagMCP trouvés boucle for sur MCD - sur MCP : " << countthetagMCP_MCD_surMCP << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves 
+    std::cout << "nombre de thetagMCP trouvés boucle for sur MCP - sur MCP : " << countthetagMCP_MCP_surMCP << std::endl;  
+    std::cout << "nombre de thetagMCD trouvés boucle for sur MCP - sur MCP : " << countthetagMCD_MCP_surMCP << std::endl;
 
     // std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
     // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
