@@ -1424,7 +1424,7 @@ void processJetsMCDMatchedMCPForBoucleWeight( ChargedMCPMatchedJetsWeighted::ite
                                               aod::JetTracks const& track, aod::JetParticles const&)
 {
     float jetweight = mcpjet.eventWeight();
-    fillMatchedHistogramsForBoucle<ChargedMCPMatchedJetsWeighted::iterator, ChargedMCDMatchedJetsWeighted>(mcpjet, thetagMCDVec, thetagMCPVec, jetweight);
+    fillMatchedHistogramsForBoucle<ChargedMCPMatchedJetsWeighted, ChargedMCDMatchedJetsWeighted>(mcpjet, thetagMCDVec, thetagMCPVec, jetweight);
 
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPForBoucleWeight, "matched mcp and mcd jets- for boucle", false);
@@ -1434,7 +1434,7 @@ void processJetsMCDMatchedMCPWeighted(ChargedMCDMatchedJetsWeighted::iterator co
                                       aod::JetTracks const& tracks, aod::JetParticles const&)
 {
     float jetweight = mcdjet.eventWeight();
-    fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet, thetagMCDVec, thetagMCPVec, jetweight);
+    fillMatchedHistograms<ChargedMCDMatchedJetsWeighted, ChargedMCPMatchedJetsWeighted>(mcdjet, thetagMCDVec, thetagMCPVec, jetweight);
     
   
 }
