@@ -1419,24 +1419,27 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
 
-void processJetsMCDMatchedMCPForBoucleWeight( ChargedMCPMatchedJetsWeighted::iterator const& mcpjet,
+void processJetsMCDMatchedMCPForBoucleWeight( soa::Filtered<aod::JetMcCollisions>::iterator const& mcCollision,
+  C                                           ChargedMCPMatchedJetsWeighted const& mcpjets,
                                               ChargedMCDMatchedJetsWeighted const&
                                               )
 {
+  for (const auto& mcpjet : mcpjets) {
     float jetweight = mcpjet.eventWeight();
     fillMatchedHistogramsForBoucle<ChargedMCPMatchedJetsWeighted::iterator, ChargedMCDMatchedJetsWeighted>(mcpjet, thetagMCDVec, thetagMCPVec, jetweight);
-
+  }
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPForBoucleWeight, "matched mcp and mcd jets- for boucle", false);
 
-void processJetsMCDMatchedMCPWeighted(ChargedMCDMatchedJetsWeighted::iterator const& mcdjet,
+void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
+                                      ChargedMCDMatchedJetsWeighted const& mcdjets,
                                       ChargedMCPMatchedJetsWeighted const&
                                       )
 {
+  for (const auto& mcdjet : mcdjets) {
     float jetweight = mcdjet.eventWeight();
     fillMatchedHistograms<ChargedMCDMatchedJetsWeighted::iterator, ChargedMCPMatchedJetsWeighted>(mcdjet, thetagMCDVec, thetagMCPVec, jetweight);
-    
-  
+  }
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeighted, "matched mcp and mcd jets with weighted events", false);
 
