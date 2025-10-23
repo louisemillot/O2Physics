@@ -1419,7 +1419,7 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
 
-void processJetsMCDMatchedMCPForBoucleWeight(ChargedMCPMatchedJetsWeighted const& mcpjet,
+void processJetsMCDMatchedMCPForBoucleWeight(ChargedMCPMatchedJetsWeighted::iterator const& mcpjet,
                                              ChargedMCDMatchedJetsWeighted const& mcdjets,
                                              aod::JetTracks const& track, aod::JetParticles const&)
 {
@@ -1429,7 +1429,7 @@ void processJetsMCDMatchedMCPForBoucleWeight(ChargedMCPMatchedJetsWeighted const
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPForBoucleWeight, "matched mcp and mcd jets- for boucle", false);
 
-void processJetsMCDMatchedMCPWeighted(ChargedMCDMatchedJetsWeighted const& mcdjet,
+void processJetsMCDMatchedMCPWeighted(ChargedMCDMatchedJetsWeighted::iterator const& mcdjet,
                                       ChargedMCPMatchedJetsWeighted const&,
                                       aod::JetTracks const& tracks, aod::JetParticles const&)
 {
