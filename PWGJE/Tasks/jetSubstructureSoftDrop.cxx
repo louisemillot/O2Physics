@@ -1420,7 +1420,7 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
 
 void processJetsMCDMatchedMCPForBoucleWeight( ChargedMCPMatchedJetsWeighted::iterator const& mcpjet,
-                                              ChargedMCDMatchedJetsWeighted const& mcdjets,
+                                              ChargedMCDMatchedJetsWeighted const&
                                               )
 {
     float jetweight = mcpjet.eventWeight();
@@ -1430,7 +1430,7 @@ void processJetsMCDMatchedMCPForBoucleWeight( ChargedMCPMatchedJetsWeighted::ite
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPForBoucleWeight, "matched mcp and mcd jets- for boucle", false);
 
 void processJetsMCDMatchedMCPWeighted(ChargedMCDMatchedJetsWeighted::iterator const& mcdjet,
-                                      ChargedMCPMatchedJetsWeighted const&,
+                                      ChargedMCPMatchedJetsWeighted const&
                                       )
 {
     float jetweight = mcdjet.eventWeight();
