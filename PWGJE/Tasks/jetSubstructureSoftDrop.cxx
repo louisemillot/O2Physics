@@ -543,7 +543,7 @@ struct JetSubstructureTask {
           if (jetMCD.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
               continue;
           }
-          if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
+          if (jetMCP.r() == round(selectedJetsRadius * 100.0f)) {
             count_surMCD++;
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
               if (ptMCD == jetMCD.pt()) {
