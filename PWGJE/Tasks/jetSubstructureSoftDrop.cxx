@@ -411,7 +411,6 @@ struct JetSubstructureTask {
                             float weight = 1.0)
   { 
     // LOGF(info, "==== Jet numéro %d ====", jetMCD.globalIndex());
-    // LOGF(info, " fillMatchedHistograms " );
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCD.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
       return;
@@ -419,34 +418,22 @@ struct JetSubstructureTask {
     // fill geometry matched histograms
     if (checkGeoMatched) {
       if (jetMCD.has_matchedJetGeo()) {
-        // LOGF(info, " has_matchedGeo " );
-        // count++;
-        // count_surMCP++;
+
         for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TTag>>()) {
-          // LOGF(info, " for loop over matched jets" );
           if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
             continue;
           }
-          // LOGF(info, " after if statement on pTHat" );
-          // LOGF(info, " weight = %.4f", weight);
-          // LOGF(info, "jetMCD.r() = %.4f, selectedJetsRadius = %.4f", static_cast<float>(jetMCD.r()), static_cast<float>(selectedJetsRadius));
-        
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
-            // LOGF(info, " after if statement jet radius" );
             count_surMCP++;
             double dpt = jetMCP.pt() - jetMCD.pt();
             /////
             for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
-              // LOGF(info, " for loop over thetaVec " );
-              // if (std::abs(ptMCD - jetMCD.pt()) < 1e-5) { 
               if (ptMCD == jetMCD.pt()) {
                 countthetagMCD_MCD_surMCP++;
-                  // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
-                      // if (std::abs(ptMCP - jetMCP.pt()) < 1e-5) { 
                       if (ptMCP == jetMCP.pt()) {
                         countthetagMCP_MCD_surMCP++;
-                        // registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
+                        registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
                         // registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                         // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                         // if (ptMCP >= 20.0 && ptMCP <= 80.0) {
@@ -455,43 +442,6 @@ struct JetSubstructureTask {
                   }
               }
             }
-            /////
-            for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) { 
-              if (ptMCP == jetMCP.pt()) {
-                countthetagMCP_MCP_surMCP++;
-                  for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
-                      if (ptMCD == jetMCD.pt()) {
-                        countthetagMCD_MCP_surMCP++;
-                        // registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
-                        // registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
-                        // if (ptMCP >= 20.0 && ptMCP <= 80.0) {
-                        //  registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
-                      } 
-                  }
-              }
-            }
-          
-            //test qui marche pas :
-            // for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) { 
-            //   if (ptMCD == jetMCD.pt()) {
-            //     countthetagMCD++;
-            //     thetagMCDVecMatched.push_back(thetagMCD);
-            //     break; // on a trouvé le bon match, inutile de continuer
-            //   }
-            // }
-            // for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
-            //   if (ptMCP == jetMCP.pt()) {
-            //     countthetagMCP++;
-            //     thetagMCPVecMatched.push_back(thetagMCP);
-            //     break;
-            //   }
-            // }
-            // for (const auto& thetagMCD : thetagMCDVecMatched) {
-            //   for (const auto& thetagMCP : thetagMCPVecMatched) {
-            //       registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
-            //     } 
-            // }
-
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
@@ -521,61 +471,6 @@ struct JetSubstructureTask {
     // fill geometry and pt histograms (a faire)
   }
 
-  int count_surMCD = 0;
-  int countthetagMCD_MCD_surMCD = 0;
-  int countthetagMCP_MCD_surMCD = 0;
-  int countthetagMCD_MCP_surMCD = 0;
-  int countthetagMCP_MCP_surMCD = 0;
-  template <typename TBase, typename TTag >
-  void fillMatchedHistogramsForBoucle(TBase const& jetMCP,
-                                      const std::vector<std::pair<float, float>>& thetagMCDVec,
-                                      const std::vector<std::pair<float, float>>& thetagMCPVec,
-                                      float weight = 1.0)
-  { 
-    float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
-    if (jetMCP.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
-      return;
-    }
-    // fill geometry matched histograms
-    if (checkGeoMatched) {
-      if (jetMCP.has_matchedJetGeo()) {
-        for (const auto& jetMCD : jetMCP.template matchedJetGeo_as<std::decay_t<TTag>>()) {
-          if (jetMCD.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
-              continue;
-          }
-          if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
-            count_surMCD++;
-            for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
-              if (ptMCD == jetMCD.pt()) {
-                countthetagMCD_MCD_surMCD++;
-                for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
-                  if (ptMCP == jetMCP.pt()) {
-                    countthetagMCP_MCD_surMCD++;
-                  } 
-                }
-              }
-            }
-            for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) { 
-              if (ptMCP == jetMCP.pt()) {
-                countthetagMCP_MCP_surMCD++;
-                for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
-                  if (ptMCD == jetMCD.pt()) {
-                    countthetagMCD_MCP_surMCD++;
-                  } 
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    std::cout << "nombre de MCD-MCP matchés - sur MCD : " << count_surMCD << std::endl;
-    std::cout << "nombre de thetagMCD trouvés boucle for sur MCD - sur MCD : " << countthetagMCD_MCD_surMCD << std::endl;
-    std::cout << "nombre de thetagMCP trouvés boucle for sur MCD - sur MCD : " << countthetagMCP_MCD_surMCD << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves 
-    std::cout << "nombre de thetagMCP trouvés boucle for sur MCP - sur MCD : " << countthetagMCP_MCP_surMCD << std::endl; 
-    std::cout << "nombre de thetagMCD trouvés boucle for sur MCP - sur MCD : " << countthetagMCD_MCP_surMCD << std::endl; //nombre de thetagMCD trouvés parmis les thetagMCP trouves
-  }
-  
   int countMCDEW_MCD = 0;
   int countMCD_MCP = 0;
   template <typename TMCDEventWise, typename TMCDtoMCP, typename TMCP > // TMCDEventWise : ChargedMCDEventWiseMatchedtoMCD ; TMCDtoMCP : ChargedMCDMatchedJets ; TMCP : ChargedMCPMatchedJets
@@ -635,8 +530,6 @@ struct JetSubstructureTask {
           }
           }
         }
-      // std::cout << "Nombre de valeurs dans thetagMCDEventWiseVec (colonne 1) = " << thetagMCDEventWiseVec.size() << std::endl;
-      // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
       }
       }
     std::cout << "nombre de MCDEW-MCD matchés : " << countMCDEW_MCD << std::endl;
