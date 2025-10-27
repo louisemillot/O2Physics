@@ -1320,6 +1320,7 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
   if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
     return;
   }
+  LOGF(info, "Total MCD jets in this timeframe = %d", mcdjets.size());
   for (const auto& mcdjet : mcdjets) {
     if (!jetfindingutilities::isInEtaAcceptance(mcdjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
       continue;
