@@ -1308,7 +1308,7 @@ void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const&
 }
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
 
-
+int totalMCDjets = 0;
 void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                       ChargedMCDMatchedJetsWeighted const& mcdjets,
                                       ChargedMCPMatchedJetsWeighted const&,
@@ -1321,6 +1321,7 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
     return;
   }
   LOGF(info, "Total MCD jets in this timeframe = %d", mcdjets.size());
+  totalMCDjets += mcdjets.size();
   for (const auto& mcdjet : mcdjets) {
     if (!jetfindingutilities::isInEtaAcceptance(mcdjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
       continue;
@@ -1354,8 +1355,10 @@ void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterato
     }
   }
 }
+void endOfStream(o2::framework::EndOfStreamContext&) {
+    LOGF(info, "====== Total MCD jets over the entire dataset = %d ======", totalMCDjets);
+}
 PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeighted, "matched mcp and mcd jets with weighted events", false);
-
 
 void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                        ChargedMCDEventWiseMatchedtoMCD const& jetsMCDEventWise, 
