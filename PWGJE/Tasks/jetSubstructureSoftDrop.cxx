@@ -533,14 +533,10 @@ struct JetSubstructureTask {
     }
     std::cout << "nombre de MCDEW-MCD matchés : " << countMCDEW_MCD << std::endl;
     std::cout << "nombre de MCD-MCP matchés aprês MCDEW-MCD: " << countMCD_MCP << std::endl;
-  }
-
-
     // fill pt matched histograms (a faire)
     // fill geometry and pt histograms (a faire)
-    
-    
   }
+    
 
   template <bool isMCP, bool isSubtracted, typename T, typename U>
   std::tuple<std::vector<std::pair<float, float>>, std::vector<std::pair<float, float>>, std::vector<std::pair<float, float>> >
