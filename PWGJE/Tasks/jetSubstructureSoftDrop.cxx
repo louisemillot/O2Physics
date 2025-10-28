@@ -1438,7 +1438,7 @@ PROCESS_SWITCH(JetSubstructureTask, processJetsMCDEventWiseMatchedMCPWeighted, "
 
 
 int totalMCDjets = 0;
-void processNumberOfMCDJetsWeighted(ChargedMCDMatchedJetsWeighted const& mcdjet)
+void processNumberOfMCDJetsWeighted(ChargedMCDetectorLevelJets const& mcdjet)
 {
   totalMCDjets += mcdjet.size();
   LOGF(info, "====== Total MCD jets over the entire dataset = %d ======", totalMCDjets);
