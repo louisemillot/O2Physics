@@ -459,10 +459,10 @@ struct JetSubstructureTask {
       }
     }
     std::cout << "nombre de MCD-MCP matchés - sur MCP : " << count_surMCP << std::endl;
-    std::cout << "nombre de thetagMCD trouvés boucle for sur MCD - sur MCP : " << countthetagMCD_MCD_surMCP << std::endl;
-    std::cout << "nombre de thetagMCP trouvés boucle for sur MCD - sur MCP : " << countthetagMCP_MCD_surMCP << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves
-    std::cout << "nombre de thetagMCP trouvés boucle for sur MCP - sur MCP : " << countthetagMCP_MCP_surMCP << std::endl;
-    std::cout << "nombre de thetagMCD trouvés boucle for sur MCP - sur MCP : " << countthetagMCD_MCP_surMCP << std::endl; //nombre de thetagMCD trouvés parmis les thetagMCP trouves
+    // std::cout << "nombre de thetagMCD trouvés boucle for sur MCD - sur MCP : " << countthetagMCD_MCD_surMCP << std::endl;
+    // std::cout << "nombre de thetagMCP trouvés boucle for sur MCD - sur MCP : " << countthetagMCP_MCD_surMCP << std::endl; //nombre de thetagMCP trouvés parmis les thetagMCD trouves
+    // std::cout << "nombre de thetagMCP trouvés boucle for sur MCP - sur MCP : " << countthetagMCP_MCP_surMCP << std::endl;
+    // std::cout << "nombre de thetagMCD trouvés boucle for sur MCP - sur MCP : " << countthetagMCD_MCP_surMCP << std::endl; //nombre de thetagMCD trouvés parmis les thetagMCP trouves
 
     // std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
     // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
