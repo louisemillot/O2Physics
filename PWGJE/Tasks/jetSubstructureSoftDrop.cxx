@@ -503,16 +503,15 @@ struct JetSubstructureTask {
                 countMCD_MCP++;
                 double dpt = jetMCP.pt() - jetMCDEventWise.pt(); 
                 if (jetfindingutilities::isInEtaAcceptance(jetMCDEventWise, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
-                  for (const auto& [thetagMCD, ptMCD] : thetagMCDEventWiseVec) {
-                    if (ptMCD == jetMCDEventWise.pt()) {
-                      // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, jetMCD.pt() = %.4f", thetagMCD, ptMCD, jetMCD.pt());
+                  for (const auto& [thetagMCDEventWise, ptMCDEventWise] : thetagMCDEventWiseVec) {
+                    if (ptMCDEventWise == jetMCDEventWise.pt()) {
                       for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                         if (ptMCP == jetMCP.pt()) {
-                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange_eventwise"), thetagMCD, thetagMCP, weight);
-                          registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange_eventwise"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
-                          LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
+                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange_eventwise"), thetagMCDEventWise, thetagMCP, weight);
+                          registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange_eventwise"),jetMCD.pt(), jetMCP.pt(), thetagMCDEventWise, thetagMCP, weight);
+                          LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCDEventWise, ptMCDEventWise, thetagMCP, ptMCP);
                           if (ptMCP >= 20.0 && ptMCP <= 80.0) {
-                            registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80_eventwise"), thetagMCD, thetagMCP, weight);
+                            registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80_eventwise"), thetagMCDEventWise, thetagMCP, weight);
                           } 
                         }
                       }
