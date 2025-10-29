@@ -434,7 +434,7 @@ struct JetSubstructureTask {
                       if (ptMCP == jetMCP.pt()) {
                         countthetagMCP_MCD_surMCP++;
                         registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
-                        // registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
+                        registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                         // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                         if (ptMCP >= 20.0 && ptMCP <= 80.0) {
                          registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
@@ -506,7 +506,7 @@ struct JetSubstructureTask {
                       for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                         if (ptMCP == jetMCP.pt()) {
                           registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange_eventwise"), thetagMCD, thetagMCP, weight);
-                          // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
+                          LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                           if (ptMCP >= 20.0 && ptMCP <= 80.0) {
                             registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80_eventwise"), thetagMCD, thetagMCP, weight);
                           } 
