@@ -137,6 +137,7 @@ struct JetSubstructureTask {
   {
     AxisSpec jetPtAxis = {200, 0., 200., "#it{p}_{T} (GeV/#it{c})"};
     AxisSpec jetPtAxisMCD = {200, 0., 200., "#it{p}_{T}^{mcd} (GeV/#it{c})"};
+    AxisSpec jetPtAxisMCDEventWise = {200, 0., 200., "#it{p}_{T}^{mcdEventWise} (GeV/#it{c})"};
     AxisSpec jetPtAxisMCP = {200, 0., 200., "#it{p}_{T}^{mcp} (GeV/#it{c})"};
     AxisSpec centralityAxis = {1200, -10., 110., "Centrality"};
     AxisSpec jetEtaAxis = {nBinsEta, -1.0, 1.0, "#eta"};
@@ -144,6 +145,7 @@ struct JetSubstructureTask {
     AxisSpec thetagAxisMCD = {200, 0.0, 1.1, "{#theta}_{g}^{mcd}"}; 
     AxisSpec thetagAxisMCP = {200, 0.0, 1.1, "{#theta}_{g}^{mcp}"}; 
     AxisSpec thetagAxisMCDEventWise = {200, 0.0, 1.1, "{#theta}_{g}^{mcd_eventwise}"}; 
+
 
 
 
@@ -286,10 +288,11 @@ struct JetSubstructureTask {
         registry.add("h2_thetagMCD_vs_thetagMCP_pt_norange","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h2_thetagMCD_vs_thetagMCP_pt_60_80","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange","p_{T}^{MCD} vs p_{T}^{MCP} vs #theta_{g}^{MCD} vs #theta_{g}^{MCP};p_{T}^{MCD} (GeV/#it{c});p_{T}^{MCP} (GeV/#it{c});#theta_{g}^{MCD};#theta_{g}^{MCP}",{HistType::kTHnSparseF, {jetPtAxisMCD, jetPtAxisMCP, thetagAxisMCD, thetagAxisMCP}});
+        registry.add("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange_eventwise","p_{T}^{MCDmcdeventwise} vs p_{T}^{MCP} vs #theta_{g}^{MCDmcdeventwise} vs #theta_{g}^{MCP};p_{T}^{MCDmcdeventwise} (GeV/#it{c});p_{T}^{MCP} (GeV/#it{c});#theta_{g}^{MCDmcdeventwise};#theta_{g}^{MCP}",{HistType::kTHnSparseF, {jetPtAxisMCDEventWise, jetPtAxisMCP, thetagAxisMCDEventWise, thetagAxisMCP}});
 
 
-        registry.add("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint_eventwise", "pT mcdeventwise vs. pT mcp;#it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c});#it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxisMCD, jetPtAxisMCP}});
-        registry.add("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcpetaconstraint_eventwise", "pT mcdeventwise vs. pT mcp;#it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c});#it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxisMCD, jetPtAxisMCP}});
+        registry.add("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint_eventwise", "pT mcdeventwise vs. pT mcp;#it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c});#it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxisMCDEventWise, jetPtAxisMCP}});
+        registry.add("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcpetaconstraint_eventwise", "pT mcdeventwise vs. pT mcp;#it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c});#it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxisMCDEventWise, jetPtAxisMCP}});
         registry.add("h2_jet_eta_mcd_jet_eta_mcp_matchedgeo_eventwise", "Eta mcdeventwise vs. Eta mcp;#eta_{jet}^{mcdeventwise};#eta_{jet}^{mcp}", {HistType::kTH2F, {jetEtaAxis, jetEtaAxis}});
         registry.add("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint_eventwise", "Phi mcdeventwise vs. Phi mcp;#varphi_{jet}^{mcdeventwise};#varphi_{jet}^{mcp}", {HistType::kTH2F, {phiAxis, phiAxis}});
         registry.add("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcpetaconstraint_eventwise", "Phi mcdeventwise vs. Phi mcp;#varphi_{jet}^{mcdeventwise};#varphi_{jet}^{mcp}", {HistType::kTH2F, {phiAxis, phiAxis}});
@@ -506,6 +509,7 @@ struct JetSubstructureTask {
                       for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                         if (ptMCP == jetMCP.pt()) {
                           registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange_eventwise"), thetagMCD, thetagMCP, weight);
+                          registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange_eventwise"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                           LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                           if (ptMCP >= 20.0 && ptMCP <= 80.0) {
                             registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80_eventwise"), thetagMCD, thetagMCP, weight);
