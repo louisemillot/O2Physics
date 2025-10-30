@@ -286,10 +286,9 @@ struct JetSubstructureTask {
         registry.add("h2_jet_pt_mcp_jet_pt_ratio_matchedgeo", "jet mcp pT vs. jet mcd pT / jet mcp pt;#it{p}_{T,jet}^{mcp} (GeV/#it{c}); #it{p}_{T,jet}^{mcd} (GeV/#it{c}) / #it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxis, {1000, -5.0, 5.0}}});
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h2_thetagMCD_vs_thetagMCP_pt_norange","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
-        registry.add("h2_thetagMCD_vs_thetagMCP_pt_60_80","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
+        registry.add("h2_thetagMCD_vs_thetagMCP_pt_20_80","#theta_{g}^{mcd} vs. #theta_{g}^{mcp};#theta_{g}^{mcd};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCD, thetagAxisMCP}});
         registry.add("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange","p_{T}^{MCD} vs p_{T}^{MCP} vs #theta_{g}^{MCD} vs #theta_{g}^{MCP};p_{T}^{MCD} (GeV/#it{c});p_{T}^{MCP} (GeV/#it{c});#theta_{g}^{MCD};#theta_{g}^{MCP}",{HistType::kTHnSparseF, {jetPtAxisMCD, jetPtAxisMCP, thetagAxisMCD, thetagAxisMCP}});
-        registry.add("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange_eventwise","p_{T}^{MCDmcdeventwise} vs p_{T}^{MCP} vs #theta_{g}^{MCDmcdeventwise} vs #theta_{g}^{MCP};p_{T}^{MCDmcdeventwise} (GeV/#it{c});p_{T}^{MCP} (GeV/#it{c});#theta_{g}^{MCDmcdeventwise};#theta_{g}^{MCP}",{HistType::kTHnSparseF, {jetPtAxisMCDEventWise, jetPtAxisMCP, thetagAxisMCDEventWise, thetagAxisMCP}});
-
+        registry.add("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_pt_20_80","p_{T}^{MCD} vs p_{T}^{MCP} vs #theta_{g}^{MCD} vs #theta_{g}^{MCP};p_{T}^{MCD} (GeV/#it{c});p_{T}^{MCP} (GeV/#it{c});#theta_{g}^{MCD};#theta_{g}^{MCP}",{HistType::kTHnSparseF, {jetPtAxisMCD, jetPtAxisMCP, thetagAxisMCD, thetagAxisMCP}});
 
         registry.add("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint_eventwise", "pT mcdeventwise vs. pT mcp;#it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c});#it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxisMCDEventWise, jetPtAxisMCP}});
         registry.add("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcpetaconstraint_eventwise", "pT mcdeventwise vs. pT mcp;#it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c});#it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxisMCDEventWise, jetPtAxisMCP}});
@@ -302,7 +301,9 @@ struct JetSubstructureTask {
         registry.add("h2_jet_pt_mcp_jet_pt_ratio_matchedgeo_eventwise", "jet mcp pT vs. jet mcdeventwise pT / jet mcp pt;#it{p}_{T,jet}^{mcp} (GeV/#it{c}); #it{p}_{T,jet}^{mcdeventwise} (GeV/#it{c}) / #it{p}_{T,jet}^{mcp} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxis, {1000, -5.0, 5.0}}});
         registry.add("h2_jet_thetag_mcd_jet_thetag_mcp_matchedgeo_eventwise","#theta_{g}^{mcdeventwise} vs. #theta_{g}^{mcp};#theta_{g}^{mcdeventwise};#theta_{g}^{mcp}", {HistType::kTH2F, {thetagAxisMCDEventWise, thetagAxisMCP}});
         registry.add("h2_thetagMCD_vs_thetagMCP_pt_norange_eventwise","#theta_{g}^{mcdeventwise} vs. #theta_{g}^{mcp};#theta_{g}^{mcdeventwise};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCDEventWise, thetagAxisMCP}});
-        registry.add("h2_thetagMCD_vs_thetagMCP_pt_60_80_eventwise","#theta_{g}^{mcdeventwise} vs. #theta_{g}^{mcp};#theta_{g}^{mcdeventwise};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCDEventWise, thetagAxisMCP}});
+        registry.add("h2_thetagMCD_vs_thetagMCP_pt_20_80_eventwise","#theta_{g}^{mcdeventwise} vs. #theta_{g}^{mcp};#theta_{g}^{mcdeventwise};#theta_{g}^{mcp}",{HistType::kTH2F, {thetagAxisMCDEventWise, thetagAxisMCP}});
+        registry.add("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange_eventwise","p_{T}^{MCDmcdeventwise} vs p_{T}^{MCP} vs #theta_{g}^{MCDmcdeventwise} vs #theta_{g}^{MCP};p_{T}^{MCDmcdeventwise} (GeV/#it{c});p_{T}^{MCP} (GeV/#it{c});#theta_{g}^{MCDmcdeventwise};#theta_{g}^{MCP}",{HistType::kTHnSparseF, {jetPtAxisMCDEventWise, jetPtAxisMCP, thetagAxisMCDEventWise, thetagAxisMCP}});
+        registry.add("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_pt_20_80_eventwise","p_{T}^{MCDmcdeventwise} vs p_{T}^{MCP} vs #theta_{g}^{MCDmcdeventwise} vs #theta_{g}^{MCP};p_{T}^{MCDmcdeventwise} (GeV/#it{c});p_{T}^{MCP} (GeV/#it{c});#theta_{g}^{MCDmcdeventwise};#theta_{g}^{MCP}",{HistType::kTHnSparseF, {jetPtAxisMCDEventWise, jetPtAxisMCP, thetagAxisMCDEventWise, thetagAxisMCP}});
 
 
       }
@@ -440,7 +441,8 @@ struct JetSubstructureTask {
                         registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                         // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
                         if (ptMCP >= 20.0 && ptMCP <= 80.0) {
-                         registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
+                         registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_20_80"), thetagMCD, thetagMCP, weight);
+                         registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_pt_20_80"),jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                         }
                       } 
                   }
@@ -511,7 +513,8 @@ struct JetSubstructureTask {
                           registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange_eventwise"),jetMCDEventWise.pt(), jetMCP.pt(), thetagMCDEventWise, thetagMCP, weight);
                           LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCDEventWise, ptMCDEventWise, thetagMCP, ptMCP);
                           if (ptMCP >= 20.0 && ptMCP <= 80.0) {
-                            registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_60_80_eventwise"), thetagMCDEventWise, thetagMCP, weight);
+                            registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_20_80_eventwise"), thetagMCDEventWise, thetagMCP, weight);
+                            registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_pt_20_80_eventwise"),jetMCDEventWise.pt(), jetMCP.pt(), thetagMCDEventWise, thetagMCP, weight);
                           } 
                         }
                       }
