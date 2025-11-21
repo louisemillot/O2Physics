@@ -3,46 +3,46 @@
 #include "Framework/AnalysisTask.h"
 #include "Framework/AnalysisHelpers.h"
 
+#include "PWGJE/DataModel/Jet.h"
 
+using namespace o2::framework;
 using namespace o2::aod;
+using namespace o2::framework::expressions;
 
-// ---------------- SlimTracksProducer ----------------
-struct SlimTracksProducer {
-  o2::framework::Produces<o2::aod::SlimTracks> slimTracks;
+struct SlimTablesProducer {
 
-  void process(Tracks const& tracks) {
+  // --- Tables produites ---
+  Produces<SlimTracks> slimTracks;
+  Produces<SlimMcParticles> slimMcParticles;
+
+  // ------------------------------
+  // SlimTracks
+  // ------------------------------
+  void processTracks(Tracks const& tracks)
+  {
     for (auto& tr : tracks) {
       slimTracks(tr.px(), tr.py(), tr.pz());
     }
   }
-};
+  PROCESS_SWITCH(SlimTablesProducer, processTracks,
+                 "Produce slim track table", true);
 
-// ---------------- SlimParticlesProducer ----------------
-struct SlimParticlesProducer {
-  o2::framework::Produces<o2::aod::SlimParticles> slimParticles;
-
-
-  void process(Particles const& particles) {
+  // ------------------------------
+  // Slim MC Particles
+  // ------------------------------
+  void processMcParticles(McParticles const& particles)
+  {
     for (auto& p : particles) {
-      slimParticles(p.px(), p.py(), p.pz(), p.E());
+      slimMcParticles(p.px(), p.py(), p.pz(), p.e());
     }
   }
+  PROCESS_SWITCH(SlimTablesProducer, processMcParticles,
+                 "Produce slim MC particle table", true);
 };
 
-// ---------------- SlimCollisionProducer ----------------
-struct SlimCollisionProducer {
-  o2::framework::Produces<o2::aod::SlimCollision> slimCollision;
-
-  void process(Collision const& coll) {
-    slimCollision(coll.posZ(), coll.Centrality(), coll.EventSel(), coll.EventWeight());
-  }
-};
-
-// ---------------- SlimMcCollisionProducer ----------------
-struct SlimMcCollisionProducer {
-  o2::framework::Produces<o2::aod::SlimMcCollision> slimMcCollision;
-
-  void process(McCollision const& mcColl) {
-    slimMcCollision(mcColl.posZ(), mcColl.centrality(), mcColl.eventSel(), mcColl.eventWeight());
-  }
-};
+WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
+{
+  return WorkflowSpec{
+    adaptAnalysisTask<SlimTablesProducer>(cfgc, TaskName{"slim-tables-producer"})
+  };
+}
