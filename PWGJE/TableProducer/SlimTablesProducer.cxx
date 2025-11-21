@@ -13,7 +13,7 @@ struct SlimTablesProducer {
 
   // --- Tables produites ---
   Produces<SlimTracks> slimTracks;
-  Produces<SlimMcParticles> slimMcParticles;
+  Produces<SlimParticles> slimParticles;
 
   // ------------------------------
   // SlimTracks
@@ -33,7 +33,7 @@ struct SlimTablesProducer {
   void processMcParticles(McParticles const& particles)
   {
     for (auto& p : particles) {
-      slimMcParticles(p.px(), p.py(), p.pz(), p.e());
+      slimParticles(p.px(), p.py(), p.pz(), p.e());
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMcParticles,
