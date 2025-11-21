@@ -12,8 +12,8 @@ using namespace o2::framework::expressions;
 struct SlimTablesProducer {
 
   // --- Tables produites ---
-  Produces<SlimTracks> slimTracks;
-  Produces<SlimParticles> slimParticles;
+  Produces<o2::aod::SlimTracks> slimTracks;
+  Produces<o2::aod::SlimParticles> slimParticles;
 
   // ------------------------------
   // SlimTracks
