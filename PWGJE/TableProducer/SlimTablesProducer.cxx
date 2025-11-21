@@ -33,7 +33,7 @@ struct SlimTablesProducer {
   void processParticles(aod::SlimParticles const& particles)
   {
     for (auto& p : particles) {
-      slimParticles(p.px(), p.py(), p.pz(), p.e());
+      slimParticles(p.px(), p.py(), p.pz(), p.energy());
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processParticles,
