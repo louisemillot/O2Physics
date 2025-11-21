@@ -1,13 +1,14 @@
 #include "PWGJE/DataModel/SlimTables.h"
 #include "Framework/AnalysisDataModel.h"
 #include "Framework/AnalysisTask.h"
+#include "Framework/AnalysisHelpers.h"
 
 
 using namespace o2::aod;
 
 // ---------------- SlimTracksProducer ----------------
 struct SlimTracksProducer {
-  Produces<SlimTracks> slimTracks;
+  o2::framework::Produces<o2::aod::SlimTracks> slimTracks;
 
   void process(Tracks const& tracks) {
     for (auto& tr : tracks) {
@@ -18,7 +19,8 @@ struct SlimTracksProducer {
 
 // ---------------- SlimParticlesProducer ----------------
 struct SlimParticlesProducer {
-  Produces<SlimParticles> slimParticles;
+  o2::framework::Produces<o2::aod::SlimParticles> slimParticles;
+
 
   void process(Particles const& particles) {
     for (auto& p : particles) {
@@ -29,7 +31,7 @@ struct SlimParticlesProducer {
 
 // ---------------- SlimCollisionProducer ----------------
 struct SlimCollisionProducer {
-  Produces<SlimCollision> slimCollision;
+  o2::framework::Produces<o2::aod::SlimCollision> slimCollision;
 
   void process(Collision const& coll) {
     slimCollision(coll.posZ(), coll.Centrality(), coll.EventSel(), coll.EventWeight());
@@ -38,7 +40,7 @@ struct SlimCollisionProducer {
 
 // ---------------- SlimMcCollisionProducer ----------------
 struct SlimMcCollisionProducer {
-  Produces<SlimMcCollision> slimMcCollision;
+  o2::framework::Produces<o2::aod::SlimMcCollision> slimMcCollision;
 
   void process(McCollision const& mcColl) {
     slimMcCollision(mcColl.posZ(), mcColl.centrality(), mcColl.eventSel(), mcColl.eventWeight());
