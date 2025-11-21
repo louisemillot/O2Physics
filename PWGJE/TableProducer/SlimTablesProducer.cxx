@@ -5,8 +5,8 @@
 
 #include "PWGJE/DataModel/Jet.h"
 
+using namespace o2;
 using namespace o2::framework;
-using namespace o2::aod;
 using namespace o2::framework::expressions;
 
 struct SlimTablesProducer {
@@ -18,7 +18,7 @@ struct SlimTablesProducer {
   // ------------------------------
   // SlimTracks
   // ------------------------------
-  void processTracks(Tracks const& tracks)
+  void processTracks(aod::SlimTracks const& tracks)
   {
     for (auto& tr : tracks) {
       slimTracks(tr.px(), tr.py(), tr.pz());
@@ -30,13 +30,13 @@ struct SlimTablesProducer {
   // ------------------------------
   // Slim MC Particles
   // ------------------------------
-  void processMcParticles(McParticles const& particles)
+  void processParticles(aod::SlimParticles const& particles)
   {
     for (auto& p : particles) {
       slimParticles(p.px(), p.py(), p.pz(), p.e());
     }
   }
-  PROCESS_SWITCH(SlimTablesProducer, processMcParticles,
+  PROCESS_SWITCH(SlimTablesProducer, processParticles,
                  "Produce slim MC particle table", true);
 };
 
