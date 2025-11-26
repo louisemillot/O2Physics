@@ -19,6 +19,8 @@ struct SlimTablesProducer {
 
   // --- Tables produites ---
   Produces<o2::aod::SlimTracks> slimTracks;
+  Produces<o2::aod::SlimParticles> slimParticles;
+
 
   // ------------------------------
   // SlimTracks
@@ -30,6 +32,17 @@ struct SlimTablesProducer {
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processTracks,"Produce slim track table", true);
+
+  void processParticles(aod::McParticles const& parts)
+  {
+    for (auto& p : parts) {
+      slimParticles(p.px(), p.py(), p.pz());
+    }
+  }
+  PROCESS_SWITCH(SlimTablesProducer, processParticles, "produce slim particles", true);
+
+
+
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)

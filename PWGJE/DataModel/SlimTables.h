@@ -15,7 +15,6 @@ namespace o2::aod
 {
 namespace slimtracks
 {
-// Track info
 DECLARE_SOA_COLUMN(CollisionId, collisionId, int);                    //! Id of collision
 DECLARE_SOA_COLUMN(Pt, pt, float);
 
