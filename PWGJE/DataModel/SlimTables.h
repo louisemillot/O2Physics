@@ -29,7 +29,7 @@ DECLARE_SOA_COLUMN(EventSel, eventSel, uint16_t);
 DECLARE_SOA_COLUMN(TrackOccupancyInTimeRange, trackOccupancyInTimeRange, int);
 }
 
-DECLARE_SOA_TABLE(SlimCollisions, "AOD", "SlimTracks",
+DECLARE_SOA_TABLE(SlimCollisions, "AOD", "SlimCollisions",
                     o2::soa::Index<>,
                     slimcollision::PosZ,
                     slimcollision::CentFT0C,
