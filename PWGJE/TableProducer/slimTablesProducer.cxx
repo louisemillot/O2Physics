@@ -13,6 +13,7 @@
 /// \brief Task to produce a reduced version of Tables for tracks, collisions, mcparticles and mccollisions.
 /// \author Millot Louise <louise.millot@cern.ch>
 
+#include "PWGJE/DataModel/Jet.h"
 #include "PWGJE/DataModel/SlimTables.h"
 
 #include "Framework/AnalysisDataModel.h"
@@ -38,7 +39,7 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimTracks> slimTracks;
   Produces<o2::aod::SlimParticles> slimParticles;
 
-  void processCollision(aod::Collisions const& collisions)
+  void processCollision(aod::JetCollisions const& collisions)
   {
     for (const auto& coll : collisions) {
       slimCollisions(coll.posZ(), coll.centFT0C(), coll.centFT0M(), coll.weight(), coll.eventSel(), coll.trackOccupancyInTimeRange());
@@ -46,7 +47,7 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processCollision, "Produce slim collision table", true);
 
-  void processMcCollision(aod::McCollisions const& mccollisions)
+  void processMcCollision(aod::JetMcCollisions const& mccollisions)
   {
     for (const auto& mccoll : mccollisions) {
       slimMcCollisions(mccoll.posZ(), mccoll.centFT0M(), mccoll.weight(), mccoll.accepted(), mccoll.ptHard());
@@ -54,7 +55,7 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processMcCollision, "Produce slim mc collision table", true);
 
-  void processTracks(aod::Tracks const& tracks)
+  void processTracks(aod::JetTracks const& tracks)
   {
     for (const auto& trk : tracks) {
       slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
@@ -62,7 +63,7 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);
 
-  void processParticles(aod::McParticles const& parts)
+  void processParticles(aod::JetParticles const& parts)
   {
     for (const auto& p : parts) {
       slimParticles(p.mcCollision(), p.pt(), p.eta(), p.phi());
