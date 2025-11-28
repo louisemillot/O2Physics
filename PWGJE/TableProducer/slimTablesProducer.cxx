@@ -38,7 +38,7 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimTracks> slimTracks;
   Produces<o2::aod::SlimParticles> slimParticles;
 
-  void processCollision(aod::SlimCollisions const& collisions)
+  void processCollision(aod::Collisions const& collisions)
   {
     for (const auto& coll : collisions) {
       slimCollisions(coll.posZ(), coll.centFT0C(), coll.centFT0M(), coll.weight(), coll.eventSel(), coll.trackOccupancyInTimeRange());
@@ -46,7 +46,7 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processCollision, "Produce slim collision table", true);
 
-  void processMcCollision(aod::SlimMcCollisions const& mccollisions)
+  void processMcCollision(aod::McCollisions const& mccollisions)
   {
     for (const auto& mccoll : mccollisions) {
       slimMcCollisions(mccoll.posZ(), mccoll.centFT0M(), mccoll.weight(), mccoll.accepted(), mccoll.ptHard());
@@ -54,7 +54,7 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processMcCollision, "Produce slim mc collision table", true);
 
-  void processTracks(aod::SlimTracks const& tracks)
+  void processTracks(aod::Tracks const& tracks)
   {
     for (const auto& trk : tracks) {
       slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
