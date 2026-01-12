@@ -76,7 +76,6 @@ DECLARE_SOA_INDEX_COLUMN(Track, track);
 DECLARE_SOA_COLUMN(Pt, pt, float);
 DECLARE_SOA_COLUMN(Eta, eta, float);
 DECLARE_SOA_COLUMN(Phi, phi, float);
-DECLARE_SOA_COLUMN(DcaXY, dcaXY, float);
 DECLARE_SOA_DYNAMIC_COLUMN(Px, px,
                            [](float pt, float phi) -> float { return pt * std::cos(phi); });
 DECLARE_SOA_DYNAMIC_COLUMN(Py, py,
@@ -92,7 +91,6 @@ DECLARE_SOA_TABLE(SlimTracks, "AOD", "SlimTracks",
                   slimtracks::Pt,
                   slimtracks::Eta,
                   slimtracks::Phi,
-                  slimtracks::DcaXY,
                   slimtracks::Px<slimtracks::Pt, slimtracks::Phi>,
                   slimtracks::Py<slimtracks::Pt, slimtracks::Phi>,
                   slimtracks::Pz<slimtracks::Pt, slimtracks::Eta>,
