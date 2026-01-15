@@ -56,11 +56,20 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processMcCollision, "Produce slim mc collision table", true);
 
-  void processTracks(aod::Collisions::iterator const& collision,
-                     aod::Tracks const& tracks)
+  // void processTracks(aod::Collisions::iterator const& collision,
+  //                    aod::Tracks const& tracks)
+  // {
+  //   auto tracksInCollision = tracks.sliceBy(trackPerColl, collision.globalIndex());
+  //   for (const auto& trk : tracksInCollision) {
+  //     // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
+  //     slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz());
+  //   }
+  // }
+  // PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);
+
+  void processTracks(aod::Tracks const& tracks)
   {
-    auto tracksInCollision = tracks.sliceBy(trackPerColl, collision.globalIndex());
-    for (const auto& trk : tracksInCollision) {
+    for (const auto& trk : tracks) {
       // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
       slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz());
     }
