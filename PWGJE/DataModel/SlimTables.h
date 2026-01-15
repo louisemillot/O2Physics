@@ -97,7 +97,7 @@ DECLARE_SOA_TABLE(SlimTracks, "AOD", "SlimTracks",
                   slimtracks::Phi,
                   slimtracks::Px,
                   slimtracks::Py,
-                  slimtracks::Pz,
+                  slimtracks::Pz
                   //   slimtracks::E
 );
 
