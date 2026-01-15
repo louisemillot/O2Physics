@@ -59,7 +59,7 @@ struct SlimTablesProducer {
   {
     for (const auto& trk : tracks) {
       // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
-      slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi());
+      slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz(), trk.e());
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);

@@ -76,14 +76,18 @@ DECLARE_SOA_INDEX_COLUMN(Track, track);
 DECLARE_SOA_COLUMN(Pt, pt, float);
 DECLARE_SOA_COLUMN(Eta, eta, float);
 DECLARE_SOA_COLUMN(Phi, phi, float);
-DECLARE_SOA_DYNAMIC_COLUMN(Px, px,
-                           [](float pt, float phi) -> float { return pt * std::cos(phi); });
-DECLARE_SOA_DYNAMIC_COLUMN(Py, py,
-                           [](float pt, float phi) -> float { return pt * std::sin(phi); });
-DECLARE_SOA_DYNAMIC_COLUMN(Pz, pz,
-                           [](float pt, float eta) -> float { return pt * std::sinh(eta); });
-DECLARE_SOA_DYNAMIC_COLUMN(Energy, energy,
-                           [](float pt, float eta) -> float { return std::sqrt((pt * std::cosh(eta) * pt * std::cosh(eta)) + (jetderiveddatautilities::mPion * jetderiveddatautilities::mPion)); });
+DECLARE_SOA_COLUMN(Px, px, float);
+DECLARE_SOA_COLUMN(Py, py, float);
+DECLARE_SOA_COLUMN(Pz, pz, float);
+DECLARE_SOA_COLUMN(E, e, float);
+// DECLARE_SOA_DYNAMIC_COLUMN(Px, px,
+//                            [](float pt, float phi) -> float { return pt * std::cos(phi); });
+// DECLARE_SOA_DYNAMIC_COLUMN(Py, py,
+//                            [](float pt, float phi) -> float { return pt * std::sin(phi); });
+// DECLARE_SOA_DYNAMIC_COLUMN(Pz, pz,
+//                            [](float pt, float eta) -> float { return pt * std::sinh(eta); });
+// DECLARE_SOA_DYNAMIC_COLUMN(Energy, energy,
+//                            [](float pt, float eta) -> float { return std::sqrt((pt * std::cosh(eta) * pt * std::cosh(eta)) + (jetderiveddatautilities::mPion * jetderiveddatautilities::mPion)); });
 } // namespace slimtracks
 DECLARE_SOA_TABLE(SlimTracks, "AOD", "SlimTracks",
                   o2::soa::Index<>,
@@ -91,10 +95,10 @@ DECLARE_SOA_TABLE(SlimTracks, "AOD", "SlimTracks",
                   slimtracks::Pt,
                   slimtracks::Eta,
                   slimtracks::Phi,
-                  slimtracks::Px<slimtracks::Pt, slimtracks::Phi>,
-                  slimtracks::Py<slimtracks::Pt, slimtracks::Phi>,
-                  slimtracks::Pz<slimtracks::Pt, slimtracks::Eta>,
-                  slimtracks::Energy<slimtracks::Pt, slimtracks::Eta>);
+                  slimtracks::Px,
+                  slimtracks::Py,
+                  slimtracks::Pz,
+                  slimtracks::E);
 
 namespace slimparticles
 {
