@@ -67,7 +67,8 @@ struct SlimTablesProducer {
   // }
   // PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);
 
-  void processTracks(aod::JetTracks const& tracks)
+  void processTracks(aod::JetCollisions::iterator const&,
+                     aod::JetTracks const& tracks)
   {
     for (const auto& trk : tracks) {
       // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
