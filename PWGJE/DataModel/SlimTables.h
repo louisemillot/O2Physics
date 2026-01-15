@@ -79,7 +79,7 @@ DECLARE_SOA_COLUMN(Phi, phi, float);
 DECLARE_SOA_COLUMN(Px, px, float);
 DECLARE_SOA_COLUMN(Py, py, float);
 DECLARE_SOA_COLUMN(Pz, pz, float);
-DECLARE_SOA_COLUMN(E, e, float);
+DECLARE_SOA_COLUMN(E, energy, float);
 // DECLARE_SOA_DYNAMIC_COLUMN(Px, px,
 //                            [](float pt, float phi) -> float { return pt * std::cos(phi); });
 // DECLARE_SOA_DYNAMIC_COLUMN(Py, py,
