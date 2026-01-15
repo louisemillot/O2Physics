@@ -55,11 +55,11 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processMcCollision, "Produce slim mc collision table", true);
 
-  void processTracks(aod::JetTracks const& tracks)
+  void processTracks(aod::SlimTracks const& tracks)
   {
     for (const auto& trk : tracks) {
       // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
-      slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz(), trk.energy());
+      slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz());
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);
