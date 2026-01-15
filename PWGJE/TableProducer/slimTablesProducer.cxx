@@ -38,6 +38,7 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimMcCollisions> slimMcCollisions;
   Produces<o2::aod::SlimTracks> slimTracks;
   Produces<o2::aod::SlimParticles> slimParticles;
+  Preslice<aod::Track> trackPerColl = aod::track::collisionId;
 
   void processCollision(aod::JetCollisions const& collisions)
   {
@@ -55,11 +56,15 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processMcCollision, "Produce slim mc collision table", true);
 
-  void processTracks(aod::Tracks const& tracks)
+  void processTracks(aod::Collisions::iterator const& collisions,
+                     aod::Tracks const& tracks)
   {
-    for (const auto& trk : tracks) {
-      // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
-      slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz());
+    for (const auto& collision : collisions) {
+      auto tracksInCollision = tracks.sliceBy(trackPerColl, collision.globalIndex());
+      for (const auto& trk : tracksInCollision) {
+        // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
+        slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz());
+      }
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);
