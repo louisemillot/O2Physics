@@ -55,7 +55,7 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processMcCollision, "Produce slim mc collision table", true);
 
-  void processTracks(aod::SlimTracks const& tracks)
+  void processTracks(aod::Tracks const& tracks)
   {
     for (const auto& trk : tracks) {
       // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
