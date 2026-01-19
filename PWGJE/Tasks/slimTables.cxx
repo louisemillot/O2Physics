@@ -46,7 +46,7 @@ using namespace o2::framework;
 struct CountSlimTracks {
 
   // Pour pouvoir faire sliceBy(tracksPerCollision, collisionId)
-  Preslice<aod::SlimTracks> tracksPerCollision = aod::slimtrack::collisionId;
+  Preslice<aod::SlimTracks> tracksPerCollision = aod::slimtracks::collisionId;
 
   void process(aod::SlimCollisions::iterator const& coll,
                aod::SlimTracks const& tracks)
