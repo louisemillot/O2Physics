@@ -38,7 +38,7 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimMcCollisions> slimMcCollisions;
   Produces<o2::aod::SlimTracks> slimTracks;
   Produces<o2::aod::SlimParticles> slimParticles;
-  Preslice<aod::JetTracks> tracksPerCollision = aod::jettrack::collisionId;
+  Preslice<aod::JetTracks> tracksPerCollision = aod::jtrack::collisionId;
 
   void processCollision(aod::JetCollisions const& collisions)
   {
