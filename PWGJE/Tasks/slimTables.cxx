@@ -48,8 +48,8 @@ struct CountSlimTracks {
   // Pour pouvoir faire sliceBy(tracksPerCollision, collisionId)
   Preslice<aod::SlimTracks> tracksPerCollision = aod::slimtracks::collisionId;
 
-  void process(aod::SlimCollisions::iterator const& coll,
-               aod::SlimTracks const& tracks)
+  void processTracks(aod::SlimCollisions::iterator const& coll,
+                     aod::SlimTracks const& tracks)
   {
     // Filtre les tracks qui appartiennent à la collision coll
     auto tracksInColl = tracks.sliceBy(tracksPerCollision, coll.globalIndex());
@@ -61,6 +61,7 @@ struct CountSlimTracks {
     LOG(info) << "Collision " << coll.globalIndex()
               << " has " << nTracks << " tracks";
   }
+  PROCESS_SWITCH(CountSlimTracks, processTracks, "number of tracks per collisions ", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
