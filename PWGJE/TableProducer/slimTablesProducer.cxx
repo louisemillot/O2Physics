@@ -35,9 +35,9 @@ struct SlimTablesProducer {
   }
 
   Produces<o2::aod::SlimCollisions> slimCollisions;
-  Produces<o2::aod::SlimMcCollisions> slimMcCollisions;
+  // Produces<o2::aod::SlimMcCollisions> slimMcCollisions;
   Produces<o2::aod::SlimTracks> slimTracks;
-  Produces<o2::aod::SlimParticles> slimParticles;
+  // Produces<o2::aod::SlimParticles> slimParticles;
   Preslice<aod::JetTracks> tracksPerCollision = aod::jtrack::collisionId;
 
   void processCollision(aod::JetCollisions const& collisions)
@@ -48,13 +48,13 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processCollision, "Produce slim collision table", true);
 
-  void processMcCollision(aod::JetMcCollisions const& mccollisions)
-  {
-    for (const auto& mccoll : mccollisions) {
-      slimMcCollisions(mccoll.posZ(), mccoll.centFT0M(), mccoll.weight(), mccoll.accepted(), mccoll.ptHard());
-    }
-  }
-  PROCESS_SWITCH(SlimTablesProducer, processMcCollision, "Produce slim mc collision table", false);
+  // void processMcCollision(aod::JetMcCollisions const& mccollisions)
+  // {
+  //   for (const auto& mccoll : mccollisions) {
+  //     slimMcCollisions(mccoll.posZ(), mccoll.centFT0M(), mccoll.weight(), mccoll.accepted(), mccoll.ptHard());
+  //   }
+  // }
+  // PROCESS_SWITCH(SlimTablesProducer, processMcCollision, "Produce slim mc collision table", false);
 
   // void processTracks(aod::Collisions::iterator const& collision,
   //                    aod::Tracks const& tracks)
@@ -78,13 +78,13 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);
 
-  void processParticles(aod::JetParticles const& parts)
-  {
-    for (const auto& p : parts) {
-      slimParticles(p.mcCollision(), p.pt(), p.eta(), p.phi());
-    }
-  }
-  PROCESS_SWITCH(SlimTablesProducer, processParticles, "Produce slim particles", false);
+  // void processParticles(aod::JetParticles const& parts)
+  // {
+  //   for (const auto& p : parts) {
+  //     slimParticles(p.mcCollision(), p.pt(), p.eta(), p.phi());
+  //   }
+  // }
+  // PROCESS_SWITCH(SlimTablesProducer, processParticles, "Produce slim particles", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
