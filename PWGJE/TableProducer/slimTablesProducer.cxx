@@ -71,7 +71,7 @@ struct SlimTablesProducer {
                      aod::JetTracks const& tracks)
   {
     auto tracksInColl = tracks.sliceBy(tracksPerCollision, coll.globalIndex());
-    for (const auto& trk : tracks) {
+    for (const auto& trk : tracksInColl) {
       // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
       slimTracks(trk.collisionId(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz());
     }
