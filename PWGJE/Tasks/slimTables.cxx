@@ -48,18 +48,20 @@ struct CountSlimTracks {
   // Pour pouvoir faire sliceBy(tracksPerCollision, collisionId)
   Preslice<aod::SlimTracks> tracksPerCollision = aod::slimtracks::collisionId;
 
-  void processTracks(aod::SlimCollisions::iterator const& coll,
+  void processTracks(aod::SlimCollisions const& collisions,
                      aod::SlimTracks const& tracks)
   {
-    // Filtre les tracks qui appartiennent à la collision coll
-    auto tracksInColl = tracks.sliceBy(tracksPerCollision, coll.globalIndex());
+    for (auto const& coll : collisions) {
 
-    // Nombre de tracks dans cette collision
-    int nTracks = tracksInColl.size();
+      // Filtre les tracks qui appartiennent à la collision coll
+      auto tracksInColl = tracks.sliceBy(tracksPerCollision, coll.globalIndex());
 
-    // Affiche le résultat
-    LOG(info) << "Collision " << coll.globalIndex()
-              << " has " << nTracks << " tracks";
+      // Nombre de tracks dans cette collision
+      int nTracks = tracksInColl.size();
+
+      // Affiche le résultat
+      LOG(info) << "Collision " << coll.globalIndex() << " has " << nTracks << " tracks";
+    }
   }
   PROCESS_SWITCH(CountSlimTracks, processTracks, "number of tracks per collisions ", false);
 };
