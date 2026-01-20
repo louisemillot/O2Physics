@@ -92,10 +92,6 @@ struct CountSlimTracks {
                      aod::SlimTracks const& tracks)
   {
     for (auto const& coll : collisions) {
-      if (!jetderiveddatautilities::selectCollision(coll, eventSelectionBits)) {
-        continue;
-      }
-
       // Filtre les tracks qui appartiennent à la collision coll
       auto tracksInColl = tracks.sliceBy(tracksPerCollision, coll.globalIndex());
 
