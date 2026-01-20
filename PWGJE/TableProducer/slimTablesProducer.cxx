@@ -65,17 +65,18 @@ struct SlimTablesProducer {
 
   Produces<o2::aod::SlimCollisions> slimCollisions;
   // Produces<o2::aod::SlimMcCollisions> slimMcCollisions;
-  Produces<o2::aod::SlimTracks> slimTracks;
+  // Produces<o2::aod::SlimTracks> slimTracks;
   // Produces<o2::aod::SlimParticles> slimParticles;
   Preslice<aod::JetTracks> tracksPerCollision = aod::jtrack::collisionId;
 
   void processCollision(aod::JetCollisions const& collisions)
   {
     for (const auto& coll : collisions) {
-      slimCollisions(coll.posZ(), coll.centFT0C(), coll.centFT0M(), coll.weight(), coll.eventSel(), coll.trackOccupancyInTimeRange());
+      // slimCollisions(coll.posZ(), coll.centFT0C(), coll.centFT0M(), coll.weight(), coll.eventSel(), coll.trackOccupancyInTimeRange());
+      slimCollisions(coll.posZ());
     }
   }
-  PROCESS_SWITCH(SlimTablesProducer, processCollision, "Produce slim collision table", true);
+  PROCESS_SWITCH(SlimTablesProducer, processCollision, "Produce slim collision table", false);
 
   // void processMcCollision(aod::JetMcCollisions const& mccollisions)
   // {
@@ -96,16 +97,16 @@ struct SlimTablesProducer {
   // }
   // PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);
 
-  void processTracks(aod::JetCollisions::iterator const& coll,
-                     aod::JetTracks const& tracks)
-  {
-    auto tracksInColl = tracks.sliceBy(tracksPerCollision, coll.globalIndex());
-    for (const auto& trk : tracksInColl) {
-      // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
-      slimTracks(trk.collisionId(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz());
-    }
-  }
-  PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);
+  // void processTracks(aod::JetCollisions::iterator const& coll,
+  //                    aod::JetTracks const& tracks)
+  // {
+  //   auto tracksInColl = tracks.sliceBy(tracksPerCollision, coll.globalIndex());
+  //   for (const auto& trk : tracksInColl) {
+  //     // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
+  //     slimTracks(trk.collisionId(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz());
+  //   }
+  // }
+  // PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);
 
   // void processParticles(aod::JetParticles const& parts)
   // {
