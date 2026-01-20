@@ -77,7 +77,7 @@ struct SlimTablesProducer {
   // }
   // PROCESS_SWITCH(SlimTablesProducer, processCollision, "Produce slim collision table", false);
 
-  void processCollision(aod::Collisions::iterator const& collision)
+  void processCollision(aod::JetCollisions::iterator const& collision)
   {
     slimCollisions(collision.posZ());
   }
