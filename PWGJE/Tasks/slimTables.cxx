@@ -48,61 +48,63 @@ struct CountSlimTracks {
   // Pour pouvoir faire sliceBy(tracksPerCollision, collisionId)
   Configurable<std::string> eventSelections{"eventSelections", "sel8FullPbPb", "choose event selection"};
 
-  Preslice<aod::SlimTracks> tracksPerCollision = aod::slimtracks::collisionId;
+  // Preslice<aod::SlimTracks> tracksPerCollision = aod::slimtracks::collisionId;
   std::vector<int> eventSelectionBits;
 
   HistogramRegistry registry;
 
   void init(InitContext const&)
   {
-    registry.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
-    eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
+    // registry.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+    // eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
   }
-
-  void processCollisions(aod::SlimCollisions const& collisions)
+  void processDummy()
   {
-    registry.fill(HIST("h_collisions"), 0.5);
-
-    for (auto const& coll : collisions) {
-      // Si aucun bit demandé, on accepte tout
-      if (eventSelectionBits.empty()) {
-        registry.fill(HIST("h_collisions"), 1.5);
-        continue;
-      }
-
-      // AND logique : tous les bits doivent être présents
-      bool accepted = false;
-      for (int bit : eventSelectionBits) {
-        if (!(coll.eventSel() & (1 << bit))) {
-          accepted = true;
-          break;
-        }
-      }
-
-      if (!accepted) {
-        continue;
-      }
-
-      registry.fill(HIST("h_collisions"), 1.5);
-    }
   }
-  PROCESS_SWITCH(CountSlimTracks, processCollisions, "number of collisions", true);
+  // void processCollisions(aod::SlimCollisions const& collisions)
+  // {
+  //   registry.fill(HIST("h_collisions"), 0.5);
 
-  void processTracks(aod::SlimCollisions const& collisions,
-                     aod::SlimTracks const& tracks)
-  {
-    for (auto const& coll : collisions) {
-      // Filtre les tracks qui appartiennent à la collision coll
-      auto tracksInColl = tracks.sliceBy(tracksPerCollision, coll.globalIndex());
+  //   for (auto const& coll : collisions) {
+  //     // Si aucun bit demandé, on accepte tout
+  //     if (eventSelectionBits.empty()) {
+  //       registry.fill(HIST("h_collisions"), 1.5);
+  //       continue;
+  //     }
 
-      // Nombre de tracks dans cette collision
-      int nTracks = tracksInColl.size();
+  //     // AND logique : tous les bits doivent être présents
+  //     bool accepted = false;
+  //     for (int bit : eventSelectionBits) {
+  //       if (!(coll.eventSel() & (1 << bit))) {
+  //         accepted = true;
+  //         break;
+  //       }
+  //     }
 
-      // Affiche le résultat
-      LOG(info) << "Collision " << coll.globalIndex() << " has " << nTracks << " tracks";
-    }
-  }
-  PROCESS_SWITCH(CountSlimTracks, processTracks, "number of tracks per collisions ", false);
+  //     if (!accepted) {
+  //       continue;
+  //     }
+
+  //     registry.fill(HIST("h_collisions"), 1.5);
+  //   }
+  // }
+  // PROCESS_SWITCH(CountSlimTracks, processCollisions, "number of collisions", true);
+
+  // void processTracks(aod::SlimCollisions const& collisions,
+  //                    aod::SlimTracks const& tracks)
+  // {
+  //   for (auto const& coll : collisions) {
+  //     // Filtre les tracks qui appartiennent à la collision coll
+  //     auto tracksInColl = tracks.sliceBy(tracksPerCollision, coll.globalIndex());
+
+  //     // Nombre de tracks dans cette collision
+  //     int nTracks = tracksInColl.size();
+
+  //     // Affiche le résultat
+  //     LOG(info) << "Collision " << coll.globalIndex() << " has " << nTracks << " tracks";
+  //   }
+  // }
+  // PROCESS_SWITCH(CountSlimTracks, processTracks, "number of tracks per collisions ", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
