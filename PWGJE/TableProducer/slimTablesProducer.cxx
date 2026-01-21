@@ -59,67 +59,53 @@ using namespace o2::framework::expressions;
 
 struct SlimTablesProducer {
 
+  HistogramRegistry histos{"histos", {}, OutputObjHandlingPolicy::AnalysisObject};
+  Configurable<int> nBinsPt{"nBinsPt", 100, "N bins in pT histo"};
+  Configurable<float> minPt{"minPt", 2.0, "min pT to save"};
+  Configurable<float> maxDCA{"maxDCA", 0.1, "max DCA"};
+  Configurable<float> etaWindow{"etaWindow", 0.8, "eta window"};
+  Configurable<bool> skipUninterestingEvents{"skipUninterestingEvents", true, "skip collisions without particle of interest"};
+  Configurable<int> minTPCNClsCrossedRows{"minTPCNClsCrossedRows", 80, "min TPC crossed rows"};
+
   void init(InitContext&)
   {
+    const AxisSpec axisCounter{1, 0, +1, ""};
+    const AxisSpec axisPt{nBinsPt, 0, 10, "p_{T}"};
+    histos.add("eventCounter", "eventCounter", kTH1F, {axisCounter});
+    histos.add("ptHistogram", "ptHistogram", kTH1F, {axisPt});
   }
 
   Produces<o2::aod::SlimCollisions> slimCollisions;
-  // Produces<o2::aod::SlimMcCollisions> slimMcCollisions;
-  // Produces<o2::aod::SlimTracks> slimTracks;
-  // Produces<o2::aod::SlimParticles> slimParticles;
-  // Preslice<aod::JetTracks> tracksPerCollision = aod::jtrack::collisionId;
+  Produces<o2::aod::SlimTracks> slimTracks;
 
-  // void processCollision(aod::JetCollisions const& collisions)
-  // {
-  //   for (const auto& coll : collisions) {
-  //     // slimCollisions(coll.posZ(), coll.centFT0C(), coll.centFT0M(), coll.weight(), coll.eventSel(), coll.trackOccupancyInTimeRange());
-  //   }
-  // }
-  // PROCESS_SWITCH(SlimTablesProducer, processCollision, "Produce slim collision table", false);
+  // Look at primary tracks only
+  Filter trackFilter = nabs(aod::track::dcaXY) < maxDCA && nabs(aod::track::eta) < etaWindow && aod::track::pt > minPt;
 
-  void processCollision(aod::Collisions::iterator const& collision)
+  using myCompleteTracks = soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>;
+  using myFilteredTracks = soa::Filtered<myCompleteTracks>;
+
+  void process(aod::Collisions::iterator const& collision, myFilteredTracks const& tracks)
   {
+    histos.fill(HIST("eventCounter"), 0.5);           // Compte tous les événements qui entrent dans la fonction, avant toute sélection
+    if (tracks.size() < 1 && skipUninterestingEvents) // si l'event n'a aucune track ET j'ai demandé de skipper les événements inintéressants, on sort immédiatement.
+      return;
+    bool interestingEvent = false; // on suppose que l'événement n'est pas intéressant au depart
+    for (const auto& track : tracks) {
+      if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) // On rejette les tracks avec pas assez de clusters TPC
+        continue;                                             // on passe à la track suivante
+      interestingEvent = true;                                // si une track a un NClsCrossedRows de 3 alors que j'ai demande 5 minimum, on l'ignore et on passe à la suivante et si la piste suivante est bonne alors interestingEvent devient true
+    }
+    if (!interestingEvent && skipUninterestingEvents) // si aucune track est de bonne qualité mais que skipUninterestingEvents est true alors on jet l'événement
+      return;
     slimCollisions(collision.posZ());
+    for (const auto& track : tracks) {
+      if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
+        continue; // remove badly tracked
+      histos.get<TH1>(HIST("ptHistogram"))->Fill(track.pt());
+      slimTracks(slimCollisions.lastIndex(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz()); // all that I need for posterior analysis!
+    }
   }
-  PROCESS_SWITCH(SlimTablesProducer, processCollision, "Produce slim collision table", false);
-
-  // void processMcCollision(aod::JetMcCollisions const& mccollisions)
-  // {
-  //   for (const auto& mccoll : mccollisions) {
-  //     slimMcCollisions(mccoll.posZ(), mccoll.centFT0M(), mccoll.weight(), mccoll.accepted(), mccoll.ptHard());
-  //   }
-  // }
-  // PROCESS_SWITCH(SlimTablesProducer, processMcCollision, "Produce slim mc collision table", false);
-
-  // void processTracks(aod::Collisions::iterator const& collision,
-  //                    aod::Tracks const& tracks)
-  // {
-  //   auto tracksInCollision = tracks.sliceBy(trackPerColl, collision.globalIndex());
-  //   for (const auto& trk : tracksInCollision) {
-  //     // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
-  //     slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz());
-  //   }
-  // }
-  // PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);
-
-  // void processTracks(aod::JetCollisions::iterator const& coll,
-  //                    aod::JetTracks const& tracks)
-  // {
-  //   auto tracksInColl = tracks.sliceBy(tracksPerCollision, coll.globalIndex());
-  //   for (const auto& trk : tracksInColl) {
-  //     // slimTracks(trk.collision(), trk.pt(), trk.eta(), trk.phi(), trk.dcaXY());
-  //     slimTracks(trk.collisionId(), trk.pt(), trk.eta(), trk.phi(), trk.px(), trk.py(), trk.pz());
-  //   }
-  // }
-  // PROCESS_SWITCH(SlimTablesProducer, processTracks, "Produce slim track table", true);
-
-  // void processParticles(aod::JetParticles const& parts)
-  // {
-  //   for (const auto& p : parts) {
-  //     slimParticles(p.mcCollision(), p.pt(), p.eta(), p.phi());
-  //   }
-  // }
-  // PROCESS_SWITCH(SlimTablesProducer, processParticles, "Produce slim particles", false);
+  PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", true);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
