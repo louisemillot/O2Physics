@@ -92,10 +92,8 @@ struct SlimTablesProducer {
 
   using myCompleteTracks = soa::Join<aod::JetTracks, aod::TracksExtra, aod::TracksDCA>;
   using myFilteredTracks = soa::Filtered<myCompleteTracks>;
-  using CollisionCandidate = soa::Join<aod::JetCollisions, aod::EvSels>;
-  using myFilteredCollisions = soa::Filtered<CollisionCandidate>;
 
-  void process(myFilteredCollisions::iterator const& collision, myFilteredTracks const& tracks)
+  void process(soa::Filtered<aod::JetCollisions>::iterator const& collision, myFilteredTracks const& tracks)
   {
     histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
