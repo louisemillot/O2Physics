@@ -90,10 +90,12 @@ struct SlimTablesProducer {
   Filter trackFilter = nabs(aod::track::dcaXY) < maxDCA && nabs(aod::track::eta) < etaWindow && aod::track::pt > minPt;
   Filter eventCuts = (nabs(aod::collision::posZ) < vertexZCut);
 
-  using myCompleteTracks = soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>;
+  using myCompleteTracks = soa::Join<aod::JetTracks, aod::TracksExtra, aod::TracksDCA>;
   using myFilteredTracks = soa::Filtered<myCompleteTracks>;
+  using CollisionCandidate = soa::Join<aod::JetCollisions, aod::EvSels>;
+  using myFilteredCollisions = soa::Filtered<CollisionCandidate>;
 
-  void process(soa::Join<aod::Collisions, aod::EvSels>::iterator const& collision, myFilteredTracks const& tracks)
+  void process(myFilteredCollisions::iterator const& collision, myFilteredTracks const& tracks)
   {
     histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
