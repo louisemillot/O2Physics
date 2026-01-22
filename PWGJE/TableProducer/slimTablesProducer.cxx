@@ -88,7 +88,7 @@ struct SlimTablesProducer {
 
   // Look at primary tracks only
   Filter trackFilter = nabs(aod::track::dcaXY) < maxDCA && nabs(aod::track::eta) < etaWindow && aod::track::pt > minPt;
-  Filter eventCuts = (nabs(aod::collision::posZ) < vertexZCut);
+  Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
 
   using myCompleteTracks = soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>;
   using myFilteredTracks = soa::Filtered<myCompleteTracks>;
