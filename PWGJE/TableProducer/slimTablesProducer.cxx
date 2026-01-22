@@ -54,6 +54,7 @@
 #include <ReconstructionDataFormats/DCA.h>
 
 #include <string>
+#include <vector>
 
 using namespace o2;
 using namespace o2::framework;
@@ -71,7 +72,7 @@ struct SlimTablesProducer {
   Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
   Configurable<std::string> eventSelections{"eventSelections", "sel8", "Event selection"};
 
-  uint64_t eventSelectionMask = 0;
+  std::vector<int> eventSelectionBits;
 
   void init(InitContext&)
   {
@@ -79,7 +80,7 @@ struct SlimTablesProducer {
     const AxisSpec axisPt{nBinsPt, 0, 10, "p_{T}"};
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
     histos.add("ptHistogram", "ptHistogram", kTH1F, {axisPt});
-    eventSelectionMask = jetderiveddatautilities::initialiseEventSelectionBits(eventSelections);
+    eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(eventSelections);
   }
 
   Produces<o2::aod::SlimCollisions> slimCollisions;
