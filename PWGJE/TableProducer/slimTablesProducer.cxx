@@ -90,7 +90,7 @@ struct SlimTablesProducer {
   Filter trackFilter = nabs(aod::track::dcaXY) < maxDCA && nabs(aod::track::eta) < etaWindow && aod::track::pt > minPt;
   Filter eventCuts = (nabs(aod::collision::posZ) < vertexZCut);
 
-  using myCompleteTracks = soa::Join<aod::JetTracks, aod::TracksExtra, aod::TracksDCA>;
+  using myCompleteTracks = soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>;
   using myFilteredTracks = soa::Filtered<myCompleteTracks>;
 
   void process(soa::Filtered<aod::JetCollisions>::iterator const& collision, myFilteredTracks const& tracks)
