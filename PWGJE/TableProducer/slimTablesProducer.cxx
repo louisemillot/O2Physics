@@ -100,10 +100,6 @@ struct SlimTablesProducer {
       return;
     }
     histos.fill(HIST("h_collisions"), 1.5);
-    if (!(collision.eventSelection() & eventSelectionMask)) {
-      return;
-    }
-    histos.fill(HIST("h_collisions"), 1.5);
 
     if (tracks.size() < 1 && skipUninterestingEvents) // si l'event n'a aucune track ET j'ai demandé de skipper les événements inintéressants, on sort immédiatement.
       return;
