@@ -80,7 +80,7 @@ struct SlimTablesProducer {
     const AxisSpec axisPt{nBinsPt, 0, 10, "p_{T}"};
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
     histos.add("ptHistogram", "ptHistogram", kTH1F, {axisPt});
-    eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(eventSelections);
+    eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
   }
 
   Produces<o2::aod::SlimCollisions> slimCollisions;
