@@ -96,7 +96,7 @@ struct SlimTablesProducer {
   void process(soa::Join<aod::Collisions, aod::EvSels>::iterator const& collision, myFilteredTracks const& tracks)
   {
     histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
-    if (!(collision.eventSelection() & eventSelectionBits)) {
+    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
       return;
     }
     histos.fill(HIST("h_collisions"), 1.5);
@@ -111,7 +111,9 @@ struct SlimTablesProducer {
     }
     if (!interestingEvent && skipUninterestingEvents) // si aucune track est de bonne qualité mais que skipUninterestingEvents est true alors on jet l'événement
       return;
+    histos.fill(HIST("h_collisions"), 2.5);
     slimCollisions(collision.posZ());
+
     for (const auto& track : tracks) {
       if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
         continue; // remove badly tracked
