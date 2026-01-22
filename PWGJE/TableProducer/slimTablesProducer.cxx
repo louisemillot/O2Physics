@@ -53,6 +53,8 @@
 #include <Framework/runDataProcessing.h>
 #include <ReconstructionDataFormats/DCA.h>
 
+#include <string>
+
 using namespace o2;
 using namespace o2::framework;
 using namespace o2::framework::expressions;
@@ -67,48 +69,63 @@ struct SlimTablesProducer {
   Configurable<bool> skipUninterestingEvents{"skipUninterestingEvents", true, "skip collisions without particle of interest"};
   Configurable<int> minTPCNClsCrossedRows{"minTPCNClsCrossedRows", 80, "min TPC crossed rows"};
   Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
+  Configurable<std::string> eventSelections{"eventSelections", "sel8", "Event selection"};
 
-  void init(InitContext&)
-  {
-    const AxisSpec axisCounter{1, 0, +1, ""};
-    const AxisSpec axisPt{nBinsPt, 0, 10, "p_{T}"};
-    histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
-    histos.add("ptHistogram", "ptHistogram", kTH1F, {axisPt});
-  }
-
-  Produces<o2::aod::SlimCollisions> slimCollisions;
-  Produces<o2::aod::SlimTracks> slimTracks;
-
-  // Look at primary tracks only
-  Filter trackFilter = nabs(aod::track::dcaXY) < maxDCA && nabs(aod::track::eta) < etaWindow && aod::track::pt > minPt;
-  Filter eventCuts = (nabs(aod::collision::posZ) < vertexZCut);
-
-  using myCompleteTracks = soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>;
-  using myFilteredTracks = soa::Filtered<myCompleteTracks>;
-
-  void process(aod::Collisions::iterator const& collision, myFilteredTracks const& tracks)
-  {
-    histos.fill(HIST("h_collisions"), 0.5);           // Compte tous les événements qui entrent dans la fonction, avant toute sélection
-    if (tracks.size() < 1 && skipUninterestingEvents) // si l'event n'a aucune track ET j'ai demandé de skipper les événements inintéressants, on sort immédiatement.
-      return;
-    bool interestingEvent = false; // on suppose que l'événement n'est pas intéressant au depart
-    for (const auto& track : tracks) {
-      if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) // On rejette les tracks avec pas assez de clusters TPC
-        continue;                                             // on passe à la track suivante
-      interestingEvent = true;                                // si une track a un NClsCrossedRows de 3 alors que j'ai demande 5 minimum, on l'ignore et on passe à la suivante et si la piste suivante est bonne alors interestingEvent devient true
-    }
-    if (!interestingEvent && skipUninterestingEvents) // si aucune track est de bonne qualité mais que skipUninterestingEvents est true alors on jet l'événement
-      return;
-    slimCollisions(collision.posZ());
-    for (const auto& track : tracks) {
-      if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
-        continue; // remove badly tracked
-      histos.get<TH1>(HIST("ptHistogram"))->Fill(track.pt());
-      slimTracks(slimCollisions.lastIndex(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz()); // all that I need for posterior analysis!
-    }
-  }
-  PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", true);
+  uint64_t eventSelectionMask = 0;
 };
+
+void init(InitContext&)
+{
+  const AxisSpec axisCounter{1, 0, +1, ""};
+  const AxisSpec axisPt{nBinsPt, 0, 10, "p_{T}"};
+  histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+  histos.add("ptHistogram", "ptHistogram", kTH1F, {axisPt});
+  eventSelectionMask = jetderiveddatautilities::initialiseEventSelectionBits(eventSelections);
+}
+
+Produces<o2::aod::SlimCollisions> slimCollisions;
+Produces<o2::aod::SlimTracks> slimTracks;
+
+// Look at primary tracks only
+Filter trackFilter = nabs(aod::track::dcaXY) < maxDCA && nabs(aod::track::eta) < etaWindow && aod::track::pt > minPt;
+Filter eventCuts = (nabs(aod::collision::posZ) < vertexZCut);
+
+using myCompleteTracks = soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>;
+using myFilteredTracks = soa::Filtered<myCompleteTracks>;
+
+void process(soa::Join<aod::Collisions, aod::EvSels>::iterator const& collision, myFilteredTracks const& tracks)
+{
+  histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
+  if (!(collision.eventSelection() & eventSelectionBits)) {
+    return;
+  }
+  histos.fill(HIST("h_collisions"), 1.5);
+  if (!(collision.eventSelection() & eventSelectionMask)) {
+    return;
+  }
+  histos.fill(HIST("h_collisions"), 1.5);
+
+  if (tracks.size() < 1 && skipUninterestingEvents) // si l'event n'a aucune track ET j'ai demandé de skipper les événements inintéressants, on sort immédiatement.
+    return;
+  bool interestingEvent = false; // on suppose que l'événement n'est pas intéressant au depart
+  for (const auto& track : tracks) {
+    if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) // On rejette les tracks avec pas assez de clusters TPC
+      continue;                                             // on passe à la track suivante
+    interestingEvent = true;                                // si une track a un NClsCrossedRows de 3 alors que j'ai demande 5 minimum, on l'ignore et on passe à la suivante et si la piste suivante est bonne alors interestingEvent devient true
+  }
+  if (!interestingEvent && skipUninterestingEvents) // si aucune track est de bonne qualité mais que skipUninterestingEvents est true alors on jet l'événement
+    return;
+  slimCollisions(collision.posZ());
+  for (const auto& track : tracks) {
+    if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
+      continue; // remove badly tracked
+    histos.get<TH1>(HIST("ptHistogram"))->Fill(track.pt());
+    slimTracks(slimCollisions.lastIndex(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz()); // all that I need for posterior analysis!
+  }
+}
+PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", true);
+}
+;
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
