@@ -66,6 +66,7 @@ struct SlimTablesProducer {
   Configurable<float> etaWindow{"etaWindow", 0.8, "eta window"};
   Configurable<bool> skipUninterestingEvents{"skipUninterestingEvents", true, "skip collisions without particle of interest"};
   Configurable<int> minTPCNClsCrossedRows{"minTPCNClsCrossedRows", 80, "min TPC crossed rows"};
+  Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
 
   void init(InitContext&)
   {
@@ -80,14 +81,14 @@ struct SlimTablesProducer {
 
   // Look at primary tracks only
   Filter trackFilter = nabs(aod::track::dcaXY) < maxDCA && nabs(aod::track::eta) < etaWindow && aod::track::pt > minPt;
+  Filter eventCuts = (nabs(aod::collision::posZ) < vertexZCut);
 
   using myCompleteTracks = soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>;
   using myFilteredTracks = soa::Filtered<myCompleteTracks>;
 
   void process(aod::Collisions::iterator const& collision, myFilteredTracks const& tracks)
   {
-    histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
-
+    histos.fill(HIST("h_collisions"), 0.5);           // Compte tous les événements qui entrent dans la fonction, avant toute sélection
     if (tracks.size() < 1 && skipUninterestingEvents) // si l'event n'a aucune track ET j'ai demandé de skipper les événements inintéressants, on sort immédiatement.
       return;
     bool interestingEvent = false; // on suppose que l'événement n'est pas intéressant au depart
