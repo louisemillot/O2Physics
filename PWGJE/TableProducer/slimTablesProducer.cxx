@@ -118,7 +118,7 @@ struct SlimTablesProducer {
       if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
         continue; // remove badly tracked
       histos.get<TH1>(HIST("ptHistogram"))->Fill(track.pt());
-      slimTracks(slimCollisions.lastIndex(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz()); // all that I need for posterior analysis!
+      slimTracks(slimCollisions.lastIndex(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), track.energy()); // all that I need for posterior analysis!
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", true);
