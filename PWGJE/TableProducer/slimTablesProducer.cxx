@@ -80,6 +80,7 @@ struct SlimTablesProducer {
     const AxisSpec axisPt{nBinsPt, 0, 10, "p_{T}"};
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
     histos.add("ptHistogram", "ptHistogram", kTH1F, {axisPt});
+    histos.add("hTracksPerCollision", "Tracks per collision;collisionId;N tracks", {HistType::kTH1F, {{500, 0.0, 500.0}}});
     eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
   }
 
@@ -114,14 +115,17 @@ struct SlimTablesProducer {
     histos.fill(HIST("h_collisions"), 2.5);
     slimCollisions(collision.posZ());
 
+    int nTracksThisCollision = 0;
     for (const auto& track : tracks) {
       if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
         continue; // remove badly tracked
+      nTracksThisCollision++;
       histos.get<TH1>(HIST("ptHistogram"))->Fill(track.pt());
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
       slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
+      histos.get<TH1>(HIST("hTracksPerCollision"))->Fill(nTracksThisCollision);
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", true);
