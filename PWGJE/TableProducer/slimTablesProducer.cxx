@@ -108,20 +108,20 @@ struct SlimTablesProducer {
     if (tracks.size() < 1 && skipUninterestingEvents) // si l'event n'a aucune track ET j'ai demandé de skipper les événements inintéressants, on sort immédiatement.
       return;
     bool interestingEvent = false; // on suppose que l'événement n'est pas intéressant au depart
-    for (const auto& track : tracks) {
-      if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) // On rejette les tracks avec pas assez de clusters TPC
-        continue;                                             // on passe à la track suivante
-      interestingEvent = true;                                // si une track a un NClsCrossedRows de 3 alors que j'ai demande 5 minimum, on l'ignore et on passe à la suivante et si la piste suivante est bonne alors interestingEvent devient true
-    }
-    if (!interestingEvent && skipUninterestingEvents) // si aucune track est de bonne qualité mais que skipUninterestingEvents est true alors on jet l'événement
-      return;
+    // for (const auto& track : tracks) {
+    //   if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) // On rejette les tracks avec pas assez de clusters TPC
+    //     continue;                                             // on passe à la track suivante
+    //   interestingEvent = true;                                // si une track a un NClsCrossedRows de 3 alors que j'ai demande 5 minimum, on l'ignore et on passe à la suivante et si la piste suivante est bonne alors interestingEvent devient true
+    // }
+    // if (!interestingEvent && skipUninterestingEvents) // si aucune track est de bonne qualité mais que skipUninterestingEvents est true alors on jet l'événement
+    //   return;
     histos.fill(HIST("h_collisions"), 2.5);
     slimCollisions(collision.posZ());
     slimCollCounter++;
     int nTracksThisCollision = 0;
     for (const auto& track : tracks) {
-      if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
-        continue; // remove badly tracked
+      // if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
+      //   continue; // remove badly tracked
       nTracksThisCollision++;
       histos.get<TH1>(HIST("ptHistogram"))->Fill(track.pt());
       float mass = jetderiveddatautilities::mPion;
