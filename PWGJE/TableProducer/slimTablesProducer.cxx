@@ -82,7 +82,7 @@ struct SlimTablesProducer {
     const AxisSpec axisPt{nBinsPt, 0, 10, "p_{T}"};
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
     histos.add("ptHistogram", "ptHistogram", kTH1F, {axisPt});
-    histos.add("hTracksPerCollision", "Tracks per collision;collisionId;N tracks", {HistType::kTH1F, {{500, 0.0, 500.0}}});
+    histos.add("hTracksPerCollision2D", "Tracks per collision;collisionId;N tracks", {HistType::kTH2F, {{1000, 0, 1000}, {500, 0, 500}}});
     eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
   }
 
@@ -123,6 +123,7 @@ struct SlimTablesProducer {
     slimCollisions(collision.posZ());
     // slimCollCounter++;
     int nTracksThisCollision = 0;
+    int collisionId = collision.globalIndex();
     for (const auto& track : tracks) {
       // if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
       //   continue; // remove badly tracked
@@ -133,8 +134,8 @@ struct SlimTablesProducer {
       float energy = std::sqrt(p * p + mass * mass);
       slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
       LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId();
-      histos.get<TH1>(HIST("hTracksPerCollision"))->Fill(nTracksThisCollision);
     }
+    histos.get<TH2>(HIST("hTracksPerCollision2D"))->Fill(collisionId, nTracksThisCollision);
   }
   PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", true);
 };
