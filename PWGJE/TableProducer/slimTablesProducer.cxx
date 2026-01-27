@@ -89,12 +89,12 @@ struct SlimTablesProducer {
 
   // Look at primary tracks only
   Filter trackFilter = nabs(aod::track::dcaXY) < maxDCA && nabs(aod::track::eta) < etaWindow && aod::track::pt > minPt;
-  Filter eventCuts = (nabs(aod::collision::posZ) < vertexZCut);
+  Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
 
   using myCompleteTracks = soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>;
   using myFilteredTracks = soa::Filtered<myCompleteTracks>;
 
-  void process(soa::Filtered<aod::Collisions>::iterator const& collision, myFilteredTracks const& tracks)
+  void process(soa::Filtered<aod::JetCollisions>::iterator const& collision, myFilteredTracks const& tracks)
   {
     histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
@@ -114,7 +114,6 @@ struct SlimTablesProducer {
       return;
     histos.fill(HIST("h_collisions"), 2.5);
     slimCollisions(collision.posZ());
-
     int nTracksThisCollision = 0;
     for (const auto& track : tracks) {
       if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
@@ -124,6 +123,7 @@ struct SlimTablesProducer {
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
+      LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId()" << track.collisionId();
       slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
       histos.get<TH1>(HIST("hTracksPerCollision"))->Fill(nTracksThisCollision);
     }
