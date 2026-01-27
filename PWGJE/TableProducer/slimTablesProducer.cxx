@@ -63,10 +63,12 @@ using namespace o2::framework::expressions;
 struct SlimTablesProducer {
 
   HistogramRegistry histos{"histos", {}, OutputObjHandlingPolicy::AnalysisObject};
-  Configurable<int> nBinsPt{"nBinsPt", 100, "N bins in pT histo"};
-  Configurable<float> minPt{"minPt", 2.0, "min pT to save"};
-  Configurable<float> maxDCA{"maxDCA", 0.1, "max DCA"};
-  Configurable<float> etaWindow{"etaWindow", 0.8, "eta window"};
+  Configurable<int> nBinsPt{"nBinsPt", 200, "N bins in pT histo"};
+  Configurable<float> minPt{"minPt", 0.15, "min pT to save"};
+  Configurable<float> maxPt{"maxPt", 200.0, "max pT to save"};
+  // Configurable<float> maxDCA{"maxDCA", 0.1, "max DCA"};
+  Configurable<float> minEta{"minEta", -0.9, "min eta to save"};
+  Configurable<float> maxEta{"maxEta", 0.9, "max eta to save"};
   Configurable<bool> skipUninterestingEvents{"skipUninterestingEvents", true, "skip collisions without particle of interest"};
   Configurable<int> minTPCNClsCrossedRows{"minTPCNClsCrossedRows", 80, "min TPC crossed rows"};
   Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
@@ -88,17 +90,19 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimTracks> slimTracks;
 
   // Look at primary tracks only
-  // Filter trackFilter = nabs(aod::jtrack::dcaXY) < maxDCA && nabs(aod::jtrack::eta) < etaWindow && aod::jtrack::pt > minPt;
+  Filter trackFilter = (aod::jtrack::pt >= minPt && aod::jtrack::pt < maxPt && aod::jtrack::eta > minEta && aod::jtrack::eta < maxEta);
   Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
 
   // using myCompleteTracks = soa::Join<aod::JetTracks>;
   // using myFilteredTracks = soa::Filtered<myCompleteTracks>;
 
-  int slimCollCounter = 0;
+  // int slimCollCounter = 0;
 
-  void process(soa::Filtered<aod::JetCollisions>::iterator const& collision, aod::JetTracks const& tracks)
+  void process(soa::Filtered<aod::JetCollisions>::iterator const& collision,
+               soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks,
+               soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA> const&)
   {
-    int slimCollId = slimCollCounter;
+    // int slimCollId = slimCollCounter;
     histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
       return;
@@ -107,7 +111,7 @@ struct SlimTablesProducer {
 
     if (tracks.size() < 1 && skipUninterestingEvents) // si l'event n'a aucune track ET j'ai demandé de skipper les événements inintéressants, on sort immédiatement.
       return;
-    bool interestingEvent = false; // on suppose que l'événement n'est pas intéressant au depart
+    // bool interestingEvent = false; // on suppose que l'événement n'est pas intéressant au depart
     // for (const auto& track : tracks) {
     //   if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) // On rejette les tracks avec pas assez de clusters TPC
     //     continue;                                             // on passe à la track suivante
@@ -117,7 +121,7 @@ struct SlimTablesProducer {
     //   return;
     histos.fill(HIST("h_collisions"), 2.5);
     slimCollisions(collision.posZ());
-    slimCollCounter++;
+    // slimCollCounter++;
     int nTracksThisCollision = 0;
     for (const auto& track : tracks) {
       // if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
@@ -128,7 +132,7 @@ struct SlimTablesProducer {
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
       slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
-      LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId() << " slimCollId = " << slimCollId;
+      // LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId() << " slimCollId = " << slimCollId;
       histos.get<TH1>(HIST("hTracksPerCollision"))->Fill(nTracksThisCollision);
     }
   }
