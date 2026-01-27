@@ -123,7 +123,7 @@ struct SlimTablesProducer {
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
-      LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId()" << track.collisionId();
+      LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId()" << track.collisionId() << "slimCollId = " << slimCollisions(collision.posZ());
       slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
       histos.get<TH1>(HIST("hTracksPerCollision"))->Fill(nTracksThisCollision);
     }
