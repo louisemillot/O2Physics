@@ -114,6 +114,7 @@ struct SlimTablesProducer {
       return;
     histos.fill(HIST("h_collisions"), 2.5);
     slimCollisions(collision.posZ());
+    auto slimCollId = slimCollisions.lastIndex();
     int nTracksThisCollision = 0;
     for (const auto& track : tracks) {
       if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
@@ -123,7 +124,6 @@ struct SlimTablesProducer {
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
-      auto slimCollId = slimCollisions(collision.posZ());
       slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
       LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId() << " slimCollId = " << slimCollId;
       histos.get<TH1>(HIST("hTracksPerCollision"))->Fill(nTracksThisCollision);
