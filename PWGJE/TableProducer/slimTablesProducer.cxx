@@ -132,7 +132,7 @@ struct SlimTablesProducer {
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
       slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
-      // LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId() << " slimCollId = " << slimCollId;
+      LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId();
       histos.get<TH1>(HIST("hTracksPerCollision"))->Fill(nTracksThisCollision);
     }
   }
