@@ -54,6 +54,7 @@
 #include <ReconstructionDataFormats/DCA.h>
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 using namespace o2;
@@ -94,8 +95,12 @@ struct SlimTablesProducer {
   using myCompleteTracks = soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>;
   using myFilteredTracks = soa::Filtered<myCompleteTracks>;
 
+  std::unordered_map<int, int> collisionMap;
+  int slimCollCounter = 0;
+
   void process(soa::Filtered<aod::JetCollisions>::iterator const& collision, myFilteredTracks const& tracks)
   {
+    int slimCollId = slimCollCounter;
     histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
       return;
@@ -114,7 +119,8 @@ struct SlimTablesProducer {
       return;
     histos.fill(HIST("h_collisions"), 2.5);
     slimCollisions(collision.posZ());
-    auto slimCollId = slimCollisions.lastIndex();
+    collisionMap[collision.globalIndex()] = slimCollId;
+    slimCollCounter++;
     int nTracksThisCollision = 0;
     for (const auto& track : tracks) {
       if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
@@ -124,8 +130,9 @@ struct SlimTablesProducer {
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
+      int slimId = collisionMap[track.collisionId()];
       slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
-      LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId() << " slimCollId = " << slimCollId;
+      LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId() << " slimCollId = " << slimCollId << " slimId = " << slimId;
       histos.get<TH1>(HIST("hTracksPerCollision"))->Fill(nTracksThisCollision);
     }
   }
