@@ -88,15 +88,15 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimTracks> slimTracks;
 
   // Look at primary tracks only
-  Filter trackFilter = nabs(aod::jtrack::dcaXY) < maxDCA && nabs(aod::jtrack::eta) < etaWindow && aod::jtrack::pt > minPt;
+  // Filter trackFilter = nabs(aod::jtrack::dcaXY) < maxDCA && nabs(aod::jtrack::eta) < etaWindow && aod::jtrack::pt > minPt;
   Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
 
-  using myCompleteTracks = soa::Join<aod::JetTracks>;
-  using myFilteredTracks = soa::Filtered<myCompleteTracks>;
+  // using myCompleteTracks = soa::Join<aod::JetTracks>;
+  // using myFilteredTracks = soa::Filtered<myCompleteTracks>;
 
   int slimCollCounter = 0;
 
-  void process(soa::Filtered<aod::JetCollisions>::iterator const& collision, myFilteredTracks const& tracks)
+  void process(soa::Filtered<aod::JetCollisions>::iterator const& collision, aod::JetTracks const& tracks)
   {
     int slimCollId = slimCollCounter;
     histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
