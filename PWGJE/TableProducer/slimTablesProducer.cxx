@@ -114,8 +114,7 @@ struct SlimTablesProducer {
       interestingEvent = true;                                // si une track a un NClsCrossedRows de 3 alors que j'ai demande 5 minimum, on l'ignore et on passe à la suivante et si la piste suivante est bonne alors interestingEvent devient true
     }
     if (!interestingEvent && skipUninterestingEvents) // si aucune track est de bonne qualité mais que skipUninterestingEvents est true alors on jet l'événement
-      slimCollCounter++;
-    return;
+      return;
     histos.fill(HIST("h_collisions"), 2.5);
     slimCollisions(collision.posZ());
     slimCollCounter++;
