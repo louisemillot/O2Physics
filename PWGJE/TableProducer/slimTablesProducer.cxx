@@ -135,6 +135,7 @@ struct SlimTablesProducer {
       slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
       LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId();
     }
+    LOG()(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
     histos.get<TH2>(HIST("hTracksPerCollision2D"))->Fill(collisionId, nTracksThisCollision);
   }
   PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", true);
