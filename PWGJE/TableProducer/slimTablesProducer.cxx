@@ -142,10 +142,10 @@ struct SlimTablesProducer {
       }
       TotalNTracks = TotalNTracks + nTracksThisCollision;
       // LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
-      LOG(info) << "Number of collisions: " << nCollisions << "Number of tracks in this collision: " << nTracksThisCollision;
       // LOG(info) << "Total number of tracks processed so far: " << TotalNTracks;
       // histos.get<TH2>(HIST("hTracksPerCollision2D"))->Fill(collisionId, nTracksThisCollision);
     }
+    LOG(info) << "Number of collisions: " << nCollisions;
   }
   PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", false);
 };
