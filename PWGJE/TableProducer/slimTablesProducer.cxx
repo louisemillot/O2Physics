@@ -104,6 +104,7 @@ struct SlimTablesProducer {
                aod::Tracks const& tracks)
   {
     int nCollisions = 0;
+    int nTracksThisBatch = 0;
     for (const auto& collision : collisions) {
       nCollisions++;
       // int slimCollId = slimCollCounter;
@@ -141,12 +142,14 @@ struct SlimTablesProducer {
         // slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
         // LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId() << " track.globalIndex() = " << track.globalIndex();
       }
+      nTracksThisBatch += nTracksThisCollision;
       TotalNTracks = TotalNTracks + nTracksThisCollision;
       // LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
       // LOG(info) << "Total number of tracks processed so far: " << TotalNTracks;
       // histos.get<TH2>(HIST("hTracksPerCollision2D"))->Fill(collisionId, nTracksThisCollision);
     }
-    LOG(info) << "Number of collisions: " << nCollisions;
+    TotalNTracks += nTracksThisBatch;
+    LOG(info) << "Number of collisions: " << nCollisions << " Total number of tracks: " << nTracksThisBatch;
   }
   PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", false);
 };
