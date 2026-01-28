@@ -138,7 +138,7 @@ struct SlimTablesProducer {
     // LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
     histos.get<TH2>(HIST("hTracksPerCollision2D"))->Fill(collisionId, nTracksThisCollision);
   }
-  PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", true);
+  PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
