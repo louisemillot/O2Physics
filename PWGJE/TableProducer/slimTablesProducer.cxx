@@ -97,10 +97,11 @@ struct SlimTablesProducer {
   // using myFilteredTracks = soa::Filtered<myCompleteTracks>;
 
   // int slimCollCounter = 0;
-
+  int nCollisions = 0;
   void process(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks)
   {
+    nCollisions++;
     // int slimCollId = slimCollCounter;
     // histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
     // if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
@@ -136,6 +137,7 @@ struct SlimTablesProducer {
       // LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId() << " track.globalIndex() = " << track.globalIndex();
     }
     LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
+    LOG(info) << "Processing collision number: " << nCollisions;
     // histos.get<TH2>(HIST("hTracksPerCollision2D"))->Fill(collisionId, nTracksThisCollision);
   }
   PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", false);
