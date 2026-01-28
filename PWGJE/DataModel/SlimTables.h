@@ -26,7 +26,8 @@
 
 namespace o2::aod
 {
-DECLARE_SOA_TABLE(SlimCollisions, "AOD", "SlimCollisions", o2::soa::Index<>,
+DECLARE_SOA_TABLE(SlimCollisions, "AOD", "SlimCollisions",
+                  o2::soa::Index<>,
                   o2::aod::collision::PosZ);
 using SlimCollision = SlimCollisions::iterator;
 // {
