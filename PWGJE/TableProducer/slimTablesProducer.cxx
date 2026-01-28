@@ -99,8 +99,8 @@ struct SlimTablesProducer {
   // int slimCollCounter = 0;
   int nCollisions = 0;
   int TotalNTracks = 0;
-  void process(aod::JetCollisions::iterator const& collision,
-               aod::JetTracks const& tracks)
+  void process(aod::Collisions::iterator const& collision,
+               aod::Tracks const& tracks)
   {
     nCollisions++;
     // int slimCollId = slimCollCounter;
