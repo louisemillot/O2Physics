@@ -130,8 +130,8 @@ struct SlimTablesProducer {
       // slimCollCounter++;
       int nTracksThisCollision = 0;
       int collisionId = collision.globalIndex();
-      // auto tracksInCollision = tracks.sliceBy(trackPerColl, collision.globalIndex());
-      for (const auto& trk : tracks) {
+      auto tracksInCollision = tracks.sliceBy(trackPerColl, collision.globalIndex());
+      for (const auto& trk : tracksInCollision) {
         // if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
         //   continue; // remove badly tracked
         nTracksThisCollision++;
