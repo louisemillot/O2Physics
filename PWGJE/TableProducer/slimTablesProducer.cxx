@@ -99,8 +99,7 @@ struct SlimTablesProducer {
   // int slimCollCounter = 0;
 
   void process(soa::Filtered<aod::JetCollisions>::iterator const& collision,
-               soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks,
-               soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA> const&)
+               soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks)
   {
     // int slimCollId = slimCollCounter;
     histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
