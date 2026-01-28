@@ -97,12 +97,13 @@ struct SlimTablesProducer {
   // using myFilteredTracks = soa::Filtered<myCompleteTracks>;
 
   // int slimCollCounter = 0;
-  int nCollisions = 0;
+
   int TotalNTracks = 0;
   Preslice<aod::Track> trackPerColl = aod::track::collisionId;
   void process(aod::Collisions const& collisions,
                aod::Tracks const& tracks)
   {
+    int nCollisions = 0;
     for (const auto& collision : collisions) {
       nCollisions++;
       // int slimCollId = slimCollCounter;
