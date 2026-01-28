@@ -89,8 +89,6 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimCollisions> slimCollisions;
   Produces<o2::aod::SlimTracks> slimTracks;
 
-  int TotalNTracks = 0;
-  Preslice<aod::Track> trackPerColl = aod::track::collisionId;
   void process(aod::Collisions::iterator const& collision,
                aod::Tracks const& tracks)
   {
