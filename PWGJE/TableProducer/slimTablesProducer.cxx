@@ -89,67 +89,18 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimCollisions> slimCollisions;
   Produces<o2::aod::SlimTracks> slimTracks;
 
-  // Look at primary tracks only
-  // Filter trackFilter = (aod::jtrack::pt >= minPt && aod::jtrack::pt < maxPt && aod::jtrack::eta > minEta && aod::jtrack::eta < maxEta);
-  // Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
-
-  // using myCompleteTracks = soa::Join<aod::JetTracks>;
-  // using myFilteredTracks = soa::Filtered<myCompleteTracks>;
-
-  // int slimCollCounter = 0;
-
   int TotalNTracks = 0;
   Preslice<aod::Track> trackPerColl = aod::track::collisionId;
-  void process(aod::Collisions const& collisions,
+  void process(aod::Collisions::iterator const& collision,
                aod::Tracks const& tracks)
   {
-    int nCollisions = 0;
-    int nTracksThisBatch = 0;
-    for (const auto& collision : collisions) {
-      nCollisions++;
-      // int slimCollId = slimCollCounter;
-      // histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
-      // if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
-      //   return;
-      // }
-      // histos.fill(HIST("h_collisions"), 1.5);
 
-      // if (tracks.size() < 1 && skipUninterestingEvents) // si l'event n'a aucune track ET j'ai demandé de skipper les événements inintéressants, on sort immédiatement.
-      //   return;
-      // bool interestingEvent = false; // on suppose que l'événement n'est pas intéressant au depart
-      // for (const auto& track : tracks) {
-      //   if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) // On rejette les tracks avec pas assez de clusters TPC
-      //     continue;                                             // on passe à la track suivante
-      //   interestingEvent = true;                                // si une track a un NClsCrossedRows de 3 alors que j'ai demande 5 minimum, on l'ignore et on passe à la suivante et si la piste suivante est bonne alors interestingEvent devient true
-      // }
-      // if (!interestingEvent && skipUninterestingEvents) // si aucune track est de bonne qualité mais que skipUninterestingEvents est true alors on jet l'événement
-      //   return;
-      // histos.fill(HIST("h_collisions"), 2.5);
-      // slimCollisions(collision.posZ());
-      // LOG(info) << "Collision globalIndex " << collision.globalIndex();
-      // slimCollCounter++;
-      int nTracksThisCollision = 0;
-      int collisionId = collision.globalIndex();
-      auto tracksInCollision = tracks.sliceBy(trackPerColl, collision.globalIndex());
-      for (const auto& trk : tracksInCollision) {
-        // if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
-        //   continue; // remove badly tracked
-        nTracksThisCollision++;
-        // histos.get<TH1>(HIST("ptHistogram"))->Fill(track.pt());
-        // float mass = jetderiveddatautilities::mPion;
-        // float p = track.pt() * std::cosh(track.eta());
-        // float energy = std::sqrt(p * p + mass * mass);
-        // slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
-        // LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId() << " track.globalIndex() = " << track.globalIndex();
-      }
-      nTracksThisBatch += nTracksThisCollision;
-      TotalNTracks = TotalNTracks + nTracksThisCollision;
-      // LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
-      // LOG(info) << "Total number of tracks processed so far: " << TotalNTracks;
-      // histos.get<TH2>(HIST("hTracksPerCollision2D"))->Fill(collisionId, nTracksThisCollision);
+    int nTracksThisCollision = 0;
+    int collisionId = collision.globalIndex();
+    for (const auto& track : tracks) {
+      nTracksThisCollision++;
     }
-    TotalNTracks += nTracksThisBatch;
-    LOG(info) << "Number of collisions: " << nCollisions << " Total number of tracks: " << nTracksThisBatch;
+    LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
   }
   PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", false);
 };
