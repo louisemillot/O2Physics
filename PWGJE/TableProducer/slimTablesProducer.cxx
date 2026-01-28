@@ -102,14 +102,14 @@ struct SlimTablesProducer {
                soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks)
   {
     // int slimCollId = slimCollCounter;
-    histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
-    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
-      return;
-    }
-    histos.fill(HIST("h_collisions"), 1.5);
+    // histos.fill(HIST("h_collisions"), 0.5); // Compte tous les événements qui entrent dans la fonction, avant toute sélection
+    // if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
+    //   return;
+    // }
+    // histos.fill(HIST("h_collisions"), 1.5);
 
-    if (tracks.size() < 1 && skipUninterestingEvents) // si l'event n'a aucune track ET j'ai demandé de skipper les événements inintéressants, on sort immédiatement.
-      return;
+    // if (tracks.size() < 1 && skipUninterestingEvents) // si l'event n'a aucune track ET j'ai demandé de skipper les événements inintéressants, on sort immédiatement.
+    //   return;
     // bool interestingEvent = false; // on suppose que l'événement n'est pas intéressant au depart
     // for (const auto& track : tracks) {
     //   if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) // On rejette les tracks avec pas assez de clusters TPC
@@ -118,8 +118,8 @@ struct SlimTablesProducer {
     // }
     // if (!interestingEvent && skipUninterestingEvents) // si aucune track est de bonne qualité mais que skipUninterestingEvents est true alors on jet l'événement
     //   return;
-    histos.fill(HIST("h_collisions"), 2.5);
-    slimCollisions(collision.posZ());
+    // histos.fill(HIST("h_collisions"), 2.5);
+    // slimCollisions(collision.posZ());
     // LOG(info) << "Collision globalIndex " << collision.globalIndex();
     // slimCollCounter++;
     int nTracksThisCollision = 0;
@@ -128,15 +128,15 @@ struct SlimTablesProducer {
       // if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows)
       //   continue; // remove badly tracked
       nTracksThisCollision++;
-      histos.get<TH1>(HIST("ptHistogram"))->Fill(track.pt());
-      float mass = jetderiveddatautilities::mPion;
-      float p = track.pt() * std::cosh(track.eta());
-      float energy = std::sqrt(p * p + mass * mass);
-      slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
+      // histos.get<TH1>(HIST("ptHistogram"))->Fill(track.pt());
+      // float mass = jetderiveddatautilities::mPion;
+      // float p = track.pt() * std::cosh(track.eta());
+      // float energy = std::sqrt(p * p + mass * mass);
+      // slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
       // LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId() << " track.globalIndex() = " << track.globalIndex();
     }
     LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
-    histos.get<TH2>(HIST("hTracksPerCollision2D"))->Fill(collisionId, nTracksThisCollision);
+    // histos.get<TH2>(HIST("hTracksPerCollision2D"))->Fill(collisionId, nTracksThisCollision);
   }
   PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", false);
 };
