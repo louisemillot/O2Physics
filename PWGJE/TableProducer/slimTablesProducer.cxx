@@ -13,6 +13,8 @@
 /// \brief Task to produce a reduced version of Tables for tracks, collisions, mcparticles and mccollisions.
 /// \author Millot Louise <louise.millot@cern.ch>
 
+#include "PWGJE/DataModel/SlimTables.h"
+
 #include "Framework/ASoA.h"
 #include "Framework/AnalysisDataModel.h"
 #include "Framework/AnalysisTask.h"
@@ -32,14 +34,19 @@ using namespace o2::framework::expressions;
 
 struct SlimTablesProducer {
 
+  Produces<o2::aod::SlimCollisions> slimCollisions;
+  Produces<o2::aod::SlimTracks> slimTracks;
+
   void process(aod::Collisions::iterator const& collision,
                aod::Tracks const& tracks)
   {
 
     int nTracksThisCollision = 0;
     int collisionId = collision.globalIndex();
+    slimCollisions(collision.posZ());
     for (const auto& track : tracks) {
       nTracksThisCollision++;
+      slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz());
     }
     LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
   }
