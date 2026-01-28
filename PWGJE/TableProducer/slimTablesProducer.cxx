@@ -98,6 +98,7 @@ struct SlimTablesProducer {
 
   // int slimCollCounter = 0;
   int nCollisions = 0;
+  int TotalNTracks = 0;
   void process(aod::JetCollisions::iterator const& collision,
                aod::JetTracks const& tracks)
   {
@@ -136,8 +137,10 @@ struct SlimTablesProducer {
       // slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy); // all that I need for posterior analysis!
       // LOG(info) << "collision.globalIndex() = " << collision.globalIndex() << " track.collisionId() = " << track.collisionId() << " track.globalIndex() = " << track.globalIndex();
     }
+    TotalNTracks = TotalNTracks + nTracksThisCollision;
     LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
     LOG(info) << "Processing collision number: " << nCollisions;
+    LOG(info) << "Total number of tracks processed so far: " << TotalNTracks;
     // histos.get<TH2>(HIST("hTracksPerCollision2D"))->Fill(collisionId, nTracksThisCollision);
   }
   PROCESS_SWITCH(SlimTablesProducer, process, "Produce slim collision table", false);
