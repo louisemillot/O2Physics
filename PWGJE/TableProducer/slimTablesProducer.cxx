@@ -37,8 +37,8 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimCollisions> slimCollisions;
   Produces<o2::aod::SlimTracks> slimTracks;
 
-  void processCollisionsAndTracks(aod::Collisions::iterator const& collision,
-                                  aod::Tracks const& tracks)
+  void process(aod::Collisions::iterator const& collision,
+               aod::Tracks const& tracks)
   {
 
     int nTracksThisCollision = 0;
@@ -50,7 +50,6 @@ struct SlimTablesProducer {
     }
     LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
   }
-  PROCESS_SWITCH(SlimTablesProducer, processCollisionsAndTracks, "Process Test", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
