@@ -79,7 +79,10 @@ struct SlimTablesProducer {
     auto slimCollIndex = slimCollisions.lastIndex();
     for (const auto& track : tracks) {
       nTracksThisCollision++;
-      slimTracks(slimCollIndex, track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz());
+      float mass = jetderiveddatautilities::mPion;
+      float p = track.pt() * std::cosh(track.eta());
+      float energy = std::sqrt(p * p + mass * mass);
+      slimTracks(slimCollIndex, track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy);
     }
     LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
   }
