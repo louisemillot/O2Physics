@@ -50,7 +50,7 @@ struct SlimTablesProducer {
     }
     LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
   }
-  PROCESS_SWITCH(SlimTablesProducer, process, "Process Test", false);
+  PROCESS_SWITCH(SlimTablesProducer, processCollisionsAndTracks, "Process Test", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
