@@ -54,7 +54,7 @@ struct SlimTablesProducer {
   Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
 
   void process(soa::Filtered<o2::aod::JetCollisions>::iterator const& collision,
-               soa::Filtered < o2::aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs >> const& tracks)
+               soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks)
   {
 
     int nTracksThisCollision = 0;
