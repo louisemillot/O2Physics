@@ -56,13 +56,13 @@ struct SlimTablesProducer {
   void process(soa::Filtered<o2::aod::JetCollisions>::iterator const& collision,
                soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks)
   {
-
     int nTracksThisCollision = 0;
     int collisionId = collision.globalIndex();
     slimCollisions(collision.posZ());
+    auto slimCollIndex = slimCollisions.lastIndex();
     for (const auto& track : tracks) {
       nTracksThisCollision++;
-      slimTracks(track.collisionId(), track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz());
+      slimTracks(slimCollIndex, track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz());
     }
     LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
   }
