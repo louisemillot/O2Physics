@@ -13,10 +13,14 @@
 /// \brief Task to produce a reduced version of Tables for tracks, collisions, mcparticles and mccollisions.
 /// \author Millot Louise <louise.millot@cern.ch>
 
+#include "PWGHF/DataModel/DerivedTables.h"
 #include "PWGJE/Core/JetDerivedDataUtilities.h"
 #include "PWGJE/DataModel/Jet.h"
 #include "PWGJE/DataModel/JetReducedData.h"
 #include "PWGJE/DataModel/SlimTables.h"
+
+#include "Common/Core/trackUtilities.h"
+#include "Common/DataModel/TrackSelectionTables.h"
 
 #include "Framework/ASoA.h"
 #include "Framework/AnalysisDataModel.h"
@@ -37,11 +41,20 @@ using namespace o2::framework::expressions;
 
 struct SlimTablesProducer {
 
+  Configurable<float> minPt{"minPt", 0.15, "min pT to save"};
+  Configurable<float> maxPt{"maxPt", 200.0, "max pT to save"};
+  Configurable<float> minEta{"minEta", -0.9, "min eta to save"};
+  Configurable<float> maxEta{"maxEta", 0.9, "max eta to save"};
+  Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
+
   Produces<o2::aod::SlimCollisions> slimCollisions;
   Produces<o2::aod::SlimTracks> slimTracks;
 
-  void process(aod::JetCollisions::iterator const& collision,
-               aod::JetTracks const& tracks)
+  Filter trackFilter = (aod::jtrack::pt >= minPt && aod::jtrack::pt < maxPt && aod::jtrack::eta > minEta && aod::jtrack::eta < maxEta);
+  Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
+
+  void process(soa::Filtered<o2::aod::JetCollisions>::iterator const& collision,
+               soa::Filtered < o2::aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs >> const& tracks)
   {
 
     int nTracksThisCollision = 0;
