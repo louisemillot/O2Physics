@@ -34,6 +34,7 @@
 #include <ReconstructionDataFormats/DCA.h>
 
 #include <string>
+#include <vector>
 
 using namespace o2;
 using namespace o2::framework;
@@ -41,11 +42,21 @@ using namespace o2::framework::expressions;
 
 struct SlimTablesProducer {
 
+  HistogramRegistry histos{"histos", {}, OutputObjHandlingPolicy::AnalysisObject};
   Configurable<float> minPt{"minPt", 0.15, "min pT to save"};
   Configurable<float> maxPt{"maxPt", 200.0, "max pT to save"};
   Configurable<float> minEta{"minEta", -0.9, "min eta to save"};
   Configurable<float> maxEta{"maxEta", 0.9, "max eta to save"};
   Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
+  Configurable<std::string> eventSelections{"eventSelections", "sel8", "Event selection"};
+
+  std::vector<int> eventSelectionBits;
+
+  void init(InitContext&)
+  {
+    histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+    eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
+  }
 
   Produces<o2::aod::SlimCollisions> slimCollisions;
   Produces<o2::aod::SlimTracks> slimTracks;
@@ -56,6 +67,12 @@ struct SlimTablesProducer {
   void process(soa::Filtered<o2::aod::JetCollisions>::iterator const& collision,
                soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks)
   {
+    histos.fill(HIST("h_collisions"), 0.5);
+    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
+      return;
+    }
+    histos.fill(HIST("h_collisions"), 1.5);
+
     int nTracksThisCollision = 0;
     int collisionId = collision.globalIndex();
     slimCollisions(collision.posZ());
