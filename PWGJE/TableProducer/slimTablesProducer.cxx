@@ -13,6 +13,9 @@
 /// \brief Task to produce a reduced version of Tables for tracks, collisions, mcparticles and mccollisions.
 /// \author Millot Louise <louise.millot@cern.ch>
 
+#include "PWGJE/Core/JetDerivedDataUtilities.h"
+#include "PWGJE/DataModel/Jet.h"
+#include "PWGJE/DataModel/JetReducedData.h"
 #include "PWGJE/DataModel/SlimTables.h"
 
 #include "Framework/ASoA.h"
@@ -37,8 +40,8 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimCollisions> slimCollisions;
   Produces<o2::aod::SlimTracks> slimTracks;
 
-  void process(aod::Collisions::iterator const& collision,
-               aod::Tracks const& tracks)
+  void process(aod::JetCollisions::iterator const& collision,
+               aod::JetTracks const& tracks)
   {
 
     int nTracksThisCollision = 0;
