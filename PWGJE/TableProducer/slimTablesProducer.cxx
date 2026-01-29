@@ -37,8 +37,8 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimCollisions> slimCollisions;
   Produces<o2::aod::SlimTracks> slimTracks;
 
-  void process(aod::Collisions::iterator const& collision,
-               aod::Tracks const& tracks)
+  void processCollisionsAndTracks(aod::Collisions::iterator const& collision,
+                                  aod::Tracks const& tracks)
   {
 
     int nTracksThisCollision = 0;
