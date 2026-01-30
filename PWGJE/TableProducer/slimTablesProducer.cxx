@@ -64,6 +64,7 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimCollisions> slimCollisions;
   Produces<o2::aod::SlimMcCollisions> slimMcCollisions;
   Produces<o2::aod::SlimTracks> slimTracks;
+  Produces<o2::aod::SlimParticles> slimParticles;
 
   Filter trackFilter = (aod::jtrack::pt >= minPt && aod::jtrack::pt < maxPt && aod::jtrack::eta > minEta && aod::jtrack::eta < maxEta);
   Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
