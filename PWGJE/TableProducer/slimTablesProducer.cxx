@@ -120,7 +120,7 @@ struct SlimTablesProducer {
 
   void processMCP(soa::Filtered<o2::aod::JetMcCollisions>::iterator const& mcCollision,
                   soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
-                  soa::Filtered<soa::Join<aod::JetParticles>> const& particles)
+                  soa::Filtered<aod::JetParticles> const& particles)
   {
     float eventWeight = mcCollision.weight();
     histos.fill(HIST("h_mcColl_counts_weight"), 0.5, eventWeight);
