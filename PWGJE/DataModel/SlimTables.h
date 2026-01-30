@@ -30,16 +30,10 @@ DECLARE_SOA_TABLE(SlimCollisions, "AOD", "SlimCollisions",
                   o2::soa::Index<>,
                   o2::aod::collision::PosZ);
 using SlimCollision = SlimCollisions::iterator;
-// {
-// DECLARE_SOA_INDEX_COLUMN(Collision, collision);
-// DECLARE_SOA_COLUMN(PosZ, posZ, float);
-// // DECLARE_SOA_COLUMN(CentFT0C, centFT0C, float);
-// // DECLARE_SOA_COLUMN(CentFT0M, centFT0M, float);
-// // DECLARE_SOA_COLUMN(Weight, weight, float);
-// // DECLARE_SOA_COLUMN(EventSel, eventSel, uint16_t);
-// // DECLARE_SOA_COLUMN(TrackOccupancyInTimeRange, trackOccupancyInTimeRange, int);
-// } // namespace slimcollision
-
+DECLARE_SOA_TABLE(SlimMcCollisions, "AOD", "SlimMcCollisions",
+                  o2::soa::Index<>,
+                  o2::aod::mccollision::PosZ);
+using SlimMcCollision = SlimMcCollisions::iterator;
 namespace slimtracks
 {
 DECLARE_SOA_INDEX_COLUMN(SlimCollision, slimcollision);
@@ -50,14 +44,6 @@ DECLARE_SOA_COLUMN(Px, px, float);
 DECLARE_SOA_COLUMN(Py, py, float);
 DECLARE_SOA_COLUMN(Pz, pz, float);
 DECLARE_SOA_COLUMN(E, e, float);
-// DECLARE_SOA_DYNAMIC_COLUMN(Px, px,
-//                            [](float pt, float phi) -> float { return pt * std::cos(phi); });
-// DECLARE_SOA_DYNAMIC_COLUMN(Py, py,
-//                            [](float pt, float phi) -> float { return pt * std::sin(phi); });
-// DECLARE_SOA_DYNAMIC_COLUMN(Pz, pz,
-//                            [](float pt, float eta) -> float { return pt * std::sinh(eta); });
-// DECLARE_SOA_DYNAMIC_COLUMN(Energy, energy,
-//                            [](float pt, float eta) -> float { return std::sqrt((pt * std::cosh(eta) * pt * std::cosh(eta)) + (jetderiveddatautilities::mPion * jetderiveddatautilities::mPion)); });
 } // namespace slimtracks
 DECLARE_SOA_TABLE(SlimTracks, "AOD", "SlimTracks",
                   o2::soa::Index<>,
@@ -70,6 +56,25 @@ DECLARE_SOA_TABLE(SlimTracks, "AOD", "SlimTracks",
                   slimtracks::Pz,
                   slimtracks::E);
 using SlimTrack = SlimTracks::iterator;
+namespace slimparticles
+{
+DECLARE_SOA_INDEX_COLUMN(SlimMcCollision, slimmccollision);
+DECLARE_SOA_COLUMN(Pt, pt, float);
+DECLARE_SOA_COLUMN(Eta, eta, float);
+DECLARE_SOA_COLUMN(Phi, phi, float);
+DECLARE_SOA_COLUMN(Px, px, float);
+DECLARE_SOA_COLUMN(Py, py, float);
+DECLARE_SOA_COLUMN(Pz, pz, float);
+} // namespace slimparticles
+DECLARE_SOA_TABLE(SlimParticles, "AOD", "SlimParticles",
+                  o2::soa::Index<>,
+                  slimparticles::SlimMcCollisionId,
+                  slimparticles::Pt,
+                  slimparticles::Eta,
+                  slimparticles::Phi,
+                  slimparticles::Px,
+                  slimparticles::Py,
+                  slimparticles::Pz);
+using SlimParticle = SlimParticles::iterator;
 } // namespace o2::aod
-
 #endif // PWGJE_DATAMODEL_SLIMTABLES_H_
