@@ -983,7 +983,7 @@ struct JetSubstructureTask {
   void processChargedJetsMCDWeighted(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                                      //  aod::JetMcCollisions const&, //join the weight
                                      soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetEventWeights> const& jets,
-                                     soa::Filtered<soa::Join<aod::JetTracksMCD, aod::JTrackExtras, aod::JTrackPIs>> const& tracks)
+                                     aod::JetTracks const& tracks)
   {
     // LOGF(info, "processChargedJetsMCDWeighted ");
     // LOGF(info, "collision index = %d ", collision.globalIndex());
