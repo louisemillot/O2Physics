@@ -434,6 +434,8 @@ struct JetSubstructureTask {
                       }
                     }
                   }
+                } else {
+                  LOGF(info, "No match for thetagMCD with ptMCD = %.4f in thetagMCPVec for jetMCD.pt() = %.4f thetagMCD = %.4f", ptMCD, jetMCD.pt(), thetagMCD);
                 }
               }
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
