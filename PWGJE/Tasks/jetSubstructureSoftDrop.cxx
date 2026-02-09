@@ -387,14 +387,15 @@ struct JetSubstructureTask {
     return true;
   }
 
-  int count_surMCP = 0;
-  int countthetagMCD_MCD_surMCP = 0;
-  int countthetagMCP_MCD_surMCP = 0;
-  int countthetagMCD_MCP_surMCP = 0;
-  int countthetagMCP_MCP_surMCP = 0;
+  // ====== for debugging
+  // int count_surMCP = 0;
+  // int countthetagMCD_MCD_surMCP = 0;
+  // int countthetagMCP_MCD_surMCP = 0;
+  // int countthetagMCD_MCP_surMCP = 0;
+  // int countthetagMCP_MCP_surMCP = 0;
+  // int countMatchedNoThetaMCD = 0;
   std::vector<float> thetagMCDVecMatched;
   std::vector<float> thetagMCPVecMatched;
-  int countMatchedNoThetaMCD = 0;
 
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
   template <typename TBase, typename TTag>
@@ -421,15 +422,18 @@ struct JetSubstructureTask {
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             count_surMCP++;
             double dpt = jetMCP.pt() - jetMCD.pt();
-            bool foundThetaMCD_forThisJet = false;
+            // ====== for debugging
+            // bool foundThetaMCD_forThisJet = false;
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
                 if (ptMCD == jetMCD.pt()) {
-                  foundThetaMCD_forThisJet = true;
-                  countthetagMCD_MCD_surMCP++;
+                  // ====== for debugging
+                  // foundThetaMCD_forThisJet = true;
+                  // countthetagMCD_MCD_surMCP++;
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                     if (ptMCP == jetMCP.pt()) {
-                      countthetagMCP_MCD_surMCP++;
+                      // ====== for debugging
+                      // countthetagMCP_MCD_surMCP++;
                       registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
                       registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"), jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                       // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
@@ -444,10 +448,10 @@ struct JetSubstructureTask {
                   }
                 }
               }
-              if (!foundThetaMCD_forThisJet) {
-                countMatchedNoThetaMCD++;
-                LOGF(info, "No thetagMCD for jetMCD.pt = %.4f", jetMCD.pt());
-              }
+              // ====== for debugging
+              // if (!foundThetaMCD_forThisJet) {
+              //   countMatchedNoThetaMCD++;
+              // }
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_diff_matchedgeo"), jetMCD.pt(), dpt / jetMCD.pt(), weight);
@@ -482,8 +486,9 @@ struct JetSubstructureTask {
     // fill geometry and pt histograms (a faire)
   }
 
-  int countMCDEW_MCD = 0;
-  int countMCD_MCP = 0;
+  // ====== for debugging
+  // int countMCDEW_MCD = 0;
+  // int countMCD_MCP = 0;
   template <typename TMCDEventWise, typename TMCDtoMCP, typename TMCP>      // TMCDEventWise : ChargedMCDEventWiseMatchedtoMCD ; TMCDtoMCP : ChargedMCDMatchedJets ; TMCP : ChargedMCPMatchedJets
   void fillMatchedHistogramsEventWise(TMCDEventWise const& jetMCDEventWise, // le jetMCDEventWise est ici le TTag : ChargedMCDEventWiseMatchedtoMCD //iterator
                                       TMCP const&,                          // le jetMCP ici est le TBase : ChargedMCDMatchedtoMCDEventWise
@@ -501,14 +506,16 @@ struct JetSubstructureTask {
       if (jetMCDEventWise.has_matchedJetGeo()) { // si il y a un match geometric entre MCD et MCDEventWise -
         // for (const auto& jetMCP : (jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()).template matchedJetGeo_as<std::decay_t<TMCP>>()) { // - alors on boucle sur MCP qui ont un matching: MCDEventWise - MCD - MCP !!!! 2 ETAPES car sinon on ne peut pas build !!!!
         for (const auto& jetMCD : jetMCDEventWise.template matchedJetGeo_as<std::decay_t<TMCDtoMCP>>()) { // - alors on boucle sur les MCD qui ont un matching avec EventWiseMCD: MCDEventWise - MCD
-          countMCDEW_MCD++;
+          // ====== for debugging
+          // countMCDEW_MCD++;
           if (jetMCD.has_matchedJetGeo()) {
             for (const auto& jetMCP : jetMCD.template matchedJetGeo_as<std::decay_t<TMCP>>()) { // - puis on boucle sur MCD qui ont un matching avec MCP: MCD - MCP  !!!! 2 ETAPES car sinon on ne peut pas build !!!!
               if (jetMCP.pt() > pTHatMaxMCP * pTHat || pTHat < pTHatAbsoluteMin) {
                 continue;
               }
               if (jetMCDEventWise.r() == round(selectedJetsRadius * 100.0f)) {
-                countMCD_MCP++;
+                // ====== for debugging
+                // countMCD_MCP++;
                 double dpt = jetMCP.pt() - jetMCDEventWise.pt();
                 if (jetfindingutilities::isInEtaAcceptance(jetMCDEventWise, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
                   for (const auto& [thetagMCDEventWise, ptMCDEventWise] : thetagMCDEventWiseVec) {
