@@ -444,7 +444,7 @@ struct JetSubstructureTask {
               }
               if (!foundThetaMCD_forThisJet) {
                 countMatchedNoThetaMCD++;
-                LOGF(info, "No thetagMCD found for jetMCD.pt = %.4f", jetMCD.pt());
+                LOGF(info, "countMatchedNoThetaMCD = %d", countMatchedNoThetaMCD);
               }
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
