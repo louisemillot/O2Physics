@@ -423,8 +423,10 @@ struct JetSubstructureTask {
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
                 if (ptMCD == jetMCD.pt()) {
-                  foundThetaMCD_forThisJet = true;
-                  countthetagMCD_MCD_surMCP++;
+                  if (!foundThetaMCD_forThisJet) {
+                    countthetagMCD_MCD_surMCP++;
+                    foundThetaMCD_forThisJet = true; // marque que ce jet a trouvé un thetagMCD
+                  }
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                     if (ptMCP == jetMCP.pt()) {
                       countthetagMCP_MCD_surMCP++;
