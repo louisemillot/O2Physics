@@ -33,9 +33,12 @@
 #include "Framework/AnalysisTask.h"
 #include "Framework/HistogramRegistry.h"
 #include "Framework/O2DatabasePDGPlugin.h"
+#include <Framework/Pack.h>
 
 #include "fastjet/ClusterSequenceArea.hh"
 #include "fastjet/PseudoJet.hh"
+
+#include <RtypesCore.h>
 
 #include <fstream>
 #include <iostream>
@@ -390,6 +393,8 @@ struct JetSubstructureTask {
   int countthetagMCP_MCP_surMCP = 0;
   std::vector<float> thetagMCDVecMatched;
   std::vector<float> thetagMCPVecMatched;
+  bool foundThetaMCD_forThisJet = false;
+  int countMatchedNoThetaMCD = 0;
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
   template <typename TBase, typename TTag>
   void fillMatchedHistograms(TBase const& jetMCD,
@@ -418,6 +423,7 @@ struct JetSubstructureTask {
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
                 if (ptMCD == jetMCD.pt()) {
+                  foundThetaMCD_forThisJet = true;
                   countthetagMCD_MCD_surMCP++;
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                     if (ptMCP == jetMCP.pt()) {
@@ -434,9 +440,11 @@ struct JetSubstructureTask {
                       }
                     }
                   }
-                } else {
-                  LOGF(info, "No match for thetagMCD with ptMCD = %.4f in thetagMCPVec for jetMCD.pt() = %.4f thetagMCD = %.4f", ptMCD, jetMCD.pt(), thetagMCD);
                 }
+              }
+              if (!foundThetaMCD_forThisJet) {
+                countMatchedNoThetaMCD++;
+                LOGF(info, "No thetagMCD found for jetMCD.pt = %.4f", jetMCD.pt());
               }
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
