@@ -420,7 +420,8 @@ struct JetSubstructureTask {
             continue;
           }
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
-            count_surMCP++;
+            // ====== for debugging
+            // count_surMCP++;
             double dpt = jetMCP.pt() - jetMCD.pt();
             // ====== for debugging
             // bool foundThetaMCD_forThisJet = false;
