@@ -81,10 +81,10 @@ struct JetSubstructureTask {
   Configurable<float> centralityMin{"centralityMin", -999, ""};
   Configurable<float> centralityMax{"centralityMax", 999, ""};
   Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
-  Configurable<float> trackQAEtaMin{"trackQAEtaMin", -0.9, "minimum eta acceptance for tracks in the processTracks QA"};
-  Configurable<float> trackQAEtaMax{"trackQAEtaMax", 0.9, "maximum eta acceptance for tracks in the processTracks QA"};
-  Configurable<float> trackQAPtMin{"trackQAPtMin", 0.15, "minimum pT acceptance for tracks in the processTracks QA"};
-  Configurable<float> trackQAPtMax{"trackQAPtMax", 100.0, "maximum pT acceptance for tracks in the processTracks QA"};
+  Configurable<float> trackEtaMin{"trackEtaMin", -0.9, "minimum eta acceptance for tracks in the processTracks QA"};
+  Configurable<float> trackEtaMax{"trackEtaMax", 0.9, "maximum eta acceptance for tracks in the processTracks QA"};
+  Configurable<float> trackPtMin{"trackPtMin", 0.15, "minimum pT acceptance for tracks in the processTracks QA"};
+  Configurable<float> trackPtMax{"trackPtMax", 100.0, "maximum pT acceptance for tracks in the processTracks QA"};
   Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
   Configurable<std::string> trackSelections{"trackSelections", "globalTracks", "set track selections"};
   Configurable<float> ptLeadingTrackCut{"ptLeadingTrackCut", 5.0f, "Leading track cut : minimum pT selection on jet constituent"};
@@ -98,8 +98,6 @@ struct JetSubstructureTask {
   Configurable<bool> skipMBGapEvents{"skipMBGapEvents", false, "flag to choose to reject min. bias gap events; jet-level rejection can also be applied at the jet finder level for jets only, here rejection is applied for collision and track process functions for the first time, and on jets in case it was set to false at the jet finder level"};
   Configurable<float> jetEtaMin{"jetEtaMin", -0.7, "minimum jet pseudorapidity"};
   Configurable<float> jetEtaMax{"jetEtaMax", 0.7, "maximum jet pseudorapidity"};
-  Configurable<float> trackEtaMin{"trackEtaMin", -0.9, "minimum eta acceptance for tracks"};
-  Configurable<float> trackEtaMax{"trackEtaMax", 0.9, "maximum eta acceptance for tracks"};
   Configurable<bool> checkLeadConstituentPtForMcpJets{"checkLeadConstituentPtForMcpJets", false, "flag to choose whether particle level jets should have their lead track pt above leadingConstituentPtMin to be accepted; off by default, as leadingConstituentPtMin cut is only applied on MCD jets for the Pb-Pb analysis using pp MC anchored to Pb-Pb for the response matrix"};
   Configurable<float> jetAreaFractionMin{"jetAreaFractionMin", -99.0, "used to make a cut on the jet areas"};
   Configurable<bool> checkGeoMatched{"checkGeoMatched", true, "0: turn off geometry matching, 1: do geometry matching "};
@@ -341,9 +339,10 @@ struct JetSubstructureTask {
     trackSelection = jetderiveddatautilities::initialiseTrackSelection(static_cast<std::string>(trackSelections));
   }
 
-  // Filter trackCuts = (aod::jtrack::pt >= trackPtMin && aod::jtrack::pt < trackPtMax && aod::jtrack::eta > trackEtaMin && aod::jtrack::eta < trackEtaMax);
+  Filter trackCuts = (aod::jtrack::pt >= trackPtMin && aod::jtrack::pt < trackPtMax && aod::jtrack::eta > trackEtaMin && aod::jtrack::eta < trackEtaMax);
   Filter collisionFilter = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centFT0M >= centralityMin && aod::jcollision::centFT0M < centralityMax);
   Filter mcCollisionFilter = (nabs(aod::jmccollision::posZ) < vertexZCut && aod::jmccollision::centFT0M >= centralityMin && aod::jmccollision::centFT0M < centralityMax);
+  // Filter particleCuts = (aod::jmcparticle::pt >= trackPtMin && aod::jmcparticle::pt < trackPtMax && aod::jmcparticle::eta > trackEtaMin && aod::jmcparticle::eta < trackEtaMax);
 
   Preslice<aod::JetTracks> TracksPerCollision = aod::jtrack::collisionId;
   Preslice<aod::JetTracksSub> TracksPerCollisionDataSub = aod::bkgcharged::collisionId;
@@ -665,7 +664,7 @@ struct JetSubstructureTask {
     //   LOGF(info, "thetagMCD = %.4f, ptJet = %.4f , Jet numéro %d ", thetag, ptJet, jet.globalIndex());
     // }
 
-    // Write the contents of thetagVec to a log file
+    // ===== Write the contents of thetagVec to a log file
     // std::ofstream logFile1("thetagMCDVec.log"); // ouvre/crée le fichier
     // logFile1 << "thetag\tpt\n"; // optionnel : écrire les en-têtes de colonnes
     // for (const auto& [thetag, pt] : thetagMCDVec) {
@@ -686,7 +685,7 @@ struct JetSubstructureTask {
     //   logFile3 << thetag << "\t" << pt << "\n"; // valeurs séparées par tabulation
     // }
     // logFile3.close();
-    // End of writing to log files
+    // ====== End of writing to log files
 
     return {thetagMCDVec, thetagMCPVec, thetagMCDEventWiseVec};
   }
@@ -870,29 +869,23 @@ struct JetSubstructureTask {
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
-    // LOGF(info, "test0 ");
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
-    // LOGF(info, "test1 ");
     LOGF(info, "Number of jets in event = %d", jets.size());
     ///////////// leading track cut try : (because filter doesnt work)
     for (auto& jet : jets) {
-      // LOGF(info, "test2 ");
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
       }
-      // LOGF(info, "test3 ");
       if (!isAcceptedJet<aod::JetTracks>(jet)) {
         continue;
       }
-      // LOGF(info, "test4 ");
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial_data"), jet.pt());
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracks>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           hasHighPtConstituent = true;
-          // LOGF(info, "test5 ");
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
@@ -990,7 +983,7 @@ struct JetSubstructureTask {
   void processChargedJetsMCDWeighted(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                                      //  aod::JetMcCollisions const&, //join the weight
                                      soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetEventWeights> const& jets,
-                                     aod::JetTracks const& tracks)
+                                     soa::Filtered<aod::JetTracks> const& tracks)
   {
     // LOGF(info, "processChargedJetsMCDWeighted ");
     // LOGF(info, "collision index = %d ", collision.globalIndex());
