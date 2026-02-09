@@ -394,7 +394,6 @@ struct JetSubstructureTask {
   std::vector<float> thetagMCDVecMatched;
   std::vector<float> thetagMCPVecMatched;
   int countMatchedNoThetaMCD = 0;
-  bool foundThetaMCD_forThisJet = false;
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
   template <typename TBase, typename TTag>
   void fillMatchedHistograms(TBase const& jetMCD,
@@ -420,6 +419,7 @@ struct JetSubstructureTask {
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             count_surMCP++;
             double dpt = jetMCP.pt() - jetMCD.pt();
+            bool foundThetaMCD_forThisJet = false;
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
                 if (ptMCD == jetMCD.pt()) {
