@@ -400,9 +400,9 @@ struct JetSubstructureTask {
   }
 
   // ====== for debugging
-  // int count_surMCP = 0;
-  // int countthetagMCD_MCD_surMCP = 0;
-  // int countthetagMCP_MCD_surMCP = 0;
+  int count_surMCP = 0;
+  int countthetagMCD_MCD_surMCP = 0;
+  int countthetagMCP_MCD_surMCP = 0;
   // int countthetagMCD_MCP_surMCP = 0;
   // int countthetagMCP_MCP_surMCP = 0;
   // int countMatchedNoThetaMCD = 0;
@@ -433,7 +433,7 @@ struct JetSubstructureTask {
           }
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             // ====== for debugging
-            // count_surMCP++;
+            count_surMCP++;
             double dpt = jetMCP.pt() - jetMCD.pt();
             // ====== for debugging
             // bool foundThetaMCD_forThisJet = false;
@@ -442,11 +442,11 @@ struct JetSubstructureTask {
                 if (ptMCD == jetMCD.pt()) {
                   // ====== for debugging
                   // foundThetaMCD_forThisJet = true;
-                  // countthetagMCD_MCD_surMCP++;
+                  countthetagMCD_MCD_surMCP++;
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                     if (ptMCP == jetMCP.pt()) {
                       // ====== for debugging
-                      // countthetagMCP_MCD_surMCP++;
+                      countthetagMCP_MCD_surMCP++;
                       registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
                       registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"), jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                       // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
@@ -482,9 +482,9 @@ struct JetSubstructureTask {
       }
     }
     // ====== for debugging
-    // std::cout << "nombre de MCD-MCP matchés - sur MCP : " << count_surMCP << std::endl;
-    // std::cout << "nombre de thetagMCD  : " << countthetagMCD_MCD_surMCP << std::endl;
-    // std::cout << "nombre de thetagMCP trouvés parmis thetagMCD : " << countthetagMCP_MCD_surMCP << std::endl;
+    std::cout << "nombre de MCD-MCP matchés - sur MCP : " << count_surMCP << std::endl;
+    std::cout << "nombre de thetagMCD  : " << countthetagMCD_MCD_surMCP << std::endl;
+    std::cout << "nombre de thetagMCP trouvés parmis thetagMCD : " << countthetagMCP_MCD_surMCP << std::endl;
 
     // std::cout << "nombre de thetagMCD trouvés boucle for sur MCD - sur MCP : " << countthetagMCD_MCD_surMCP << std::endl;
     // std::cout << "nombre de thetagMCP trouvés boucle for sur MCD - sur MCP : " << countthetagMCP_MCD_surMCP << std::endl; // nombre de thetagMCP trouvés parmis les thetagMCD trouves
@@ -966,6 +966,10 @@ struct JetSubstructureTask {
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
+      return;
+    }
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
@@ -1005,34 +1009,33 @@ struct JetSubstructureTask {
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
+      return;
+    }
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
-    LOGF(info, "test0 ");
     // Leading track cut
     for (auto& jet : jets) {
-      LOGF(info, "test1.2 ");
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
       }
       if (!isAcceptedJet<aod::JetTracks>(jet)) {
         continue;
       }
-      LOGF(info, "test1.5 ");
       bool hasHighPtConstituent = false;
       registry.fill(HIST("h_jet_pt_initial_data_eventwise"), jet.pt());
       // auto & jetConstituent0 = jet.tracks_as<aod::JetTracksSub>().iteratorAt(0)
       for (auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
         if (jetConstituent.pt() >= ptLeadingTrackCut) {
           // LOGF(info, "Jet with leading constituent pt = %.2f found", jetConstituent.pt());
-          LOGF(info, "test1 ");
           hasHighPtConstituent = true;
           break; // Sortir de la boucle dès qu'un constituant valide est trouvé
         }
       }
       // Si un jet contient un constituant avec un pt > au critère, on l'analyse
       if (hasHighPtConstituent) {
-        LOGF(info, "test2 ");
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_data_eventwise"), jet.pt());
         analyseCharged<true>(jet, tracksOfCollisions, jetSplittingsDataSubTable);
         // registry.fill(HIST("h_jet_pt_after_grooming"), jet.pt()); //rajouter weight pour MC
@@ -1046,6 +1049,10 @@ struct JetSubstructureTask {
                              aod::JetTracks const& tracks)
   {
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+      return;
+    }
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
       return;
     }
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
@@ -1085,6 +1092,10 @@ struct JetSubstructureTask {
     // LOGF(info, "processChargedJetsMCDWeighted ");
     // LOGF(info, "collision index = %d ", collision.globalIndex());
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+      return;
+    }
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
       return;
     }
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
@@ -1145,6 +1156,10 @@ struct JetSubstructureTask {
       return;
     }
     // LOGF(info, "test1");
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
+      return;
+    }
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
@@ -1184,6 +1199,10 @@ struct JetSubstructureTask {
   {
     // //rajouter les cuts de jetspectra
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+      return;
+    }
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
       return;
     }
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
@@ -1249,15 +1268,18 @@ struct JetSubstructureTask {
     if (collisions.size() < 1) {
       return;
     }
+    float centrality = -1;
     bool hasSel8Coll = false;
-    bool centralityIsGood = false;
+    bool centralityCheck = false;
     bool occupancyIsGood = false;
+
     for (auto const& collision : collisions) {
       if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
         hasSel8Coll = true;
       }
-      if ((centralityMin < collision.centFT0C()) && (collision.centFT0C() < centralityMax)) {
-        centralityIsGood = true;
+      centrality = checkCentFT0M ? collisions.begin().centFT0M() : collisions.begin().centFT0C();
+      if (!cutCentrality || ((centralityMin < centrality) && (centrality < centralityMax))) { // mcCollision.centFT0C() isn't filled at the moment; can use it instead when it is added to O2Physics
+        centralityCheck = true;
       }
       if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
         occupancyIsGood = true;
@@ -1266,7 +1288,7 @@ struct JetSubstructureTask {
     if (!hasSel8Coll) {
       return;
     }
-    if (!centralityIsGood) {
+    if (!centralityCheck) {
       return;
     }
     if (!occupancyIsGood) {
