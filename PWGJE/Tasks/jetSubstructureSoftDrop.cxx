@@ -421,9 +421,7 @@ struct JetSubstructureTask {
             double dpt = jetMCP.pt() - jetMCD.pt();
             if (jetfindingutilities::isInEtaAcceptance(jetMCD, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
               for (const auto& [thetagMCD, ptMCD] : thetagMCDVec) {
-                bool foundThetaMCD_forThisJet = false;
                 if (ptMCD == jetMCD.pt()) {
-                  foundThetaMCD_forThisJet = true;
                   countthetagMCD_MCD_surMCP++;
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                     if (ptMCP == jetMCP.pt()) {
@@ -441,10 +439,6 @@ struct JetSubstructureTask {
                     }
                   }
                 }
-              }
-              if (!foundThetaMCD_forThisJet) {
-                countMatchedNoThetaMCD++;
-                LOGF(info, "countMatchedNoThetaMCD = %d", countMatchedNoThetaMCD);
               }
               registry.fill(HIST("h2_jet_pt_mcd_jet_pt_mcp_matchedgeo_mcdetaconstraint"), jetMCD.pt(), jetMCP.pt(), weight);
               registry.fill(HIST("h2_jet_phi_mcd_jet_phi_mcp_matchedgeo_mcdetaconstraint"), jetMCD.phi(), jetMCP.phi(), weight);
