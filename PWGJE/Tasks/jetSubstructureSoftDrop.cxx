@@ -750,7 +750,7 @@ struct JetSubstructureSoftDrop {
     registry.fill(HIST("h_collisions"), 3.5);
     registry.fill(HIST("h2_centrality_collisions"), centrality, 3.5);
   }
-  PROCESS_SWITCH(JetSubstructureSoftDrop, processCollisionsFromData, "collisions from Data", true);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processCollisionsFromData, "collisions from Data", false);
 
   void processCollisionsFromMc(soa::Filtered<soa::Join<aod::JetCollisions, aod::JMcCollisionLbs>>::iterator const& collision,
                                soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs> const&,
@@ -963,7 +963,7 @@ struct JetSubstructureSoftDrop {
     registry.fill(HIST("h2_centrality_mccollisions"), centrality, 2.5);
     registry.fill(HIST("h2_centrality_mccollisions_weighted"), centrality, 2.5, eventWeight);
   }
-  PROCESS_SWITCH(JetSubstructureSoftDrop, processMcCollisionsWeighted, "Mc collision in weighted MC ", true);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processMcCollisionsWeighted, "Mc collision in weighted MC ", false);
 
   void processChargedJetsData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                               aod::JetTracks const& tracksOfCollisions,
