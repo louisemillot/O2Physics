@@ -37,6 +37,7 @@
 
 #include "fastjet/ClusterSequenceArea.hh"
 #include "fastjet/PseudoJet.hh"
+#include <fairlogger/Logger.h>
 
 #include <RtypesCore.h>
 
@@ -483,21 +484,22 @@ struct JetSubstructureTask {
       }
     }
     // ====== for debugging
-    // std::cout << "nombre de MCD-MCP matchés - sur MCP : " << count_surMCP << std::endl;
-    // std::cout << "nombre de thetagMCD  : " << countthetagMCD_MCD_surMCP << std::endl;
-    // std::cout << "nombre de thetagMCP trouvés parmis thetagMCD : " << countthetagMCP_MCD_surMCP << std::endl;
+    // LOGF(info, "nombre de MCD-MCP matchés - sur MCP : %d", count_surMCP);
+    // LOGF(info, "nombre de thetagMCD : %d", countthetagMCD_MCD_surMCP);
+    // LOGF(info, "nombre de MCD-MCP trouvés parmis thetagMCD : %d", count_surMCP);
 
-    // std::cout << "nombre de thetagMCD trouvés boucle for sur MCD - sur MCP : " << countthetagMCD_MCD_surMCP << std::endl;
-    // std::cout << "nombre de thetagMCP trouvés boucle for sur MCD - sur MCP : " << countthetagMCP_MCD_surMCP << std::endl; // nombre de thetagMCP trouvés parmis les thetagMCD trouves
-    // std::cout << "nombre de thetagMCP trouvés boucle for sur MCP - sur MCP : " << countthetagMCP_MCP_surMCP << std::endl;
-    // std::cout << "nombre de thetagMCD trouvés boucle for sur MCP - sur MCP : " << countthetagMCD_MCP_surMCP << std::endl; //nombre de thetagMCD trouvés parmis les thetagMCP trouves
+    // LOGF(info, "nombre de thetagMCD trouvés boucle for sur MCD - sur MCP : %d", countthetagMCD_MCD_surMCP);
+    // LOGF(info, "nombre de thetagMCP trouvés boucle for sur MCD - sur MCP : %d", countthetagMCP_MCD_surMCP); // nombre de thetagMCP trouvés parmis les thetagMCD trouves
+    // LOGF(info, "nombre de thetagMCP trouvés boucle for sur MCP - sur MCP : %d", countthetagMCP_MCP_surMCP);
+    // LOGF(info, "nombre de thetagMCD trouvés boucle for sur MCP - sur MCP : %d", countthetagMCD_MCP_surMCP); // nombre de thetagMCD trouvés parmis les thetagMCP trouves
 
-    // std::cout << "countMatchedNoThetaMCD = " << countMatchedNoThetaMCD << std::endl;
+    // LOGF(info, "countMatchedNoThetaMCD = %d", countMatchedNoThetaMCD);
 
-    // std::cout << "Nombre de valeurs dans thetagMCDVec (colonne 1) = " << thetagMCDVec.size() << std::endl;
-    // std::cout << "Nombre de valeurs dans thetagMCPVec (colonne 1) = " << thetagMCPVec.size() << std::endl;
-    // fill pt matched histograms (a faire)
-    // fill geometry and pt histograms (a faire)
+    // LOGF(info, "Nombre de valeurs dans thetagMCDVec (colonne 1) = %d", thetagMCDVec.size());
+    // LOGF(info, "Nombre de valeurs dans thetagMCDVec (colonne 1) = %d", thetagMCDVec.size());
+
+    // fill pt matched histograms (to be done)
+    // fill geometry and pt histograms (to be done)
   }
 
   // ====== for debugging
