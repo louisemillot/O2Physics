@@ -1582,6 +1582,6 @@ struct JetSubstructureSoftDrop {
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
-  return WorkflowSpec{adaptAnalysisTask<JetSubstructureTask>(
+  return WorkflowSpec{adaptAnalysisTask<JetSubstructureSoftDrop>(
     cfgc, TaskName{"jet-substructure-softdrop"})};
 }
