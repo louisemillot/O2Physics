@@ -54,7 +54,7 @@ using namespace o2::framework::expressions;
 
 #include "Framework/runDataProcessing.h"
 
-struct JetSubstructureTask {
+struct JetSubstructureSoftDrop {
 
   using ChargedMCDMatchedJets = soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents, aod::ChargedMCDetectorLevelJetsMatchedToChargedMCParticleLevelJets>;                                                                    // 1
   using ChargedMCPMatchedJets = soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents, aod::ChargedMCParticleLevelJetsMatchedToChargedMCDetectorLevelJets>;                                                                    // 2
@@ -88,7 +88,7 @@ struct JetSubstructureTask {
   Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
   Configurable<std::string> trackSelections{"trackSelections", "globalTracks", "set track selections"};
   Configurable<float> ptLeadingTrackCut{"ptLeadingTrackCut", 5.0f, "Leading track cut : minimum pT selection on jet constituent"};
-  Configurable<float> ptLeadingTrackCutMax{"ptleadingConstituentPtMax", 9999.0, "maximum pT selection on jet constituent"};
+  Configurable<float> ptLeadingTrackCutMax{"ptLeadingTrackCutMax", 9999.0, "maximum pT selection on jet constituent"};
   Configurable<float> pTHatMaxMCD{"pTHatMaxMCD", 999.0, "maximum fraction of hard scattering for jet acceptance in detector MC"};
   Configurable<float> pTHatMaxMCP{"pTHatMaxMCP", 999.0, "maximum fraction of hard scattering for jet acceptance in particle MC"};
   Configurable<float> ptHatMin{"ptHatMin", 5, "min pT hat of collisions"};
@@ -132,6 +132,8 @@ struct JetSubstructureTask {
   std::vector<int> eventSelectionBits;
   int trackSelection = -1;
 
+  float configSwitchLow = -98.0;
+  float configSwitchHigh = 9998.0;
   enum AcceptSplitCollisionsOptions {
     NonSplitOnly = 0,
     SplitOkCheckAnyAssocColl,      // 1
@@ -366,14 +368,14 @@ struct JetSubstructureTask {
   template <typename TTracks, typename TJets>
   bool isAcceptedJet(TJets const& jet, bool mcLevelIsParticleLevel = false)
   {
-    if (jetAreaFractionMin > -98.0) {
+    if (jetAreaFractionMin > configSwitchLow) {
       if (jet.area() < jetAreaFractionMin * o2::constants::math::PI * (jet.r() / 100.0) * (jet.r() / 100.0)) {
         return false;
       }
     }
     bool checkConstituentPt = true;
-    bool checkConstituentMinPt = (ptLeadingTrackCut > -98.0);
-    bool checkConstituentMaxPt = (ptLeadingTrackCutMax < 9998.0);
+    bool checkConstituentMinPt = (ptLeadingTrackCut > configSwitchLow);
+    bool checkConstituentMaxPt = (ptLeadingTrackCutMax < configSwitchHigh);
     if (!checkConstituentMinPt && !checkConstituentMaxPt) {
       checkConstituentPt = false;
     }
@@ -409,7 +411,9 @@ struct JetSubstructureTask {
   // int countMatchedNoThetaMCD = 0;
   std::vector<float> thetagMCDVecMatched;
   std::vector<float> thetagMCPVecMatched;
-
+  int ptMin = 20.0;
+  int ptMid = 60.0;
+  int ptMax = 80.0;
   // template <typename TBase, typename TTag, typename TableMCD, typename TableMCP>
   template <typename TBase, typename TTag>
   void fillMatchedHistograms(TBase const& jetMCD,
@@ -451,11 +455,11 @@ struct JetSubstructureTask {
                       registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
                       registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"), jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                       // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
-                      if (ptMCP >= 20.0 && ptMCP <= 80.0) {
+                      if (ptMCP >= ptMin && ptMCP <= ptMax) {
                         registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_20_80"), thetagMCD, thetagMCP, weight);
                         registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_pt_20_80"), jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                       }
-                      if (ptMCP >= 60.0 && ptMCP <= 80.0) {
+                      if (ptMCP >= ptMid && ptMCP <= ptMax) {
                         registry.fill(HIST("h2_thetagMCD_thetagMCP_pt_60_80"), thetagMCD, thetagMCP, weight);
                       }
                     }
@@ -540,11 +544,11 @@ struct JetSubstructureTask {
                           registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange_eventwise"), thetagMCDEventWise, thetagMCP, weight);
                           registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange_eventwise"), jetMCDEventWise.pt(), jetMCP.pt(), thetagMCDEventWise, thetagMCP, weight);
                           LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCDEventWise, ptMCDEventWise, thetagMCP, ptMCP);
-                          if (ptMCP >= 20.0 && ptMCP <= 80.0) {
+                          if (ptMCP >= ptMin && ptMCP <= ptMax) {
                             registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_20_80_eventwise"), thetagMCDEventWise, thetagMCP, weight);
                             registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_pt_20_80_eventwise"), jetMCDEventWise.pt(), jetMCP.pt(), thetagMCDEventWise, thetagMCP, weight);
                           }
-                          if (ptMCP >= 60.0 && ptMCP <= 80.0) {
+                          if (ptMCP >= ptMid && ptMCP <= ptMax) {
                             registry.fill(HIST("h2_thetagMCD_thetagMCP_pt_60_80_eventwise"), thetagMCDEventWise, thetagMCP, weight);
                           }
                         }
@@ -721,7 +725,7 @@ struct JetSubstructureTask {
   void processDummy(aod::JetTracks const&)
   {
   }
-  PROCESS_SWITCH(JetSubstructureTask, processDummy, "Dummy process function turned on by default", true);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processDummy, "Dummy process function turned on by default", true);
 
   void processCollisionsFromData(soa::Filtered<aod::JetCollisions>::iterator const& collision)
   {
@@ -745,7 +749,7 @@ struct JetSubstructureTask {
     registry.fill(HIST("h_collisions"), 3.5);
     registry.fill(HIST("h2_centrality_collisions"), centrality, 3.5);
   }
-  PROCESS_SWITCH(JetSubstructureTask, processCollisionsFromData, "collisions from Data", true);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processCollisionsFromData, "collisions from Data", true);
 
   void processCollisionsFromMc(soa::Filtered<soa::Join<aod::JetCollisions, aod::JMcCollisionLbs>>::iterator const& collision,
                                soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs> const&,
@@ -782,7 +786,7 @@ struct JetSubstructureTask {
     registry.fill(HIST("h_collisions"), 4.5);
     registry.fill(HIST("h2_centrality_collisions"), centrality, 4.5);
   }
-  PROCESS_SWITCH(JetSubstructureTask, processCollisionsFromMc, "QA for reconstructed collisions in MC without weights", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processCollisionsFromMc, "QA for reconstructed collisions in MC without weights", false);
 
   void processCollisionsFromMcWeighted(soa::Join<aod::JetCollisions, aod::JMcCollisionLbs>::iterator const& collision,
                                        soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs> const&,
@@ -820,7 +824,7 @@ struct JetSubstructureTask {
     registry.fill(HIST("h_collisions"), 4.5);
     registry.fill(HIST("h_collisions_weighted"), 4.5, eventWeight);
   }
-  PROCESS_SWITCH(JetSubstructureTask, processCollisionsFromMcWeighted, "reconstructed collisions in weighted MC", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processCollisionsFromMcWeighted, "reconstructed collisions in weighted MC", false);
 
   void processMcCollisions(soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs>::iterator const& mcCollision,
                            soa::Join<aod::McCollisions, aod::HepMCXSections> const&,
@@ -884,7 +888,7 @@ struct JetSubstructureTask {
     registry.fill(HIST("h_mccollisions"), 2.5);
     registry.fill(HIST("h2_centrality_mccollisions"), centrality, 2.5);
   }
-  PROCESS_SWITCH(JetSubstructureTask, processMcCollisions, "McCollisions in MC without weights", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processMcCollisions, "McCollisions in MC without weights", false);
 
   void processMcCollisionsWeighted(soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs>::iterator const& mcCollision,
                                    soa::Join<aod::McCollisions, aod::HepMCXSections> const&,
@@ -958,7 +962,7 @@ struct JetSubstructureTask {
     registry.fill(HIST("h2_centrality_mccollisions"), centrality, 2.5);
     registry.fill(HIST("h2_centrality_mccollisions_weighted"), centrality, 2.5, eventWeight);
   }
-  PROCESS_SWITCH(JetSubstructureTask, processMcCollisionsWeighted, "Mc collision in weighted MC ", true);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processMcCollisionsWeighted, "Mc collision in weighted MC ", true);
 
   void processChargedJetsData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                               aod::JetTracks const& tracksOfCollisions,
@@ -999,7 +1003,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsData, "charged jet substructure", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processChargedJetsData, "charged jet substructure", false);
 
   void processChargedJetsEventWiseSubData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                           soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets,
@@ -1044,7 +1048,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processChargedJetsEventWiseSubData, "eventwise-constituent subtracted charged jet substructure", false);
 
   void processChargedJetsMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                              soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
@@ -1084,7 +1088,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCD, "charged jet MCD substructure weighted", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processChargedJetsMCD, "charged jet MCD substructure weighted", false);
 
   void processChargedJetsMCDWeighted(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                                      //  aod::JetMcCollisions const&, //join the weight
@@ -1146,7 +1150,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCDWeighted, "charged jet MCD substructure weighted", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processChargedJetsMCDWeighted, "charged jet MCD substructure weighted", false);
 
   void processChargedJetsEventWiseSubMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                                          soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
@@ -1193,7 +1197,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processChargedJetsEventWiseSubMCD, "eventwise-constituent subtracted MCD charged jet substructure", false);
 
   void processChargedJetsEventWiseSubMCDWeighted(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                                                  soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents, aod::ChargedMCDetectorLevelEventWiseSubtractedJetEventWeights> const& jets,
@@ -1246,7 +1250,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsEventWiseSubMCDWeighted, "Weighted eventwise-constituent subtracted MCD charged jet substructure ", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processChargedJetsEventWiseSubMCDWeighted, "Weighted eventwise-constituent subtracted MCD charged jet substructure ", false);
 
   void processChargedJetsMCP(soa::Filtered<aod::JetMcCollisions>::iterator const& mcCollision,
                              soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
@@ -1324,7 +1328,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCP, "charged jet substructure on MC particle level", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processChargedJetsMCP, "charged jet substructure on MC particle level", false);
 
   void processChargedJetsMCPWeighted(soa::Filtered<aod::JetMcCollisions>::iterator const& mcCollision,
                                      soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
@@ -1403,7 +1407,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processChargedJetsMCPWeighted, "charged jet substructure on MC particle level weighted", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processChargedJetsMCPWeighted, "charged jet substructure on MC particle level weighted", false);
 
   void processJetsMCDMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                 ChargedMCDMatchedJets const& mcdjets,
@@ -1437,7 +1441,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processJetsMCDMatchedMCP, "matched mcp and mcd jets", false);
 
   void processJetsMCDMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                         ChargedMCDMatchedJetsWeighted const& mcdjets,
@@ -1483,7 +1487,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processJetsMCDMatchedMCPWeighted, "matched mcp and mcd jets with weighted events", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processJetsMCDMatchedMCPWeighted, "matched mcp and mcd jets with weighted events", false);
 
   void processJetsMCDEventWiseMatchedMCP(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                          ChargedMCDEventWiseMatchedtoMCD const& jetsMCDEventWise,
@@ -1523,7 +1527,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processJetsMCDEventWiseMatchedMCP, "matched mcp and mcd jets eventwise", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processJetsMCDEventWiseMatchedMCP, "matched mcp and mcd jets eventwise", false);
 
   void processJetsMCDEventWiseMatchedMCPWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                                  ChargedMCDEventWiseMatchedtoMCDWeighted const& jetsMCDEventWise,
@@ -1564,7 +1568,7 @@ struct JetSubstructureTask {
       }
     }
   }
-  PROCESS_SWITCH(JetSubstructureTask, processJetsMCDEventWiseMatchedMCPWeighted, "matched mcp and mcd jets eventwise weighted", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processJetsMCDEventWiseMatchedMCPWeighted, "matched mcp and mcd jets eventwise weighted", false);
 
   int totalMCDjets = 0;
   void processNumberOfMCDJetsWeighted(o2::aod::ChargedMCDetectorLevelJets const& mcdjet)
@@ -1572,12 +1576,11 @@ struct JetSubstructureTask {
     totalMCDjets += mcdjet.size();
     LOGF(info, "====== Total MCD jets over the entire dataset = %d ======", totalMCDjets);
   }
-  PROCESS_SWITCH(JetSubstructureTask, processNumberOfMCDJetsWeighted, "number of mcd jets weighted", false);
+  PROCESS_SWITCH(JetSubstructureSoftDrop, processNumberOfMCDJetsWeighted, "number of mcd jets weighted", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
 
-  return WorkflowSpec{adaptAnalysisTask<JetSubstructureTask>(
-    cfgc, TaskName{"jet-substructure-softdrop"})};
+  return WorkflowSpec{adaptAnalysisTask<JetSubstructureSoftDrop>(cfgc)};
 }
