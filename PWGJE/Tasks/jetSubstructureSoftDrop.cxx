@@ -404,9 +404,9 @@ struct JetSubstructureSoftDrop {
   }
 
   // ====== for debugging
-  int count_surMCP = 0;
-  int countthetagMCD_MCD_surMCP = 0;
-  int countthetagMCP_MCD_surMCP = 0;
+  // int count_surMCP = 0;
+  // int countthetagMCD_MCD_surMCP = 0;
+  // int countthetagMCP_MCD_surMCP = 0;
   // int countthetagMCD_MCP_surMCP = 0;
   // int countthetagMCP_MCP_surMCP = 0;
   // int countMatchedNoThetaMCD = 0;
@@ -439,7 +439,7 @@ struct JetSubstructureSoftDrop {
           }
           if (jetMCD.r() == round(selectedJetsRadius * 100.0f)) {
             // ====== for debugging
-            count_surMCP++;
+            // count_surMCP++;
             double dpt = jetMCP.pt() - jetMCD.pt();
             // ====== for debugging
             // bool foundThetaMCD_forThisJet = false;
@@ -448,11 +448,11 @@ struct JetSubstructureSoftDrop {
                 if (ptMCD == jetMCD.pt()) {
                   // ====== for debugging
                   // foundThetaMCD_forThisJet = true;
-                  countthetagMCD_MCD_surMCP++;
+                  // countthetagMCD_MCD_surMCP++;
                   for (const auto& [thetagMCP, ptMCP] : thetagMCPVec) {
                     if (ptMCP == jetMCP.pt()) {
                       // ====== for debugging
-                      countthetagMCP_MCD_surMCP++;
+                      // countthetagMCP_MCD_surMCP++;
                       registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange"), thetagMCD, thetagMCP, weight);
                       registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange"), jetMCD.pt(), jetMCP.pt(), thetagMCD, thetagMCP, weight);
                       // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCD, ptMCD, thetagMCP, ptMCP);
@@ -488,9 +488,9 @@ struct JetSubstructureSoftDrop {
       }
     }
     // ====== for debugging
-    LOGF(info, "nombre de MCD-MCP matchés - sur MCP : %d", count_surMCP);
-    LOGF(info, "nombre de thetagMCD : %d", countthetagMCD_MCD_surMCP);
-    LOGF(info, "nombre de MCD-MCP trouvés parmis thetagMCD : %d", countthetagMCP_MCD_surMCP);
+    // LOGF(info, "nombre de MCD-MCP matchés - sur MCP : %d", count_surMCP);
+    // LOGF(info, "nombre de thetagMCD : %d", countthetagMCD_MCD_surMCP);
+    // LOGF(info, "nombre de MCD-MCP trouvés parmis thetagMCD : %d", countthetagMCP_MCD_surMCP);
 
     // LOGF(info, "nombre de thetagMCD trouvés boucle for sur MCD - sur MCP : %d", countthetagMCD_MCD_surMCP);
     // LOGF(info, "nombre de thetagMCP trouvés boucle for sur MCD - sur MCP : %d", countthetagMCP_MCD_surMCP); // nombre de thetagMCP trouvés parmis les thetagMCD trouves
@@ -1583,5 +1583,5 @@ struct JetSubstructureSoftDrop {
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
 {
   return WorkflowSpec{adaptAnalysisTask<JetSubstructureSoftDrop>(
-    cfgc, TaskName{"jet-substructure-softdrop"})};
+    cfgc, TaskName{"jet-substructure-softdrop"})}; // o2-linter: disable=name/o2-task(Required for correct DPL workflow)
 }
