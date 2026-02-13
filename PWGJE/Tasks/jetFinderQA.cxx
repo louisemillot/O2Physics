@@ -389,8 +389,8 @@ struct JetFinderQATask {
 
   Filter trackCuts = (aod::jtrack::pt >= trackPtMin && aod::jtrack::pt < trackPtMax && aod::jtrack::eta > trackEtaMin && aod::jtrack::eta < trackEtaMax);
   Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut &&
-                      (checkCentFT0M ? aod::jcollision::centFT0M() : aod::jcollision::centFT0C()) >= centralityMin &&
-                      (checkCentFT0M ? aod::jcollision::centFT0M() : aod::jcollision::centFT0C()) < centralityMax);
+                      (checkCentFT0M ? aod::jcollision::centFT0M : aod::jcollision::centFT0C) >= centralityMin &&
+                      (checkCentFT0M ? aod::jcollision::centFT0M : aod::jcollision::centFT0C) < centralityMax);
   PresliceUnsorted<soa::Filtered<aod::JetCollisionsMCD>> CollisionsPerMCPCollision = aod::jmccollisionlb::mcCollisionId;
   PresliceUnsorted<soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs>> McCollisionsPerMCPCollision = aod::jmccollision::mcCollisionId;
 
@@ -730,7 +730,7 @@ struct JetFinderQATask {
   template <typename T, typename U, typename V>
   void randomCone(T const& collision, U const& jets, V const& tracks)
   {
-    centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits)) {
       return;
     }
@@ -817,7 +817,7 @@ struct JetFinderQATask {
 
   void processJetsData(soa::Filtered<aod::JetCollisions>::iterator const& collision, soa::Join<aod::ChargedJets, aod::ChargedJetConstituents> const& jets, aod::JetTracks const&)
   {
-    centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
@@ -837,7 +837,7 @@ struct JetFinderQATask {
                                  soa::Join<aod::ChargedJets, aod::ChargedJetConstituents> const& jets,
                                  aod::JetTracks const&)
   {
-    centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
@@ -857,7 +857,7 @@ struct JetFinderQATask {
                                 soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
                                 aod::JetTracks const&)
   {
-    centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
@@ -875,7 +875,7 @@ struct JetFinderQATask {
 
   void processEvtWiseConstSubJetsData(soa::Filtered<aod::JetCollisions>::iterator const& collision, soa::Join<aod::ChargedEventWiseSubtractedJets, aod::ChargedEventWiseSubtractedJetConstituents> const& jets, aod::JetTracksSub const&)
   {
-    centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
@@ -893,7 +893,7 @@ struct JetFinderQATask {
 
   void processEvtWiseConstSubJetsMCD(soa::Filtered<aod::JetCollisions>::iterator const& collision, soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets, aod::JetTracksSub const&)
   {
-    centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
@@ -940,7 +940,7 @@ struct JetFinderQATask {
 
   void processJetsMCD(soa::Filtered<soa::Join<aod::JetCollisions, aod::JMcCollisionLbs>>::iterator const& collision, aod::JetMcCollisions const&, soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets, aod::JetTracks const&)
   {
-    centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
@@ -958,7 +958,7 @@ struct JetFinderQATask {
 
   void processJetsMCDWeighted(soa::Filtered<soa::Join<aod::JetCollisions, aod::JMcCollisionLbs, aod::JCollisionOutliers>>::iterator const& collision, aod::JetMcCollisions const&, soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets, aod::JetTracks const&)
   {
-    centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
@@ -1239,7 +1239,7 @@ struct JetFinderQATask {
                      aod::JetMcCollisions const&,
                      soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras>> const& tracks)
   {
-    centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (skipMBGapEvents && collision.getSubGeneratorId() == jetderiveddatautilities::JCollisionSubGeneratorId::mbGap) {
       return;
     }
@@ -1291,7 +1291,7 @@ struct JetFinderQATask {
   void processTracksSub(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                         soa::Filtered<aod::JetTracksSub> const& tracks)
   {
-    centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (skipMBGapEvents && collision.getSubGeneratorId() == jetderiveddatautilities::JCollisionSubGeneratorId::mbGap) {
       return;
     }
@@ -1311,7 +1311,7 @@ struct JetFinderQATask {
 
   void processRho(soa::Filtered<soa::Join<aod::JetCollisions, aod::BkgChargedRhos>>::iterator const& collision, soa::Filtered<aod::JetTracks> const& tracks)
   {
-    centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (skipMBGapEvents && collision.getSubGeneratorId() == jetderiveddatautilities::JCollisionSubGeneratorId::mbGap) {
       return;
     }
