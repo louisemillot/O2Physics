@@ -1038,11 +1038,11 @@ struct JetSubstructureSoftDrop {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
       }
-      LOGF(info, "4");
+      LOGF(info, "test4");
       if (!isAcceptedJet<aod::JetTracksSub>(jet)) {
         continue;
       }
-      LOGF(info, "5");
+      LOGF(info, "test5");
       registry.fill(HIST("h_jet_pt_initial_mcd_eventwise"), jet.pt());
       bool hasHighPtConstituent = false;
       for (const auto& jetConstituent : jet.tracks_as<aod::JetTracksSub>()) {
@@ -1051,7 +1051,7 @@ struct JetSubstructureSoftDrop {
           break;
         }
       }
-      LOGF(info, "6");
+      LOGF(info, "test6");
       if (hasHighPtConstituent) {
         registry.fill(HIST("h_jet_pt_after_leadingtrackcut_mcd_eventwise"), jet.pt());
         analyseCharged<true>(jet, tracks, jetSplittingsMCDSubTable);
