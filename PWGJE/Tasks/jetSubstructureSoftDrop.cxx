@@ -1023,13 +1023,16 @@ struct JetSubstructureSoftDrop {
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
+    LOGF(info, "test1");
     float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
     if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
       return;
     }
+    LOGF(info, "test2");
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
+    LOGF(info, "test3");
     ///////////// leading track cut /////////////
     for (const auto& jet : jets) {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
@@ -1185,11 +1188,13 @@ struct JetSubstructureSoftDrop {
     bool hasSel8Coll = false;
     bool centralityIsGood = false;
     bool occupancyIsGood = false;
+
     for (const auto& collision : collisions) {
       if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
         hasSel8Coll = true;
       }
-      if ((centralityMin < collision.centFT0C()) && (collision.centFT0C() < centralityMax)) {
+      float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C(); // mc collision centFT0C isn't filled at the moment, can use it instead when it is added to O2Physics
+      if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
         centralityIsGood = true;
       }
       if ((trackOccupancyInTimeRangeMin < collision.trackOccupancyInTimeRange()) && (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMax)) {
@@ -1252,6 +1257,10 @@ struct JetSubstructureSoftDrop {
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
+      return;
+    }
 
     for (const auto& mcdjet : mcdjets) {
       if (!jetfindingutilities::isInEtaAcceptance(mcdjet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
@@ -1284,6 +1293,10 @@ struct JetSubstructureSoftDrop {
       return;
     }
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+      return;
+    }
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
       return;
     }
     for (const auto& mcdjet : mcdjets) {
@@ -1328,6 +1341,11 @@ struct JetSubstructureSoftDrop {
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
+      return;
+    }
+
     for (const auto& jetMCDEventWise : jetsMCDEventWise) {
       if (!jetfindingutilities::isInEtaAcceptance(jetMCDEventWise, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
@@ -1361,6 +1379,10 @@ struct JetSubstructureSoftDrop {
       return;
     }
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
+      return;
+    }
+    float centrality = checkCentFT0M ? collision.centFT0M() : collision.centFT0C();
+    if (cutCentrality && (centrality < centralityMin || centralityMax < centrality)) {
       return;
     }
     for (const auto& jetMCDEventWise : jetsMCDEventWise) {
