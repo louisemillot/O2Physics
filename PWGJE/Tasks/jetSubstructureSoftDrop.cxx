@@ -1383,7 +1383,9 @@ struct JetSubstructureSoftDrop {
           break;
         }
       }
+      LOGF(info, "test1");
       if (hasHighPtConstituent) {
+        LOGF(info, "test2");
         fillMatchedHistogramsEventWise<ChargedMCDEventWiseMatchedtoMCDWeighted::iterator, ChargedMCDMatchedJetsWeighted, ChargedMCPMatchedJetsWeighted>(jetMCDEventWise, jetsMCP, thetagMCDEventWiseVec, thetagMCPVec, jetweight);
       }
     }
