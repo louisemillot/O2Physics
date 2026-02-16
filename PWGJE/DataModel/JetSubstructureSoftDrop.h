@@ -28,7 +28,7 @@ namespace o2::aod
 JETSPLITTING_TABLE_DEF(ChargedMCDetectorLevelEventWiseSubtracted,
                        "CDEWS",
                        chargedmcdetectorleveleventwisesubtracted,
-                       JTracks,
+                       JetTracksSub,
                        CMCDJetCOs)
 
 } // namespace o2::aod
