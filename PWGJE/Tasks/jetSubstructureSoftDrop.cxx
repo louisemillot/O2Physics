@@ -452,6 +452,7 @@ struct JetSubstructureSoftDrop {
                                       const std::vector<std::pair<float, float>>& thetagMCPVec,
                                       float weight = 1.0)
   {
+    LOGF(info, "entering fillMatchedHistogramsEventWise");
     float pTHat = 10. / (std::pow(weight, 1.0 / pTHatExponent));
     if (jetMCDEventWise.pt() > pTHatMaxMCD * pTHat || pTHat < pTHatAbsoluteMin) {
       return;
@@ -475,7 +476,7 @@ struct JetSubstructureSoftDrop {
                         if (ptMCP == jetMCP.pt()) {
                           registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_norange_eventwise"), thetagMCDEventWise, thetagMCP, weight);
                           registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_norange_eventwise"), jetMCDEventWise.pt(), jetMCP.pt(), thetagMCDEventWise, thetagMCP, weight);
-                          LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCDEventWise, ptMCDEventWise, thetagMCP, ptMCP);
+                          // LOGF(info, "thetagMCD = %.4f, ptMCD = %.4f, thetagMCP = %.4f, ptMCP = %.4f", thetagMCDEventWise, ptMCDEventWise, thetagMCP, ptMCP);
                           if (ptMCP >= ptMin && ptMCP <= ptMax) {
                             registry.fill(HIST("h2_thetagMCD_vs_thetagMCP_pt_20_80_eventwise"), thetagMCDEventWise, thetagMCP, weight);
                             registry.fill(HIST("h4_ptMCD_ptMCP_thetagMCD_thetagMCP_pt_20_80_eventwise"), jetMCDEventWise.pt(), jetMCP.pt(), thetagMCDEventWise, thetagMCP, weight);
@@ -1018,6 +1019,7 @@ struct JetSubstructureSoftDrop {
                                          soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents> const& jets,
                                          aod::JetTracksSub const& tracks)
   {
+    LOGF(info, "entering processChargedJetsEventWiseSubMCD");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
@@ -1056,6 +1058,7 @@ struct JetSubstructureSoftDrop {
                                                  soa::Join<aod::ChargedMCDetectorLevelEventWiseSubtractedJets, aod::ChargedMCDetectorLevelEventWiseSubtractedJetConstituents, aod::ChargedMCDetectorLevelEventWiseSubtractedJetEventWeights> const& jets,
                                                  aod::JetTracksSub const& tracks)
   {
+    LOGF(info, "entering processChargedJetsEventWiseSubMCDWeighted");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
@@ -1211,7 +1214,7 @@ struct JetSubstructureSoftDrop {
       }
       bool hasHighPtConstituent = false;
       float jetweight = jet.eventWeight();
-      LOGF(info, "jetweight = %.8f, eventWeight = %.8f", jetweight, eventWeight);
+      // LOGF(info, "jetweight = %.8f, eventWeight = %.8f", jetweight, eventWeight);
       double pTHat = 10. / (std::pow(jetweight, 1.0 / pTHatExponent));
       registry.fill(HIST("h_jet_pt_initial_mcp"), jet.pt());
       registry.fill(HIST("h_jet_pt_initial_mcp_weighted"), jet.pt(), jetweight);
@@ -1353,6 +1356,7 @@ struct JetSubstructureSoftDrop {
                                                  ChargedMCDMatchedJetsWeighted const&,
                                                  aod::JetTracksSub const& tracks)
   {
+    LOGF(info, "entering processJetsMCDEventWiseMatchedMCPWeighted");
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
@@ -1390,7 +1394,7 @@ struct JetSubstructureSoftDrop {
   void processNumberOfMCDJetsWeighted(o2::aod::ChargedMCDetectorLevelJets const& mcdjet)
   {
     totalMCDjets += mcdjet.size();
-    LOGF(info, "====== Total MCD jets over the entire dataset = %d ======", totalMCDjets);
+    // LOGF(info, "====== Total MCD jets over the entire dataset = %d ======", totalMCDjets);
   }
   PROCESS_SWITCH(JetSubstructureSoftDrop, processNumberOfMCDJetsWeighted, "number of mcd jets weighted", false);
 };
