@@ -1036,6 +1036,7 @@ struct JetSubstructureSoftDrop {
     }
     LOGF(info, "test3");
     ///////////// leading track cut /////////////
+    LOGF(info, "Number of jets: %d", jets.size());
     for (const auto& jet : jets) {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
