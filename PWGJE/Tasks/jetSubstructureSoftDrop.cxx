@@ -15,8 +15,6 @@
 /// \brief Task to calculate soft drop jet substructure observables for charged jets, with and without event-wise background subtraction, and for both data and MC, matching to particle level for MC
 /// \author Louise Millot <louise.millot@cern.ch>
 
-#include "PWGJE/DataModel/JetSubstructureSoftDrop.h"
-
 #include "PWGJE/Core/FastJetUtilities.h"
 #include "PWGJE/Core/JetFinder.h"
 #include "PWGJE/Core/JetFindingUtilities.h"
