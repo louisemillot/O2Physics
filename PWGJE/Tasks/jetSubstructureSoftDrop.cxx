@@ -368,10 +368,10 @@ struct JetSubstructureSoftDrop {
       for (const auto& constituent : jet.template tracks_as<TTracks>()) {
         double pt = constituent.pt();
 
-        if (checkConstituentMinPt && pt >= ptLeadingTrackCut) {
+        if (checkConstituentMinPt && pt >= leadingConstituentPtMin) {
           isMinLeadingConstituent = true;
         }
-        if (checkConstituentMaxPt && pt > ptLeadingTrackCutMax) {
+        if (checkConstituentMaxPt && pt > leadingConstituentPtMax) {
           isMaxLeadingConstituent = false;
         }
       }
