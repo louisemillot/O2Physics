@@ -96,16 +96,15 @@ struct JetDsSpecSubs {
                               {"h_jet_phi", "jet #phi;#phi_{jet};entries", {HistType::kTH1F, {{80, -1.0, 7.}}}},
                               {"h_collision_counter", "# of collisions;", {HistType::kTH1F, {{200, 0., 200.}}}},
                               {"h_jet_counter", ";# of D_{S} jets;", {HistType::kTH1F, {{6, 0., 3.0}}}},
-                              {"h_ds_jet_projection", ";z^{D_{S},jet}_{||};dN/dz^{D_{S},jet}_{||}", {HistType::kTH1F, {{1000, 0., 10.}}}},
-                              {"h_ds_jet_distance_vs_projection", ";#DeltaR_{D_{S},jet};z^{D_{S},jet}_{||}", {HistType::kTH2F, {{1000, 0., 10.}, {1000, 0., 10.}}}},
-                              {"h_ds_jet_distance", ";#DeltaR_{D_{S},jet};dN/d(#DeltaR)", {HistType::kTH1F, {{1000, 0., 10.}}}},
-                              {"h_ds_jet_pt", ";p_{T,D_{S} jet};dN/dp_{T,D_{S} jet}", {HistType::kTH1F, {{200, 0., 10.}}}},
-                              {"h_ds_jet_eta", ";#eta_{T,D_{S} jet};dN/d#eta_{D_{S} jet}", {HistType::kTH1F, {{250, -5., 5.}}}},
-                              {"h_ds_jet_phi", ";#phi_{T,D_{S} jet};dN/d#phi_{D_{S} jet}", {HistType::kTH1F, {{250, -10., 10.}}}},
-                              {"h_ds_mass", ";m_{D_{S}} (GeV/c^{2});dN/dm_{D_{S}}", {HistType::kTH1F, {{1000, 0., 10.}}}},
-                              {"h_ds_eta", ";#eta_{D_{S}} (GeV/c^{2});dN/d#eta_{D_{S}}", {HistType::kTH1F, {{250, -5., 5.}}}},
-                              {"h_ds_phi", ";#phi_{D_{S}} (GeV/c^{2});dN/d#phi_{D_{S}}", {HistType::kTH1F, {{250, -10., 10.}}}}}};
-
+                              {"h_ds_jet_projection", ";z^{D_{S},jet}_{||};dN/dz^{D_{S},jet}_{||}", {HistType::kTH1F, {{1000, 0., 2.}}}},
+                              {"h_ds_jet_distance_vs_projection", ";#DeltaR_{D_{S},jet};z^{D_{S},jet}_{||}", {HistType::kTH2F, {{1000, 0., 1.}, {1000, 0., 2.}}}},
+                              {"h_ds_jet_distance", ";#DeltaR_{D_{S},jet};dN/d(#DeltaR)", {HistType::kTH1F, {{1000, 0., 1.}}}},
+                              {"h_ds_jet_pt", ";p_{T,D_{S} jet};dN/dp_{T,D_{S} jet}", {HistType::kTH1F, {{1000, 0., 100.}}}},
+                              {"h_ds_jet_eta", ";#eta_{T,D_{S} jet};dN/d#eta_{D_{S} jet}", {HistType::kTH1F, {{250, -1., 1.}}}},
+                              {"h_ds_jet_phi", ";#phi_{T,D_{S} jet};dN/d#phi_{D_{S} jet}", {HistType::kTH1F, {{250, -1., 7.}}}},
+                              {"h_ds_mass", ";m_{D_{S}} (GeV/c^{2});dN/dm_{D_{S}}", {HistType::kTH1F, {{1000, 0., 6.}}}},
+                              {"h_ds_eta", ";#eta_{D_{S}} (GeV/c^{2});dN/d#eta_{D_{S}}", {HistType::kTH1F, {{250, -1., 1.}}}},
+                              {"h_ds_phi", ";#phi_{D_{S}} (GeV/c^{2});dN/d#phi_{D_{S}}", {HistType::kTH1F, {{250, -1., 7.}}}}}};
   Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
 
   Configurable<float> jetPtMin{"jetPtMin", 5.0, "minimum jet pT cut"};
@@ -201,11 +200,19 @@ struct JetDsSpecSubs {
         registry.fill(HIST("h_ds_eta"), dsCandidate.eta());
         registry.fill(HIST("h_ds_phi"), dsCandidate.phi());
 
-        // filling table
-        distJetTable(axisDistance,
-                     jet.pt(), jet.eta(), jet.phi(), jet.tracks_as<aod::JetTracks>().size(),
-                     dsCandidate.pt(), dsCandidate.eta(), dsCandidate.phi(), dsCandidate.m(), dsCandidate.y(), dsCandidate.mlScores()[0], dsCandidate.mlScores()[1], dsCandidate.mlScores()[2]);
+        // Retrieve ML scores safely
+        auto scores = dsCandidate.mlScores();
 
+        float s0 = (scores.size() > 0) ? scores[0] : -999.f;
+        float s1 = (scores.size() > 1) ? scores[1] : -999.f;
+        float s2 = (scores.size() > 2) ? scores[2] : -999.f;
+
+        distJetTable(axisDistance,
+                     jet.pt(), jet.eta(), jet.phi(),
+                     static_cast<int>(jet.tracks_as<aod::JetTracks>().size()),
+                     dsCandidate.pt(), dsCandidate.eta(), dsCandidate.phi(),
+                     dsCandidate.m(), dsCandidate.y(),
+                     s0, s1, s2);
         break; // get out of candidates' loop after first HF particle is found in jet
       } // end of DS candidates loop
 
