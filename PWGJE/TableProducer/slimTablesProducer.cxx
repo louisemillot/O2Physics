@@ -97,9 +97,10 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processData, "process collisions and tracks for Data and MCD", false);
 
-  void processMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
-                  soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs> const&, // join the weight
-                  soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks)
+  void processMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision
+                  // soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs> const&, // join the weight
+                  // soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks
+  )
   {
     // float eventWeight = collision.mcCollision_as<soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs>>().weight();
     // histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
@@ -121,9 +122,10 @@ struct SlimTablesProducer {
   }
   PROCESS_SWITCH(SlimTablesProducer, processMCD, "process collisions and tracks for MCD", false);
 
-  void processMCP(soa::Filtered<o2::aod::JetMcCollisions>::iterator const& mcCollision,
-                  soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
-                  soa::Filtered<aod::JetParticles> const& particles)
+  void processMCP(soa::Filtered<o2::aod::JetMcCollisions>::iterator const& mcCollision
+                  // soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
+                  // soa::Filtered<aod::JetParticles> const& particles
+  )
   {
     // float eventWeight = mcCollision.weight();
     // histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeight);
