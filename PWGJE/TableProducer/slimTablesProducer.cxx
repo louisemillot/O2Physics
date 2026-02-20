@@ -101,15 +101,15 @@ struct SlimTablesProducer {
                   soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs> const&, // join the weight
                   soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks)
   {
-    float eventWeight = collision.mcCollision_as<soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs>>().weight();
-    histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
-    if (!collision.has_mcCollision()) {
-      return;
-    }
-    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
-      return;
-    }
-    histos.fill(HIST("h_mcCollMCD_counts_weight"), 1.5, eventWeight);
+    // float eventWeight = collision.mcCollision_as<soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs>>().weight();
+    // histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
+    // if (!collision.has_mcCollision()) {
+    //   return;
+    // }
+    // if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+    //   return;
+    // }
+    // histos.fill(HIST("h_mcCollMCD_counts_weight"), 1.5, eventWeight);
     // auto slimCollIndex = slimCollisions.lastIndex();
     slimCollisions(collision.posZ());
     // for (const auto& track : tracks) {
@@ -125,27 +125,27 @@ struct SlimTablesProducer {
                   soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
                   soa::Filtered<aod::JetParticles> const& particles)
   {
-    float eventWeight = mcCollision.weight();
-    histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeight);
-    if (std::abs(mcCollision.posZ()) > vertexZCut) {
-      return;
-    }
-    histos.fill(HIST("h_mcCollMCP_counts_weight"), 1.5, eventWeight);
-    if (collisions.size() < 1) {
-      return;
-    }
-    histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeight);
-    bool hasSel8Coll = false;
-    for (auto const& collision : collisions) {
-      if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
-        hasSel8Coll = true;
-      }
-    }
-    if (!hasSel8Coll) {
-      return;
-    }
-    histos.fill(HIST("h_mcCollMCP_counts_weight"), 3.5, eventWeight);
-    LOGF(info, "Processing MCP for mcCollision with posZ = %f, event weight = %f", mcCollision.posZ(), eventWeight);
+    // float eventWeight = mcCollision.weight();
+    // histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeight);
+    // if (std::abs(mcCollision.posZ()) > vertexZCut) {
+    //   return;
+    // }
+    // histos.fill(HIST("h_mcCollMCP_counts_weight"), 1.5, eventWeight);
+    // if (collisions.size() < 1) {
+    //   return;
+    // }
+    // histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeight);
+    // bool hasSel8Coll = false;
+    // for (auto const& collision : collisions) {
+    //   if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+    //     hasSel8Coll = true;
+    //   }
+    // }
+    // if (!hasSel8Coll) {
+    //   return;
+    // }
+    // histos.fill(HIST("h_mcCollMCP_counts_weight"), 3.5, eventWeight);
+    // LOGF(info, "Processing MCP for mcCollision with posZ = %f, event weight = %f", mcCollision.posZ(), eventWeight);
     // auto slimMcCollIndex = slimMcCollisions.lastIndex();
     slimMcCollisions(mcCollision.posZ());
     // for (const auto& particle : particles) {
