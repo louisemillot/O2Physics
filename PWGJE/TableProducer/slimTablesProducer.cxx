@@ -65,8 +65,8 @@ struct SlimTablesProducer {
 
   Produces<o2::aod::SlimCollisions> slimCollisions;
   Produces<o2::aod::SlimMcCollisions> slimMcCollisions;
-  Produces<o2::aod::SlimTracks> slimTracks;
-  Produces<o2::aod::SlimParticles> slimParticles;
+  // Produces<o2::aod::SlimTracks> slimTracks;
+  // Produces<o2::aod::SlimParticles> slimParticles;
 
   Filter trackFilter = (aod::jtrack::pt >= minPt && aod::jtrack::pt < maxPt && aod::jtrack::eta > minEta && aod::jtrack::eta < maxEta);
   Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
@@ -85,14 +85,14 @@ struct SlimTablesProducer {
     int nTracksThisCollision = 0;
     int collisionId = collision.globalIndex();
     slimCollisions(collision.posZ());
-    auto slimCollIndex = slimCollisions.lastIndex();
-    for (const auto& track : tracks) {
-      nTracksThisCollision++;
-      float mass = jetderiveddatautilities::mPion;
-      float p = track.pt() * std::cosh(track.eta());
-      float energy = std::sqrt(p * p + mass * mass);
-      slimTracks(slimCollIndex, track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy);
-    }
+    // auto slimCollIndex = slimCollisions.lastIndex();
+    // for (const auto& track : tracks) {
+    //   nTracksThisCollision++;
+    //   float mass = jetderiveddatautilities::mPion;
+    //   float p = track.pt() * std::cosh(track.eta());
+    //   float energy = std::sqrt(p * p + mass * mass);
+    //   slimTracks(slimCollIndex, track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy);
+    // }
     LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
   }
   PROCESS_SWITCH(SlimTablesProducer, processData, "process collisions and tracks for Data and MCD", false);
@@ -110,14 +110,14 @@ struct SlimTablesProducer {
       return;
     }
     histos.fill(HIST("h_mcCollMCD_counts_weight"), 1.5, eventWeight);
-    auto slimCollIndex = slimCollisions.lastIndex();
+    // auto slimCollIndex = slimCollisions.lastIndex();
     slimCollisions(collision.posZ());
-    for (const auto& track : tracks) {
-      float mass = jetderiveddatautilities::mPion;
-      float p = track.pt() * std::cosh(track.eta());
-      float energy = std::sqrt(p * p + mass * mass);
-      slimTracks(slimCollIndex, track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy);
-    }
+    // for (const auto& track : tracks) {
+    //   float mass = jetderiveddatautilities::mPion;
+    //   float p = track.pt() * std::cosh(track.eta());
+    //   float energy = std::sqrt(p * p + mass * mass);
+    //   slimTracks(slimCollIndex, track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy);
+    // }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMCD, "process collisions and tracks for MCD", false);
 
@@ -146,11 +146,11 @@ struct SlimTablesProducer {
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 3.5, eventWeight);
     LOGF(info, "Processing MCP for mcCollision with posZ = %f, event weight = %f", mcCollision.posZ(), eventWeight);
-    auto slimMcCollIndex = slimMcCollisions.lastIndex();
+    // auto slimMcCollIndex = slimMcCollisions.lastIndex();
     slimMcCollisions(mcCollision.posZ());
-    for (const auto& particle : particles) {
-      slimParticles(slimMcCollIndex, particle.pt(), particle.eta(), particle.phi(), particle.px(), particle.py(), particle.pz());
-    }
+    // for (const auto& particle : particles) {
+    //   slimParticles(slimMcCollIndex, particle.pt(), particle.eta(), particle.phi(), particle.px(), particle.py(), particle.pz());
+    // }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMCP, "process mccollisions and mcparticles for MCD", false);
 };
