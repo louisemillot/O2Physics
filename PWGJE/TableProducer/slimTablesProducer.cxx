@@ -145,6 +145,7 @@ struct SlimTablesProducer {
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 3.5, eventWeight);
+    LOGF(info, "Processing MCP for mcCollision with posZ = %f, event weight = %f", mcCollision.posZ(), eventWeight);
     slimMcCollisions(mcCollision.posZ());
     for (const auto& particle : particles) {
       slimParticles(slimMcCollisions.lastIndex(), particle.pt(), particle.eta(), particle.phi(), particle.px(), particle.py(), particle.pz());
