@@ -45,6 +45,9 @@ using namespace o2::framework::expressions;
 struct SlimTablesProducer {
 
   HistogramRegistry histos{"histos", {}, OutputObjHandlingPolicy::AnalysisObject};
+  Configurable<bool> checkCentFT0M{"checkCentFT0M", false, "0: centFT0C as default, 1: use centFT0M estimator"};
+  Configurable<float> centralityMin{"centralityMin", -999, ""};
+  Configurable<float> centralityMax{"centralityMax", 999, ""};
   Configurable<float> minPt{"minPt", 0.15, "min pT to save"};
   Configurable<float> maxPt{"maxPt", 200.0, "max pT to save"};
   Configurable<float> minEta{"minEta", -0.9, "min eta to save"};
@@ -69,8 +72,10 @@ struct SlimTablesProducer {
   Produces<o2::aod::SlimParticles> slimParticles;
 
   Filter trackFilter = (aod::jtrack::pt >= minPt && aod::jtrack::pt < maxPt && aod::jtrack::eta > minEta && aod::jtrack::eta < maxEta);
-  Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
-  Filter mcCollisionFilter = (nabs(aod::jmccollision::posZ) < vertexZCut);
+  Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut &&
+                      (checkCentFT0M ? aod::jcollision::centFT0M : aod::jcollision::centFT0C) >= centralityMin &&
+                      (checkCentFT0M ? aod::jcollision::centFT0M : aod::jcollision::centFT0C) < centralityMax);
+  Filter mcCollisionFilter = (nabs(aod::jmccollision::posZ) < vertexZCut && aod::jmccollision::centFT0M >= centralityMin && aod::jmccollision::centFT0M < centralityMax); // no centFT0C for mccollisions, using centFT0M for both
   Filter particleCuts = (aod::jmcparticle::pt >= minPt && aod::jmcparticle::pt < maxPt && aod::jmcparticle::eta > minEta && aod::jmcparticle::eta < maxEta);
 
   void processData(soa::Filtered<o2::aod::JetCollisions>::iterator const& collision,
@@ -137,7 +142,7 @@ struct SlimTablesProducer {
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeight);
     bool hasSel8Coll = false;
     for (auto const& collision : collisions) {
-      if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+      if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) { // look if the rec collision associated to the mc collision passes the event selection
         hasSel8Coll = true;
       }
     }
