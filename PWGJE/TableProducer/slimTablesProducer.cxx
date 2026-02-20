@@ -58,7 +58,8 @@ struct SlimTablesProducer {
   void init(InitContext&)
   {
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
-    histos.add("h_mcColl_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{5, 0.0, 5.0}}});
+    histos.add("h_mcCollMCD_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{5, 0.0, 5.0}}});
+    histos.add("h_mcCollMCP_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{5, 0.0, 5.0}}});
     eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
   }
 
@@ -101,14 +102,14 @@ struct SlimTablesProducer {
                   soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks)
   {
     float eventWeight = collision.mcCollision_as<soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs>>().weight();
-    histos.fill(HIST("h_mcColl_counts_weight"), 0.5, eventWeight);
+    histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
     if (!collision.has_mcCollision()) {
       return;
     }
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
       return;
     }
-    histos.fill(HIST("h_mcColl_counts_weight"), 1.5, eventWeight);
+    histos.fill(HIST("h_mcCollMCD_counts_weight"), 1.5, eventWeight);
     auto slimCollIndex = slimCollisions.lastIndex();
     slimCollisions(collision.posZ());
     for (const auto& track : tracks) {
@@ -125,7 +126,7 @@ struct SlimTablesProducer {
                   soa::Filtered<aod::JetParticles> const& particles)
   {
     float eventWeight = mcCollision.weight();
-    histos.fill(HIST("h_mcColl_counts_weight"), 0.5, eventWeight);
+    histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeight);
     if (std::abs(mcCollision.posZ()) > vertexZCut) {
       return;
     }
@@ -133,7 +134,7 @@ struct SlimTablesProducer {
     if (collisions.size() < 1) {
       return;
     }
-    histos.fill(HIST("h_mcColl_counts_weight"), 2.5, eventWeight);
+    histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeight);
     bool hasSel8Coll = false;
     for (auto const& collision : collisions) {
       if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
@@ -143,7 +144,7 @@ struct SlimTablesProducer {
     if (!hasSel8Coll) {
       return;
     }
-    histos.fill(HIST("h_mcColl_counts_weight"), 3.5, eventWeight);
+    histos.fill(HIST("h_mcCollMCP_counts_weight"), 3.5, eventWeight);
     slimMcCollisions(mcCollision.posZ());
     for (const auto& particle : particles) {
       slimParticles(slimMcCollisions.lastIndex(), particle.pt(), particle.eta(), particle.phi(), particle.px(), particle.py(), particle.pz());
