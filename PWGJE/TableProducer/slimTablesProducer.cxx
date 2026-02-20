@@ -146,9 +146,10 @@ struct SlimTablesProducer {
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 3.5, eventWeight);
     LOGF(info, "Processing MCP for mcCollision with posZ = %f, event weight = %f", mcCollision.posZ(), eventWeight);
+    auto slimMcCollIndex = slimMcCollisions.lastIndex();
     slimMcCollisions(mcCollision.posZ());
     for (const auto& particle : particles) {
-      slimParticles(slimMcCollisions.lastIndex(), particle.pt(), particle.eta(), particle.phi(), particle.px(), particle.py(), particle.pz());
+      slimParticles(slimMcCollIndex, particle.pt(), particle.eta(), particle.phi(), particle.px(), particle.py(), particle.pz());
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMCP, "process mccollisions and mcparticles for MCD", false);
