@@ -57,30 +57,34 @@ struct SlimTablesProducer {
   Configurable<bool> skipMBGapEvents{"skipMBGapEvents", false, "flag to choose to reject min. bias gap events; jet-level rejection can also be applied at the jet finder level for jets only, here rejection is applied for collision and track process functions for the first time, and on jets in case it was set to false at the jet finder level"};
 
   std::vector<int> eventSelectionBits;
+  bool doSumw2 = false;
 
   void init(InitContext&)
   {
-    AxisSpec centralityAxis{1200, -10., 110., "Centrality"};
+    doSumw2 = skipMBGapEvents;
+
+    AxisSpec centralityAxis = {1200, -10., 110., "Centrality"};
 
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
-    histos.add("h2_centrality_collisions", "centrality vs collisions;Centrality;Event status", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}});
+    histos.add("h2_centrality_collisions", "event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hColl = histos.get<TH1>(HIST("h_collisions"));
     hColl->GetXaxis()->SetBinLabel(1, "All");
     hColl->GetXaxis()->SetBinLabel(2, "eventSelection");
 
     histos.add("h_mcCollMCD_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{5, 0.0, 5.0}}});
-    histos.add("h2_centrality_MCD", "centrality vs MCD collisions;Centrality;Event status", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}});
+    histos.add("h2_centrality_MCD", "mc event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hMCD = histos.get<TH1>(HIST("h_mcCollMCD_counts_weight"));
     hMCD->GetXaxis()->SetBinLabel(1, "All");
     hMCD->GetXaxis()->SetBinLabel(2, "Has MC coll");
     hMCD->GetXaxis()->SetBinLabel(3, "eventSelection");
 
     histos.add("h_mcCollMCP_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{5, 0.0, 5.0}}});
-    histos.add("h2_centrality_MCP", "centrality vs MCP collisions;Centrality;Event status", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}});
+    histos.add("h2_centrality_MCP", "mc event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hMCP = histos.get<TH1>(HIST("h_mcCollMCP_counts_weight"));
     hMCP->GetXaxis()->SetBinLabel(1, "All");
     hMCP->GetXaxis()->SetBinLabel(2, "ZVertex");
     hMCP->GetXaxis()->SetBinLabel(3, "Collision size");
+    hMCP->GetXaxis()->SetBinLabel(4, "eventSelection");
 
     eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
   }
@@ -103,24 +107,20 @@ struct SlimTablesProducer {
     histos.fill(HIST("h_collisions"), 0.5);
     float centrality = -1.0;
     checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
-    histos.fill(HIST("h2_centrality_collisions"), centrality, 0.5);
+    histos.fill(HIST("h2_centrality_collisions"), centrality, 0.5, 1.0);
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
       return;
     }
     histos.fill(HIST("h_collisions"), 1.5);
 
-    int nTracksThisCollision = 0;
-    int collisionId = collision.globalIndex();
     slimCollisions(collision.posZ());
     auto slimCollIndex = slimCollisions.lastIndex();
     for (const auto& track : tracks) {
-      nTracksThisCollision++;
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
       slimTracks(slimCollIndex, track.pt(), track.eta(), track.phi(), track.px(), track.py(), track.pz(), energy);
     }
-    LOG(info) << "Number of tracks saved for collision " << collisionId << " : " << nTracksThisCollision;
   }
   PROCESS_SWITCH(SlimTablesProducer, processData, "process collisions and tracks for Data and MCD", false);
 
@@ -133,7 +133,7 @@ struct SlimTablesProducer {
 
     float centrality = -1.0;
     checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
-    histos.fill(HIST("h2_centrality_MCD"), centrality, 0.5);
+    histos.fill(HIST("h2_centrality_MCD"), centrality, 0.5, eventWeight);
 
     if (!collision.has_mcCollision()) {
       return;
@@ -160,7 +160,7 @@ struct SlimTablesProducer {
     float eventWeight = mcCollision.weight();
     float centrality = mcCollision.centFT0M(); // checkCentFT0M ? centrality = mccollision.centFT0M() : centrality = mccollision.centFT0C();
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeight);
-    histos.fill(HIST("h2_centrality_MCP"), centrality, 0.5);
+    histos.fill(HIST("h2_centrality_MCP"), centrality, 0.5, eventWeight);
     if (std::abs(mcCollision.posZ()) > vertexZCut) {
       return;
     }
