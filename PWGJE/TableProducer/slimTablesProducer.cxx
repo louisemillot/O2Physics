@@ -61,7 +61,7 @@ struct SlimTablesProducer {
 
   void init(InitContext&)
   {
-    doSumw2 = skipMBGapEvents;
+    doSumw2 = skipMBGapEvents; // true or false : storage of square erros when jet-jet
 
     AxisSpec centralityAxis = {1200, -10., 110., "Centrality"};
 
@@ -75,8 +75,7 @@ struct SlimTablesProducer {
     histos.add("h2_centrality_MCD", "mc event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hMCD = histos.get<TH1>(HIST("h_mcCollMCD_counts_weight"));
     hMCD->GetXaxis()->SetBinLabel(1, "All");
-    hMCD->GetXaxis()->SetBinLabel(2, "Has MC coll");
-    hMCD->GetXaxis()->SetBinLabel(3, "eventSelection");
+    hMCD->GetXaxis()->SetBinLabel(2, "Has MC coll + eventSelection ");
 
     histos.add("h_mcCollMCP_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{5, 0.0, 5.0}}});
     histos.add("h2_centrality_MCP", "mc event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
