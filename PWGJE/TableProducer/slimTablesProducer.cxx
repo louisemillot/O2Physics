@@ -60,9 +60,28 @@ struct SlimTablesProducer {
 
   void init(InitContext&)
   {
+    AxisSpec centralityAxis{1200, -10., 110., "Centrality"};
+
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+    histos.add("h2_centrality_collisions", "centrality vs collisions;Centrality;Event status", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}});
+    auto hColl = histos.get<TH1>(HIST("h_collisions"));
+    hColl->GetXaxis()->SetBinLabel(1, "All");
+    hColl->GetXaxis()->SetBinLabel(2, "eventSelection");
+
     histos.add("h_mcCollMCD_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{5, 0.0, 5.0}}});
+    histos.add("h2_centrality_MCD", "centrality vs MCD collisions;Centrality;Event status", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}});
+    auto hMCD = histos.get<TH1>(HIST("h_mcCollMCD_counts_weight"));
+    hMCD->GetXaxis()->SetBinLabel(1, "All");
+    hMCD->GetXaxis()->SetBinLabel(2, "Has MC coll");
+    hMCD->GetXaxis()->SetBinLabel(3, "eventSelection");
+
     histos.add("h_mcCollMCP_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{5, 0.0, 5.0}}});
+    histos.add("h2_centrality_MCP", "centrality vs MCP collisions;Centrality;Event status", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}});
+    auto hMCP = histos.get<TH1>(HIST("h_mcCollMCP_counts_weight"));
+    hMCP->GetXaxis()->SetBinLabel(1, "All");
+    hMCP->GetXaxis()->SetBinLabel(2, "ZVertex");
+    hMCP->GetXaxis()->SetBinLabel(3, "Collision size");
+
     eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
   }
 
@@ -82,6 +101,9 @@ struct SlimTablesProducer {
                    soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks)
   {
     histos.fill(HIST("h_collisions"), 0.5);
+    float centrality = -1.0;
+    checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
+    histos.fill(HIST("h2_centrality_collisions"), centrality);
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
       return;
     }
@@ -108,6 +130,11 @@ struct SlimTablesProducer {
   {
     float eventWeight = collision.mcCollision_as<soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs>>().weight();
     histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
+
+    float centrality = -1.0;
+    checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
+    histos.fill(HIST("h2_centrality_MCD"), centrality, eventWeight);
+
     if (!collision.has_mcCollision()) {
       return;
     }
@@ -131,7 +158,9 @@ struct SlimTablesProducer {
                   soa::Filtered<aod::JetParticles> const& particles)
   {
     float eventWeight = mcCollision.weight();
+    float centrality = mcCollision.centFT0M(); // checkCentFT0M ? centrality = mccollision.centFT0M() : centrality = mccollision.centFT0C();
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeight);
+    histos.fill(HIST("h2_centrality_MCP"), centrality, eventWeight);
     if (std::abs(mcCollision.posZ()) > vertexZCut) {
       return;
     }
