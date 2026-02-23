@@ -103,7 +103,7 @@ struct SlimTablesProducer {
     histos.fill(HIST("h_collisions"), 0.5);
     float centrality = -1.0;
     checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
-    histos.fill(HIST("h2_centrality_collisions"), centrality);
+    histos.fill(HIST("h2_centrality_collisions"), centrality, 0.5);
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
       return;
     }
@@ -133,7 +133,7 @@ struct SlimTablesProducer {
 
     float centrality = -1.0;
     checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
-    histos.fill(HIST("h2_centrality_MCD"), centrality, eventWeight);
+    histos.fill(HIST("h2_centrality_MCD"), centrality, 0.5);
 
     if (!collision.has_mcCollision()) {
       return;
@@ -160,7 +160,7 @@ struct SlimTablesProducer {
     float eventWeight = mcCollision.weight();
     float centrality = mcCollision.centFT0M(); // checkCentFT0M ? centrality = mccollision.centFT0M() : centrality = mccollision.centFT0C();
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeight);
-    histos.fill(HIST("h2_centrality_MCP"), centrality, eventWeight);
+    histos.fill(HIST("h2_centrality_MCP"), centrality, 0.5);
     if (std::abs(mcCollision.posZ()) > vertexZCut) {
       return;
     }
