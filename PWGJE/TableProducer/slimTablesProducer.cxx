@@ -55,6 +55,7 @@ struct SlimTablesProducer {
   Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
   Configurable<std::string> eventSelections{"eventSelections", "sel8", "Event selection"};
   Configurable<bool> skipMBGapEvents{"skipMBGapEvents", false, "flag to choose to reject min. bias gap events; jet-level rejection can also be applied at the jet finder level for jets only, here rejection is applied for collision and track process functions for the first time, and on jets in case it was set to false at the jet finder level"};
+  Configurable<bool> applyRCTSelections{"applyRCTSelections", true, "decide to apply RCT selections"};
 
   std::vector<int> eventSelectionBits;
   bool doSumw2 = false;
@@ -84,6 +85,7 @@ struct SlimTablesProducer {
     hMCP->GetXaxis()->SetBinLabel(2, "ZVertex");
     hMCP->GetXaxis()->SetBinLabel(3, "Collision size");
     hMCP->GetXaxis()->SetBinLabel(4, "eventSelection");
+    hMCP->GetXaxis()->SetBinLabel(5, "eventSelectionMC");
 
     eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
   }
@@ -107,7 +109,7 @@ struct SlimTablesProducer {
     float centrality = -1.0;
     checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
     histos.fill(HIST("h2_centrality_collisions"), centrality, 0.5, 1.0);
-    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false)) {
+    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false, applyRCTSelections)) {
       return;
     }
     histos.fill(HIST("h_collisions"), 1.5);
@@ -137,7 +139,7 @@ struct SlimTablesProducer {
     if (!collision.has_mcCollision()) {
       return;
     }
-    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) {
+    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) {
       return;
     }
     histos.fill(HIST("h_mcCollMCD_counts_weight"), 1.5, eventWeight);
@@ -170,7 +172,7 @@ struct SlimTablesProducer {
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeight);
     bool hasSel8Coll = false;
     for (auto const& collision : collisions) {
-      if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents)) { // look if the rec collision associated to the mc collision passes the event selection
+      if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) { // look if the rec collision associated to the mc collision passes the event selection
         hasSel8Coll = true;
       }
     }
@@ -178,7 +180,11 @@ struct SlimTablesProducer {
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 3.5, eventWeight);
-    LOGF(info, "Processing MCP for mcCollision with posZ = %f, event weight = %f", mcCollision.posZ(), eventWeight);
+    if (!jetderiveddatautilities::selectMcCollision(mcCollision, skipMBGapEvents, applyRCTSelections)) {
+      return;
+    }
+    histos.fill(HIST("h_mcCollMCP_counts_weight"), 4.5, eventWeight);
+    // LOGF(info, "Processing MCP for mcCollision with posZ = %f, event weight = %f", mcCollision.posZ(), eventWeight);
     auto slimMcCollIndex = slimMcCollisions.lastIndex();
     slimMcCollisions(mcCollision.posZ());
     for (const auto& particle : particles) {
