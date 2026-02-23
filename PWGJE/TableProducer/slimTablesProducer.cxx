@@ -78,7 +78,7 @@ struct SlimTablesProducer {
     hMCD->GetXaxis()->SetBinLabel(1, "All");
     hMCD->GetXaxis()->SetBinLabel(2, "Has MC coll + eventSelection ");
 
-    histos.add("h_mcCollMCP_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{5, 0.0, 5.0}}});
+    histos.add("h_mcCollMCP_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{6, 0.0, 6.0}}});
     histos.add("h2_centrality_MCP", "mc event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hMCP = histos.get<TH1>(HIST("h_mcCollMCP_counts_weight"));
     hMCP->GetXaxis()->SetBinLabel(1, "All");
