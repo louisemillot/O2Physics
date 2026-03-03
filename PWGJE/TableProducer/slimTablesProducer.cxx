@@ -152,8 +152,7 @@ struct SlimTablesProducer {
   Filter particleCuts = (aod::jmcparticle::pt >= minPt && aod::jmcparticle::pt < maxPt && aod::jmcparticle::eta > minEta && aod::jmcparticle::eta < maxEta);
 
   void processData(soa::Filtered<o2::aod::JetCollisions>::iterator const& collision,
-                   soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::TracksDCA>> const& tracks,
-                   soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA> const&)
+                   soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras>> const& tracks)
   {
     histos.fill(HIST("h_collisions"), 0.5);
     float centrality = -1.0;
@@ -170,9 +169,9 @@ struct SlimTablesProducer {
       if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
         continue;
       }
-      if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
-        continue; // remove badly tracked
-      }
+      // if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
+      //   continue; // remove badly tracked
+      // }
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
@@ -183,8 +182,7 @@ struct SlimTablesProducer {
 
   void processMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                   soa::Filtered<aod::JetMcCollisions> const&, // join the weight
-                  soa::Filtered<soa::Join<aod::JetTracksMCD, aod::JTrackExtras>> const& tracks,
-                  soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA> const&)
+                  soa::Filtered<soa::Join<aod::JetTracksMCD, aod::JTrackExtras>> const& tracks)
   {
     float eventWeight = collision.mcCollision_as<aod::JetMcCollisions>().weight();
     histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
