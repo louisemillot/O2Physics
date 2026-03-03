@@ -166,7 +166,7 @@ struct SlimTablesProducer {
     slimCollisions(collision.posZ());
     auto slimCollIndex = slimCollisions.lastIndex();
     for (const auto& track : tracks) {
-      if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
+      if (!jetderiveddatautilities::selectTrack(track, trackSelection) && jetderiveddatautilities::selectTrackDcaZ(track, trackDcaZmax)) {
         continue;
       }
       // if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
