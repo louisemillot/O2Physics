@@ -182,7 +182,8 @@ struct SlimTablesProducer {
 
   void processMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                   soa::Filtered<aod::JetMcCollisions> const&, // join the weight
-                  soa::Filtered<soa::Join<aod::JetTracksMCD, aod::JTrackExtras>> const& tracks)
+                  soa::Filtered<soa::Join<aod::JetTracksMCD, aod::JTrackExtras, aod::JTrackPIs>> const& tracks,
+                  soa::Join<aod::Tracks, aod::TracksExtra, o2::aod::TracksDCA> const&)
   {
     float eventWeight = collision.mcCollision_as<aod::JetMcCollisions>().weight();
     histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
@@ -204,9 +205,10 @@ struct SlimTablesProducer {
       if (!jetderiveddatautilities::selectTrack(track, trackSelection) && jetderiveddatautilities::selectTrackDcaZ(track, trackDcaZmax)) {
         continue;
       }
-      // if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
-      //   continue; // remove badly tracked
-      // }
+      const auto& aodTrack = track.track_as<soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>>();
+      if (aodTrack.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
+        continue; // remove badly tracked
+      }
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
