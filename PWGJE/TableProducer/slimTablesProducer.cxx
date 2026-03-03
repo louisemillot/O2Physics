@@ -17,6 +17,9 @@
 #include "PWGJE/DataModel/Jet.h"
 #include "PWGJE/DataModel/JetReducedData.h"
 
+#include "Common/Core/TrackSelection.h"
+#include "Common/Core/TrackSelectionDefaults.h"
+
 #include <Framework/ASoA.h>
 #include <Framework/AnalysisDataModel.h>
 #include <Framework/AnalysisHelpers.h>
@@ -93,11 +96,15 @@ struct SlimTablesProducer {
   Configurable<float> minEta{"minEta", -0.9, "min eta to save"};
   Configurable<float> maxEta{"maxEta", 0.9, "max eta to save"};
   Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
+  Configurable<float> trackDcaZmax{"trackDcaZmax", 99, "additional cut on dcaZ to PV for tracks; uniformTracks in particular don't cut on this at all"};
   Configurable<std::string> eventSelections{"eventSelections", "sel8", "Event selection"};
+  Configurable<std::string> trackSelections{"trackSelections", "globalTracks", "set track selections; other option: uniformTracks"};
+  Configurable<int> minTPCNClsCrossedRows{"minTPCNClsCrossedRows", 80, "min TPC crossed rows"};
   Configurable<bool> skipMBGapEvents{"skipMBGapEvents", false, "flag to choose to reject min. bias gap events; jet-level rejection can also be applied at the jet finder level for jets only, here rejection is applied for collision and track process functions for the first time, and on jets in case it was set to false at the jet finder level"};
   Configurable<bool> applyRCTSelections{"applyRCTSelections", true, "decide to apply RCT selections"};
 
   std::vector<int> eventSelectionBits;
+  int trackSelection = -1;
   bool doSumw2 = false;
 
   void init(InitContext&)
@@ -128,6 +135,7 @@ struct SlimTablesProducer {
     hMCP->GetXaxis()->SetBinLabel(5, "eventSelectionMC");
 
     eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
+    trackSelection = jetderiveddatautilities::initialiseTrackSelection(static_cast<std::string>(trackSelections));
   }
 
   Produces<o2::aod::SlimCollisions> slimCollisions;
@@ -143,7 +151,7 @@ struct SlimTablesProducer {
   Filter particleCuts = (aod::jmcparticle::pt >= minPt && aod::jmcparticle::pt < maxPt && aod::jmcparticle::eta > minEta && aod::jmcparticle::eta < maxEta);
 
   void processData(soa::Filtered<o2::aod::JetCollisions>::iterator const& collision,
-                   soa::Filtered<aod::JetTracks> const& tracks)
+                   soa::Filtered<soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>> const& tracks)
   {
     histos.fill(HIST("h_collisions"), 0.5);
     float centrality = -1.0;
@@ -157,6 +165,12 @@ struct SlimTablesProducer {
     slimCollisions(collision.posZ());
     auto slimCollIndex = slimCollisions.lastIndex();
     for (const auto& track : tracks) {
+      if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
+        continue;
+      }
+      if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
+        continue; // remove badly tracked
+      }
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
@@ -167,7 +181,7 @@ struct SlimTablesProducer {
 
   void processMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                   soa::Filtered<aod::JetMcCollisions> const&, // join the weight
-                  soa::Filtered<aod::JetTracks> const& tracks)
+                  soa::Filtered<soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>> const& tracks)
   {
     float eventWeight = collision.mcCollision_as<aod::JetMcCollisions>().weight();
     histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
@@ -186,6 +200,12 @@ struct SlimTablesProducer {
     auto slimCollIndex = slimCollisions.lastIndex();
     slimCollisions(collision.posZ());
     for (const auto& track : tracks) {
+      if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
+        continue;
+      }
+      if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
+        continue; // remove badly tracked
+      }
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
