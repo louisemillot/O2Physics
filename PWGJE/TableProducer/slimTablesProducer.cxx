@@ -169,9 +169,9 @@ struct SlimTablesProducer {
       if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
         continue;
       }
-      // if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
-      //   continue; // remove badly tracked
-      // }
+      if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
+        continue; // remove badly tracked
+      }
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
       float energy = std::sqrt(p * p + mass * mass);
