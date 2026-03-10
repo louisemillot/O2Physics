@@ -201,8 +201,8 @@ struct SlimTablesProducer {
       return;
     }
     histos.fill(HIST("h_mcCollMCD_counts_weight"), 1.5, eventWeight);
-    auto slimCollIndex = slimCollisions.lastIndex();
     slimCollisions(collision.posZ());
+    auto slimCollIndex = slimCollisions.lastIndex();
     for (const auto& track : tracks) {
       if (!jetderiveddatautilities::selectTrack(track, trackSelection) && jetderiveddatautilities::selectTrackDcaZ(track, trackDcaZmax)) {
         continue;
@@ -249,8 +249,8 @@ struct SlimTablesProducer {
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 4.5, eventWeight);
-    auto slimMcCollIndex = slimMcCollisions.lastIndex();
     slimMcCollisions(mcCollision.posZ());
+    auto slimMcCollIndex = slimMcCollisions.lastIndex();
     for (const auto& particle : particles) {
       slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz());
     }
