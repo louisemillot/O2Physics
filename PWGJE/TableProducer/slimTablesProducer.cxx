@@ -184,7 +184,7 @@ struct SlimTablesProducer {
 
   void processMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
                   soa::Filtered<aod::JetMcCollisions> const&, // join the weight
-                  soa::Filtered<soa::Join<aod::JetTracksMCD, aod::JTrackExtras>> const& tracks,
+                  soa::Filtered<soa::Join<aod::JetTracksMCD, aod::JTrackExtras, aod::JTrackPIs>> const& tracks,
                   soa::Join<aod::Tracks, aod::TracksExtra, o2::aod::TracksDCA> const&)
   {
     float eventWeight = collision.mcCollision_as<aod::JetMcCollisions>().weight();
