@@ -207,8 +207,8 @@ struct SlimTablesProducer {
       if (!jetderiveddatautilities::selectTrack(track, trackSelection) && jetderiveddatautilities::selectTrackDcaZ(track, trackDcaZmax)) {
         continue;
       }
-      // const auto& aodTrack = track.track_as<soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>>();
-      if (track.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
+      const auto& aodTrack = track.track_as<soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>>();
+      if (aodTrack.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
         continue; // remove badly tracked
       }
       float mass = jetderiveddatautilities::mPion;
