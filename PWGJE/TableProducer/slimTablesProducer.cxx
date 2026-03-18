@@ -187,7 +187,7 @@ struct SlimTablesProducer {
                   soa::Filtered<soa::Join<aod::JetTracksMCD, aod::JTrackExtras, aod::JTrackPIs>> const& tracks,
                   soa::Join<aod::Tracks, aod::TracksExtra, o2::aod::TracksDCA> const&)
   {
-    float eventWeight = collision.mcCollision_as<soa::Join<aod::JetMcCollisions, aod::JMcCollisionPIs>>().weight();
+    float eventWeight = collision.mcCollision_as<aod::JetMcCollisions>().weight();
     histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
     float centrality = -1.0;
     checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
