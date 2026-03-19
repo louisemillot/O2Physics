@@ -22,6 +22,7 @@
 #include "Common/DataModel/TrackSelectionTables.h"
 
 #include <Framework/ASoA.h>
+// #include <Framework/O2DatabasePDGPlugin.h>
 #include <Framework/AnalysisDataModel.h>
 #include <Framework/AnalysisHelpers.h>
 #include <Framework/AnalysisTask.h>
@@ -72,13 +73,15 @@ DECLARE_SOA_COLUMN(Phi, phi, float);
 DECLARE_SOA_COLUMN(Px, px, float);
 DECLARE_SOA_COLUMN(Py, py, float);
 DECLARE_SOA_COLUMN(Pz, pz, float);
+DECLARE_SOA_COLUMN(E, e, float);
 } // namespace slimparticles
 DECLARE_SOA_TABLE(SlimParticles, "AOD", "SlimParticles",
                   o2::soa::Index<>,
                   slimparticles::SlMcCollisionId,
                   slimparticles::Px,
                   slimparticles::Py,
-                  slimparticles::Pz);
+                  slimparticles::Pz,
+                  slimparticles::E);
 using SlimParticle = SlimParticles::iterator;
 } // namespace o2::aod
 
@@ -105,6 +108,7 @@ struct SlimTablesProducer {
   Configurable<bool> applyRCTSelections{"applyRCTSelections", true, "decide to apply RCT selections"};
 
   std::vector<int> eventSelectionBits;
+  // Service<o2::framework::O2DatabasePDG> pdgDatabase;
   int trackSelection = -1;
   bool doSumw2 = false;
 
@@ -152,7 +156,7 @@ struct SlimTablesProducer {
   Filter particleCuts = (aod::jmcparticle::pt >= minPt && aod::jmcparticle::pt < maxPt && aod::jmcparticle::eta > minEta && aod::jmcparticle::eta < maxEta);
 
   void processData(soa::Filtered<o2::aod::JetCollisions>::iterator const& collision,
-                   soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackPIs>> const& tracks,
+                   soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks,
                    soa::Join<aod::Tracks, aod::TracksExtra, o2::aod::TracksDCA> const&)
   {
     histos.fill(HIST("h_collisions"), 0.5);
@@ -250,7 +254,10 @@ struct SlimTablesProducer {
     slimMcCollisions(mcCollision.posZ());
     auto slimMcCollIndex = slimMcCollisions.lastIndex();
     for (const auto& particle : particles) {
-      slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz());
+      // auto pdgParticle = pdgDatabase->GetParticle(particle.pdgCode());
+      // float massParticle = pdgParticle ? pdgParticle->Mass() : jetderiveddatautilities::mPion;
+      // float energyParticle = std::sqrt(particle.px() * particle.px() + particle.py() * particle.py() + particle.pz() * particle.pz() + massParticle * massParticle);
+      slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMCP, "process mccollisions and mcparticles for MCD", false);
