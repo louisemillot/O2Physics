@@ -155,8 +155,8 @@ struct SlimTablesProducer {
   Filter mcCollisionFilter = (nabs(aod::jmccollision::posZ) < vertexZCut && aod::jmccollision::centFT0M >= centralityMin && aod::jmccollision::centFT0M < centralityMax); // no centFT0C for mccollisions, using centFT0M for both
   Filter particleCuts = (aod::jmcparticle::pt >= minPt && aod::jmcparticle::pt < maxPt && aod::jmcparticle::eta > minEta && aod::jmcparticle::eta < maxEta);
 
-  void processData(soa::Filtered<o2::aod::JetCollisions>::iterator const& collision,
-                   soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks,
+  void processData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
+                   soa::Filtered<aod::JetTracks> const& tracks,
                    soa::Join<aod::Tracks, aod::TracksExtra, o2::aod::TracksDCA> const&)
   {
     histos.fill(HIST("h_collisions"), 0.5);
@@ -171,12 +171,8 @@ struct SlimTablesProducer {
     slimCollisions(collision.posZ());
     auto slimCollIndex = slimCollisions.lastIndex();
     for (const auto& track : tracks) {
-      if (!jetderiveddatautilities::selectTrack(track, trackSelection) && jetderiveddatautilities::selectTrackDcaZ(track, trackDcaZmax)) {
+      if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
         continue;
-      }
-      const auto& aodTrack = track.track_as<soa::Join<aod::Tracks, aod::TracksExtra, aod::TracksDCA>>();
-      if (aodTrack.tpcNClsCrossedRows() < minTPCNClsCrossedRows) {
-        continue; // remove badly tracked
       }
       float mass = jetderiveddatautilities::mPion;
       float p = track.pt() * std::cosh(track.eta());
