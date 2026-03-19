@@ -152,7 +152,7 @@ struct SlimTablesProducer {
   Filter particleCuts = (aod::jmcparticle::pt >= minPt && aod::jmcparticle::pt < maxPt && aod::jmcparticle::eta > minEta && aod::jmcparticle::eta < maxEta);
 
   void processData(soa::Filtered<o2::aod::JetCollisions>::iterator const& collision,
-                   soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackExtras, aod::JTrackPIs>> const& tracks,
+                   soa::Filtered<soa::Join<aod::JetTracks, aod::JTrackPIs>> const& tracks,
                    soa::Join<aod::Tracks, aod::TracksExtra, o2::aod::TracksDCA> const&)
   {
     histos.fill(HIST("h_collisions"), 0.5);
