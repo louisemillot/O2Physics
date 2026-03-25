@@ -287,6 +287,7 @@ struct SlimTablesProducer {
                       soa::Filtered<aod::JetParticles> const& particles)
   {
     for (auto const& collision : collisions) {
+      LOG(info) << "Processing collision with global ID " << collision.globalIndex();
       if (!collision.has_mcCollision()) {
         // on ne garde pas cette collision
         LOG(info) << "Skipping collision " << collision.globalIndex() << " (no MC collision)";
