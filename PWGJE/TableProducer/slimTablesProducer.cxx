@@ -322,6 +322,7 @@ struct SlimTablesProducer {
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
       slimMcCollisions(mcColl.posZ(), mcColl.globalIndex());
+      LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMCDTest, "process collisions and tracks for MCD", false);
