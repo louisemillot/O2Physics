@@ -244,7 +244,10 @@ struct SlimTablesProducer {
         int globalId = collision.globalIndex();
         if (recoGlobalToSlim.find(globalId) != recoGlobalToSlim.end()) { // find the globalId of collision (original AO2D) till the end
           matchedSlimCollId = recoGlobalToSlim[globalId];                // if globalId found in map -> get the corresponding slimCollId
-          LOG(info) << "MC collision → matched slim ID = " << matchedSlimCollId;
+          LOG(info) << "==== MATCH FOUND ====";
+          LOG(info) << "MC AO2D ID          = " << mcCollision.globalIndex();
+          LOG(info) << "Reco AO2D ID        = " << globalId;
+          LOG(info) << "Reco Slim ID        = " << matchedSlimCollId;
           break; // on prend le premier valide
         }
       }
@@ -262,6 +265,8 @@ struct SlimTablesProducer {
     }
     slimMcCollisions(mcCollision.posZ(), matchedSlimCollId);
     auto slimMcCollIndex = slimMcCollisions.lastIndex();
+    LOG(info) << "MC Slim ID          = " << slimMcCollIndex;
+    LOG(info) << "======================";
     for (const auto& particle : particles) {
       // auto pdgParticle = pdgDatabase->GetParticle(particle.pdgCode());
       // float massParticle = pdgParticle ? pdgParticle->Mass() : jetderiveddatautilities::mPion;
