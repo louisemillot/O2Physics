@@ -169,7 +169,8 @@ struct SlimTablesProducer {
   Filter mcCollisionFilter = (nabs(aod::jmccollision::posZ) < vertexZCut && aod::jmccollision::centFT0M >= centralityMin && aod::jmccollision::centFT0M < centralityMax); // no centFT0C for mccollisions, using centFT0M for both
   Filter particleCuts = (aod::jmcparticle::pt >= minPt && aod::jmcparticle::pt < maxPt && aod::jmcparticle::eta > minEta && aod::jmcparticle::eta < maxEta);
 
-  Preslice<aod::JetTracks> perCollisionTracks = aod::jtrack::collisionId;
+  Preslice<aod::JetTracksMCD> perCollisionTracks = aod::jtrack::collisionId;
+  Preslice<aod::JetParticles> perMcCollisionParticles = aod::jmcparticle::mcCollisionId;
 
   // void processData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
   //                  soa::Filtered<aod::JetTracks> const& tracks)
@@ -323,6 +324,10 @@ struct SlimTablesProducer {
       }
       slimMcCollisions(mcColl.posZ(), mcColl.globalIndex());
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
+      auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mcColl.globalIndex());
+      for (const auto& particle : slicedParticles) {
+        slimParticles(slimMcCollisions.lastIndex(), particle.px(), particle.py(), particle.pz(), particle.energy());
+      }
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMCDTest, "process collisions and tracks for MCD", false);
