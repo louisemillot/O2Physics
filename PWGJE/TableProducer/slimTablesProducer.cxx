@@ -172,31 +172,31 @@ struct SlimTablesProducer {
   Preslice<aod::JetTracksMCD> perCollisionTracks = aod::jtrack::collisionId;
   Preslice<aod::JetParticles> perMcCollisionParticles = aod::jmcparticle::mcCollisionId;
 
-  // void processData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
-  //                  soa::Filtered<aod::JetTracks> const& tracks)
-  // {
-  //   histos.fill(HIST("h_collisions"), 0.5);
-  //   float centrality = -1.0;
-  //   checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
-  //   histos.fill(HIST("h2_centrality_collisions"), centrality, 0.5, 1.0);
-  //   if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false, applyRCTSelections)) {
-  //     return;
-  //   }
-  //   histos.fill(HIST("h_collisions"), 1.5);
+  void processData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
+                   soa::Filtered<aod::JetTracks> const& tracks)
+  {
+    histos.fill(HIST("h_collisions"), 0.5);
+    float centrality = -1.0;
+    checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
+    histos.fill(HIST("h2_centrality_collisions"), centrality, 0.5, 1.0);
+    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, false, applyRCTSelections)) {
+      return;
+    }
+    histos.fill(HIST("h_collisions"), 1.5);
 
-  //   slimCollisions(collision.posZ());
-  //   auto slimCollIndex = slimCollisions.lastIndex();
-  //   for (const auto& track : tracks) {
-  //     if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
-  //       continue;
-  //     }
-  //     float mass = jetderiveddatautilities::mPion;
-  //     float p = track.pt() * std::cosh(track.eta());
-  //     float energy = std::sqrt(p * p + mass * mass);
-  //     slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
-  //   }
-  // }
-  // PROCESS_SWITCH(SlimTablesProducer, processData, "process collisions and tracks for Data and MCD", false);
+    slimCollisions(collision.posZ(), collision.globalIndex());
+    auto slimCollIndex = slimCollisions.lastIndex();
+    for (const auto& track : tracks) {
+      if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
+        continue;
+      }
+      float mass = jetderiveddatautilities::mPion;
+      float p = track.pt() * std::cosh(track.eta());
+      float energy = std::sqrt(p * p + mass * mass);
+      slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
+    }
+  }
+  PROCESS_SWITCH(SlimTablesProducer, processData, "process collisions and tracks for Data and MCD", false);
 
   // void processMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
   //                 aod::JetMcCollisions const&, // join the weight
