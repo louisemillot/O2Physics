@@ -165,7 +165,6 @@ struct SlimTablesProducer {
   Filter particleCuts = (aod::jmcparticle::pt >= minPt && aod::jmcparticle::pt < maxPt && aod::jmcparticle::eta > minEta && aod::jmcparticle::eta < maxEta);
 
   Preslice<aod::JetTracks> perCollisionTracks = aod::jtrack::collisionId;
-  Preslice<aod::JetMcCollisions> perMcCollision = aod::jcollision::collisionId;
 
   void processData(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                    soa::Filtered<aod::JetTracks> const& tracks)
@@ -314,10 +313,8 @@ struct SlimTablesProducer {
         float energy = std::sqrt(p * p + mass * mass);
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
-      auto slicedMcCollisions = mccollisions.sliceBy(perMcCollision, collision.globalIndex());
-      for (auto const& mcColl : slicedMcCollisions) {
-        LOG(info) << "MC collision global ID = " << mcColl.globalIndex() << "coll global ID = " << collision.globalIndex();
-      }
+      auto mcColl = collision.mcCollision();
+      LOG(info) << "MC collision global ID = " << mcColl.globalIndex() << "coll global ID = " << collision.globalIndex();
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMCDTest, "process collisions and tracks for MCD", false);
