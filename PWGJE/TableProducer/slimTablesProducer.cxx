@@ -316,7 +316,7 @@ struct SlimTablesProducer {
       }
       auto slicedMcCollisions = mccollisions.sliceBy(perMcCollision, collision.globalIndex());
       for (auto const& mcColl : slicedMcCollisions) {
-        LOG(info) << "MC collision global ID = " << mcColl.globalIndex() << "coll global ID = " << collision.globalIndex() :
+        LOG(info) << "MC collision global ID = " << mcColl.globalIndex() << "coll global ID = " << collision.globalIndex();
       }
     }
   }
