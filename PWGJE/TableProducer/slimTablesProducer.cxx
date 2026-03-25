@@ -33,6 +33,7 @@
 #include <Rtypes.h>
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace o2::aod
@@ -41,9 +42,14 @@ DECLARE_SOA_TABLE(SlimCollisions, "AOD", "SlimCollisions",
                   o2::soa::Index<>,
                   o2::aod::collision::PosZ);
 using SlimCollision = SlimCollisions::iterator;
+namespace slmccollisions
+{
+DECLARE_SOA_COLUMN(RecoCollisionId, recoCollisionId, int);
+}
 DECLARE_SOA_TABLE(SlMcCollisions, "AOD", "SlMcCollisions",
                   o2::soa::Index<>,
-                  o2::aod::mccollision::PosZ);
+                  o2::aod::mccollision::PosZ,
+                  slmccollisions::RecoCollisionId);
 using SlMcCollision = SlMcCollisions::iterator;
 namespace slimtracks
 {
@@ -108,6 +114,7 @@ struct SlimTablesProducer {
   Configurable<bool> applyRCTSelections{"applyRCTSelections", true, "decide to apply RCT selections"};
 
   std::vector<int> eventSelectionBits;
+  std::unordered_map<int, int> recoGlobalToSlim;
   // Service<o2::framework::O2DatabasePDG> pdgDatabase;
   int trackSelection = -1;
   bool doSumw2 = false;
@@ -199,6 +206,7 @@ struct SlimTablesProducer {
     histos.fill(HIST("h_mcCollMCD_counts_weight"), 1.5, eventWeight);
     slimCollisions(collision.posZ());
     auto slimCollIndex = slimCollisions.lastIndex();
+    recoGlobalToSlim[collision.globalIndex()] = slimCollIndex;
     for (const auto& track : tracks) {
       if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
         continue;
@@ -212,13 +220,14 @@ struct SlimTablesProducer {
   PROCESS_SWITCH(SlimTablesProducer, processMCD, "process collisions and tracks for MCD", false);
 
   void processMCP(soa::Filtered<o2::aod::JetMcCollisions>::iterator const& mcCollision,
-                  soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
+                  soa::SmallGroups<aod::JetCollisionsMCD> const& collisions, // SmallGroups contains and access the rec collisions associated to the mc collision
                   soa::Filtered<aod::JetParticles> const& particles)
   {
     float eventWeight = mcCollision.weight();
     float centrality = mcCollision.centFT0M(); // checkCentFT0M ? centrality = mccollision.centFT0M() : centrality = mccollision.centFT0C();
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeight);
     histos.fill(HIST("h2_centrality_MCP"), centrality, 0.5, eventWeight);
+
     if (std::abs(mcCollision.posZ()) > vertexZCut) {
       return;
     }
@@ -228,9 +237,15 @@ struct SlimTablesProducer {
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeight);
     bool hasSel8Coll = false;
+    int matchedSlimCollId = -1;
     for (auto const& collision : collisions) {
       if (jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) { // look if the rec collision associated to the mc collision passes the event selection
         hasSel8Coll = true;
+        int globalId = collision.globalIndex();
+        if (recoGlobalToSlim.find(globalId) != recoGlobalToSlim.end()) { // find the globalId of collision (original AO2D) till the end
+          matchedSlimCollId = recoGlobalToSlim[globalId];                // if globalId found in map -> get the corresponding slimCollId
+          break;                                                         // on prend le premier valide
+        }
       }
     }
     if (!hasSel8Coll) {
@@ -241,7 +256,10 @@ struct SlimTablesProducer {
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 4.5, eventWeight);
-    slimMcCollisions(mcCollision.posZ());
+    if (matchedSlimCollId < 0) {
+      return;
+    }
+    slimMcCollisions(mcCollision.posZ(), matchedSlimCollId);
     auto slimMcCollIndex = slimMcCollisions.lastIndex();
     for (const auto& particle : particles) {
       // auto pdgParticle = pdgDatabase->GetParticle(particle.pdgCode());
