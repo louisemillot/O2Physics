@@ -30,6 +30,8 @@
 #include <Framework/InitContext.h>
 #include <Framework/runDataProcessing.h>
 
+#include <fairlogger/Logger.h>
+
 #include <Rtypes.h>
 
 #include <string>
@@ -198,6 +200,7 @@ struct SlimTablesProducer {
     checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
     histos.fill(HIST("h2_centrality_MCD"), centrality, 0.5, eventWeight);
     if (!collision.has_mcCollision()) {
+      LOG(warning) << "MC collision not found for collision with global ID " << collision.globalIndex();
       return;
     }
     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) {
