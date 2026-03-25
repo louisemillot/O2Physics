@@ -244,7 +244,8 @@ struct SlimTablesProducer {
         int globalId = collision.globalIndex();
         if (recoGlobalToSlim.find(globalId) != recoGlobalToSlim.end()) { // find the globalId of collision (original AO2D) till the end
           matchedSlimCollId = recoGlobalToSlim[globalId];                // if globalId found in map -> get the corresponding slimCollId
-          break;                                                         // on prend le premier valide
+          LOG(info) << "MC collision → matched slim ID = " << matchedSlimCollId;
+          break; // on prend le premier valide
         }
       }
     }
