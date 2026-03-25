@@ -293,16 +293,14 @@ struct SlimTablesProducer {
         continue;
       }
       auto mcColl = collision.mcCollision(); // MC collision correspondant
-      if (!mcColl) {
-        LOG(warning) << "MC collision pointer null for collision " << collision.globalIndex();
-        continue;
-      }
       // ici on a collision + MC collision
       float eventWeight = mcColl.weight();
       histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) {
         continue;
       }
+      LOG(INFO) << "MC collision global ID = " << mcColl.globalIndex()
+                << " coll global ID = " << collision.globalIndex();
       slimCollisions(collision.posZ());
       auto slimCollIndex = slimCollisions.lastIndex();
       recoGlobalToSlim[collision.globalIndex()] = slimCollIndex;
