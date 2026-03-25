@@ -287,34 +287,35 @@ struct SlimTablesProducer {
                       soa::Filtered<aod::JetParticles> const& particles)
   {
     for (auto const& collision : collisions) {
-      float eventWeight = collision.mcCollision_as<aod::JetMcCollisions>().weight();
-      histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
-      float centrality = -1.0;
-      checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
-      histos.fill(HIST("h2_centrality_MCD"), centrality, 0.5, eventWeight);
       if (!collision.has_mcCollision()) {
-        LOG(warning) << "MC collision not found for collision with global ID " << collision.globalIndex();
-        return;
+        // on ne garde pas cette collision
+        LOG(info) << "Skipping collision " << collision.globalIndex() << " (no MC collision)";
+        continue;
       }
+      auto mcColl = collision.mcCollision(); // MC collision correspondant
+      if (!mcColl) {
+        LOG(warning) << "MC collision pointer null for collision " << collision.globalIndex();
+        continue;
+      }
+      // ici on a collision + MC collision
+      float eventWeight = mcColl.weight();
+      histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) {
-        return;
+        continue;
       }
-      histos.fill(HIST("h_mcCollMCD_counts_weight"), 1.5, eventWeight);
       slimCollisions(collision.posZ());
       auto slimCollIndex = slimCollisions.lastIndex();
       recoGlobalToSlim[collision.globalIndex()] = slimCollIndex;
+      // slicer les tracks
       auto slicedTracks = tracks.sliceBy(perCollisionTracks, collision.globalIndex());
       for (const auto& track : slicedTracks) {
-        if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
+        if (!jetderiveddatautilities::selectTrack(track, trackSelection))
           continue;
-        }
         float mass = jetderiveddatautilities::mPion;
         float p = track.pt() * std::cosh(track.eta());
         float energy = std::sqrt(p * p + mass * mass);
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
-      auto mcColl = collision.mcCollision();
-      LOG(info) << "MC collision global ID = " << mcColl.globalIndex() << "coll global ID = " << collision.globalIndex();
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMCDTest, "process collisions and tracks for MCD", false);
