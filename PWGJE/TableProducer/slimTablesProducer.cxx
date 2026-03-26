@@ -173,9 +173,12 @@ struct SlimTablesProducer {
       return;
     }
     histos.fill(HIST("h_collisions"), 1.5);
-
     slimCollisions(collision.posZ());
+    auto ts = collision.collisionTime();
     auto slimCollIndex = slimCollisions.lastIndex();
+    LOG(INFO) << "Collision PbPB globalindex = " << collision.globalIndex();
+    LOG(INFO) << "Collision PbPb slimIndex = " << slimCollisions.lastIndex();
+    LOG(INFO) << "Collision time PbPb = " << ts;
     for (const auto& track : tracks) {
       if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
         continue;
@@ -295,7 +298,10 @@ struct SlimTablesProducer {
                 << " coll global ID = " << collision.globalIndex();
       slimCollisions(collision.posZ());
       auto slimCollIndex = slimCollisions.lastIndex();
-      LOG(INFO) << "slimCollIndex = " << slimCollIndex;
+      auto ts = collision.collisionTime();
+      LOG(INFO) << "Collision pp globalindex = " << collision.globalIndex();
+      LOG(INFO) << "Collision pp slimIndex = " << slimCollisions.lastIndex();
+      LOG(INFO) << "Collision time pp = " << ts;
       auto slicedTracks = tracks.sliceBy(perCollisionTracks, collision.globalIndex());
       for (const auto& track : slicedTracks) {
         if (!jetderiveddatautilities::selectTrack(track, trackSelection))
