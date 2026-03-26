@@ -301,6 +301,9 @@ struct SlimTablesProducer {
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) {
         continue;
       }
+      float eventMCWeight = mcColl.weight();
+      LOG(INFO) << "eventWeight =" << eventWeight;
+      LOG(INFO) << "eventMCWeight =" << eventMCWeight;
       LOG(INFO) << "MC collision global ID = " << mcColl.globalIndex()
                 << " coll global ID = " << collision.globalIndex();
       slimCollisions(collision.posZ(), collision.collisionTime(), eventWeight);
