@@ -295,14 +295,9 @@ struct SlimTablesProducer {
     for (auto const& collision : collisions) {
       LOG(info) << "Processing collision with global ID " << collision.globalIndex();
       if (!collision.has_mcCollision()) {
-        // on ne garde pas cette collision
-        LOG(info) << "Skipping collision " << collision.globalIndex() << " (no MC collision)";
         continue;
       }
-      auto mcColl = collision.mcCollision(); // MC collision correspondant
-      // ici on a collision + MC collision
-      float eventWeight = mcColl.weight();
-      histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
+      auto mcColl = collision.mcCollision(); // corresponding MC coll
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) {
         continue;
       }
@@ -310,9 +305,7 @@ struct SlimTablesProducer {
                 << " coll global ID = " << collision.globalIndex();
       slimCollisions(collision.posZ(), collision.globalIndex());
       auto slimCollIndex = slimCollisions.lastIndex();
-      LOG(INFO) << "slimCollIndex = " << slimCollisions.lastIndex();
-      recoGlobalToSlim[collision.globalIndex()] = slimCollIndex;
-      // slicer les tracks
+      LOG(INFO) << "slimCollIndex = " << slimCollIndex;
       auto slicedTracks = tracks.sliceBy(perCollisionTracks, collision.globalIndex());
       for (const auto& track : slicedTracks) {
         if (!jetderiveddatautilities::selectTrack(track, trackSelection))
