@@ -40,10 +40,15 @@
 
 namespace o2::aod
 {
+namespace slimcollision
+{
+DECLARE_SOA_COLUMN(Weight, weight, float);
+}
 DECLARE_SOA_TABLE(SlimCollisions, "AOD", "SlimCollisions",
                   o2::soa::Index<>,
                   o2::aod::collision::PosZ,
-                  o2::aod::collision::CollisionTime);
+                  o2::aod::collision::CollisionTime,
+                  slimcollision::Weight);
 using SlimCollision = SlimCollisions::iterator;
 DECLARE_SOA_TABLE(SlMcCollisions, "AOD", "SlMcCollisions",
                   o2::soa::Index<>,
@@ -174,7 +179,7 @@ struct SlimTablesProducer {
       return;
     }
     histos.fill(HIST("h_collisions"), 1.5);
-    slimCollisions(collision.posZ(), collision.collisionTime());
+    slimCollisions(collision.posZ(), collision.collisionTime(), 1.0);
     auto ts = collision.collisionTime();
     auto slimCollIndex = slimCollisions.lastIndex();
     LOG(INFO) << "Collision PbPB globalindex = " << collision.globalIndex();
@@ -287,6 +292,7 @@ struct SlimTablesProducer {
                       soa::Filtered<aod::JetParticles> const& particles)
   {
     for (auto const& collision : collisions) {
+      float eventWeight = collision.weight();
       LOG(info) << "Processing collision with global ID " << collision.globalIndex();
       if (!collision.has_mcCollision()) {
         continue;
@@ -297,7 +303,7 @@ struct SlimTablesProducer {
       }
       LOG(INFO) << "MC collision global ID = " << mcColl.globalIndex()
                 << " coll global ID = " << collision.globalIndex();
-      slimCollisions(collision.posZ(), collision.collisionTime());
+      slimCollisions(collision.posZ(), collision.collisionTime(), eventWeight);
       auto slimCollIndex = slimCollisions.lastIndex();
       auto ts = collision.collisionTime();
       LOG(INFO) << "Collision pp globalindex = " << collision.globalIndex();
