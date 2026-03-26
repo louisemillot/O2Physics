@@ -40,23 +40,13 @@
 
 namespace o2::aod
 {
-namespace slimcollisions
-{
-DECLARE_SOA_COLUMN(GlobalCollisionId, globalCollisionId, int);
-}
 DECLARE_SOA_TABLE(SlimCollisions, "AOD", "SlimCollisions",
                   o2::soa::Index<>,
-                  o2::aod::collision::PosZ,
-                  slimcollisions::GlobalCollisionId);
+                  o2::aod::collision::PosZ);
 using SlimCollision = SlimCollisions::iterator;
-namespace slmccollisions
-{
-DECLARE_SOA_COLUMN(GlobalMcCollisionId, globalMcCollisionId, int);
-}
 DECLARE_SOA_TABLE(SlMcCollisions, "AOD", "SlMcCollisions",
                   o2::soa::Index<>,
-                  o2::aod::mccollision::PosZ,
-                  slmccollisions::GlobalMcCollisionId);
+                  o2::aod::mccollision::PosZ);
 using SlMcCollision = SlMcCollisions::iterator;
 namespace slimtracks
 {
@@ -184,7 +174,7 @@ struct SlimTablesProducer {
     }
     histos.fill(HIST("h_collisions"), 1.5);
 
-    slimCollisions(collision.posZ(), collision.globalIndex());
+    slimCollisions(collision.posZ());
     auto slimCollIndex = slimCollisions.lastIndex();
     for (const auto& track : tracks) {
       if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
@@ -303,7 +293,7 @@ struct SlimTablesProducer {
       }
       LOG(INFO) << "MC collision global ID = " << mcColl.globalIndex()
                 << " coll global ID = " << collision.globalIndex();
-      slimCollisions(collision.posZ(), collision.globalIndex());
+      slimCollisions(collision.posZ());
       auto slimCollIndex = slimCollisions.lastIndex();
       LOG(INFO) << "slimCollIndex = " << slimCollIndex;
       auto slicedTracks = tracks.sliceBy(perCollisionTracks, collision.globalIndex());
@@ -315,11 +305,12 @@ struct SlimTablesProducer {
         float energy = std::sqrt(p * p + mass * mass);
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
-      slimMcCollisions(mcColl.posZ(), mcColl.globalIndex());
+      slimMcCollisions(mcColl.posZ());
+      auto slimMcCollIndex = slimMcCollisions.lastIndex();
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
       auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mcColl.globalIndex());
       for (const auto& particle : slicedParticles) {
-        slimParticles(slimMcCollisions.lastIndex(), particle.px(), particle.py(), particle.pz(), particle.energy());
+        slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
       }
     }
   }
