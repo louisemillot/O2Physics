@@ -335,6 +335,8 @@ struct SlimTablesProducer {
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
       auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mcColl.globalIndex());
       for (const auto& particle : slicedParticles) {
+        if (!particle.isPhysicalPrimary())
+          continue;
         slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
       }
     }
