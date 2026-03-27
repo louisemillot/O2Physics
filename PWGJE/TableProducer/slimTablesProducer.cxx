@@ -50,9 +50,14 @@ DECLARE_SOA_TABLE(SlimCollisions, "AOD", "SlimCollisions",
                   o2::aod::collision::CollisionTime,
                   slimcollision::Weight);
 using SlimCollision = SlimCollisions::iterator;
+namespace slmccollision
+{
+DECLARE_SOA_COLUMN(McWeight, weight, float);
+}
 DECLARE_SOA_TABLE(SlMcCollisions, "AOD", "SlMcCollisions",
                   o2::soa::Index<>,
-                  o2::aod::mccollision::PosZ);
+                  o2::aod::mccollision::PosZ,
+                  slmccollision::McWeight);
 using SlMcCollision = SlMcCollisions::iterator;
 namespace slimtracks
 {
@@ -304,6 +309,7 @@ struct SlimTablesProducer {
       if (!jetderiveddatautilities::selectMcCollision(mcColl, skipMBGapEvents, applyRCTSelections)) {
         continue;
       }
+      // RAJOUTER FILTRE MC COLL : ZVERTEX + CENTRALITE (MAIS CENTRALITE OSEF CAR PP)
       float eventMCWeight = mcColl.weight();
       LOG(INFO) << "eventWeight =" << eventWeight;
       LOG(INFO) << "eventMCWeight =" << eventMCWeight;
@@ -324,7 +330,7 @@ struct SlimTablesProducer {
         float energy = std::sqrt(p * p + mass * mass);
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
-      slimMcCollisions(mcColl.posZ());
+      slimMcCollisions(mcColl.posZ(), eventMCWeight);
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
       auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mcColl.globalIndex());
