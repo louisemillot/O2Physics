@@ -310,7 +310,8 @@ struct SlimTablesProducer {
         continue;
       }
       if (std::abs(mcColl.posZ()) > vertexZCut)
-        continue; // RAJOUTER FILTRE MC COLL : ZVERTEX + CENTRALITE (MAIS CENTRALITE OSEF CAR PP)
+        continue;
+      // RAJOUTER FILTRE MC COLL : ZVERTEX + CENTRALITE (MAIS CENTRALITE OSEF CAR PP)
       float eventMCWeight = mcColl.weight();
       LOG(INFO) << "eventWeight =" << eventWeight;
       LOG(INFO) << "eventMCWeight =" << eventMCWeight;
