@@ -143,16 +143,14 @@ struct SlimTablesProducer {
     histos.add("h2_centrality_MCD", "mc event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hMCD = histos.get<TH1>(HIST("h_mcCollMCD_counts_weight"));
     hMCD->GetXaxis()->SetBinLabel(1, "All");
-    hMCD->GetXaxis()->SetBinLabel(2, "Has MC coll + eventSelection ");
+    hMCD->GetXaxis()->SetBinLabel(2, "eventSelectionBits + skipMBGapEvents + applyRCTSelections ");
 
     histos.add("h_mcCollMCP_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{7, 0.0, 7.0}}});
     histos.add("h2_centrality_MCP", "mc event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hMCP = histos.get<TH1>(HIST("h_mcCollMCP_counts_weight"));
     hMCP->GetXaxis()->SetBinLabel(1, "All");
-    hMCP->GetXaxis()->SetBinLabel(2, "ZVertex");
-    hMCP->GetXaxis()->SetBinLabel(3, "Collision size");
-    hMCP->GetXaxis()->SetBinLabel(4, "eventSelection");
-    hMCP->GetXaxis()->SetBinLabel(5, "eventSelectionMC");
+    hMCP->GetXaxis()->SetBinLabel(2, "mcColl + skipMBGapEvents + applyRCTSelections");
+    hMCP->GetXaxis()->SetBinLabel(3, "Zvertex");
 
     eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
     trackSelection = jetderiveddatautilities::initialiseTrackSelection(static_cast<std::string>(trackSelections));
@@ -303,15 +301,20 @@ struct SlimTablesProducer {
         continue;
       }
       auto mcColl = collision.mcCollision(); // corresponding MC coll
+      histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
+      histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeight);
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) {
         continue;
       }
       if (!jetderiveddatautilities::selectMcCollision(mcColl, skipMBGapEvents, applyRCTSelections)) {
         continue;
       }
+      histos.fill(HIST("h_mcCollMCD_counts_weight"), 1.5, eventWeight);
+      histos.fill(HIST("h_mcCollMCP_counts_weight"), 1.5, eventWeight);
       if (std::abs(mcColl.posZ()) > vertexZCut)
         continue;
-      // RAJOUTER FILTRE MC COLL : ZVERTEX + CENTRALITE (MAIS CENTRALITE OSEF CAR PP)
+      histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeight);
+
       float eventMCWeight = mcColl.weight();
       LOG(INFO) << "eventWeight =" << eventWeight;
       LOG(INFO) << "eventMCWeight =" << eventMCWeight;
@@ -323,7 +326,7 @@ struct SlimTablesProducer {
       LOG(INFO) << "Collision pp globalindex = " << collision.globalIndex();
       LOG(INFO) << "Collision pp slimIndex = " << slimCollisions.lastIndex();
       LOG(INFO) << "Collision time pp = " << ts;
-      auto slicedTracks = tracks.sliceBy(perCollisionTracks, collision.globalIndex());
+      auto slicedTracks = tracks.sliceBy(perCollisionTracks, collision.globalIndex()); // tracks associated to the rec collision
       for (const auto& track : slicedTracks) {
         if (!jetderiveddatautilities::selectTrack(track, trackSelection))
           continue;
@@ -335,7 +338,7 @@ struct SlimTablesProducer {
       slimMcCollisions(mcColl.posZ(), eventMCWeight);
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
-      auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mcColl.globalIndex());
+      auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mcColl.globalIndex()); // particles associated to the mc collision
       for (const auto& particle : slicedParticles) {
         if (!particle.isPhysicalPrimary())
           continue;
