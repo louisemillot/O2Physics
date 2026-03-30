@@ -140,13 +140,11 @@ struct SlimTablesProducer {
     hColl->GetXaxis()->SetBinLabel(2, "eventSelection");
 
     histos.add("h_mcCollMCD_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{5, 0.0, 5.0}}});
-    histos.add("h2_centrality_MCD", "mc event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hMCD = histos.get<TH1>(HIST("h_mcCollMCD_counts_weight"));
     hMCD->GetXaxis()->SetBinLabel(1, "All");
     hMCD->GetXaxis()->SetBinLabel(2, "eventSelectionBits + skipMBGapEvents + applyRCTSelections ");
 
     histos.add("h_mcCollMCP_counts_weight", "MC event status;event status;weighted entries", {HistType::kTH1F, {{7, 0.0, 7.0}}});
-    histos.add("h2_centrality_MCP", "mc event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hMCP = histos.get<TH1>(HIST("h_mcCollMCP_counts_weight"));
     hMCP->GetXaxis()->SetBinLabel(1, "All");
     hMCP->GetXaxis()->SetBinLabel(2, "mcColl + skipMBGapEvents + applyRCTSelections");
@@ -198,7 +196,7 @@ struct SlimTablesProducer {
       slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
     }
   }
-  PROCESS_SWITCH(SlimTablesProducer, processData, "process collisions and tracks for Data and MCD", false);
+  PROCESS_SWITCH(SlimTablesProducer, processData, "process collisions and tracks for data", false);
 
   // void processMCD(soa::Filtered<aod::JetCollisionsMCD>::iterator const& collision,
   //                 aod::JetMcCollisions const&, // join the weight
@@ -289,10 +287,10 @@ struct SlimTablesProducer {
   // }
   // PROCESS_SWITCH(SlimTablesProducer, processMCP, "process mccollisions and mcparticles for MCD", false);
 
-  void processMCDTest(soa::Filtered<aod::JetCollisionsMCD> const& collisions,
-                      aod::JetMcCollisions const&, // join the weight
-                      soa::Filtered<aod::JetTracksMCD> const& tracks,
-                      soa::Filtered<aod::JetParticles> const& particles)
+  void processMC(soa::Filtered<aod::JetCollisionsMCD> const& collisions,
+                 aod::JetMcCollisions const&, // join the weight
+                 soa::Filtered<aod::JetTracksMCD> const& tracks,
+                 soa::Filtered<aod::JetParticles> const& particles)
   {
     for (auto const& collision : collisions) {
       float eventWeight = collision.weight();
@@ -346,7 +344,7 @@ struct SlimTablesProducer {
       }
     }
   }
-  PROCESS_SWITCH(SlimTablesProducer, processMCDTest, "process collisions and tracks for MCD", false);
+  PROCESS_SWITCH(SlimTablesProducer, processMC, "process collisions & tracks, MCcollisions & particles for MC", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
