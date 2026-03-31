@@ -1189,6 +1189,8 @@ struct JetSpectraCharged {
         registry.fill(HIST("h_pt_particles"), jetConstituent.pt(), eventWeight);
       }
       for (auto const& particle : particles) {
+        if (!particle.isPhysicalPrimary())
+          continue;
         registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
       }
       fillMCPHistograms(jet, eventWeight);
