@@ -195,6 +195,7 @@ struct JetSpectraCharged {
       registry.add("h3_jet_pt_jet_eta_jet_phi_part", "part jet pt vs. eta vs. phi", {HistType::kTH3F, {jetPtAxis, jetEtaAxis, phiAxis}}, doSumw2);
       if (doprocessSpectraMCPWeighted) {
         registry.add("h2_jet_ptcut_part", "p_{T} cut;p_{T,jet}^{part} (GeV/#it{c});N;entries", {HistType::kTH2F, {{300, 0, 300}, {20, 0, 5}}}, doSumw2);
+        registry.add("h_pt_particles", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
       }
     }
 
@@ -1182,6 +1183,9 @@ struct JetSpectraCharged {
         if (jet.pt() < N * 0.25 * pTHat && jet.r() == round(selectedJetsRadius * 100.0f)) {
           registry.fill(HIST("h2_jet_ptcut_part"), jet.pt(), N * 0.25, eventWeight);
         }
+      }
+      for (auto& jetConstituent : jet.template tracks_as<aod::JetParticles>()) {
+        registry.fill(HIST("h_pt_particles"), jetConstituent.pt(), eventWeight);
       }
       fillMCPHistograms(jet, eventWeight);
     }
