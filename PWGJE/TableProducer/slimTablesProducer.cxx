@@ -134,6 +134,7 @@ struct SlimTablesProducer {
     AxisSpec centralityAxis = {1200, -10., 110., "Centrality"};
 
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+    histos.add("h_pt_particles", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
     histos.add("h2_centrality_collisions", "event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hColl = histos.get<TH1>(HIST("h_collisions"));
     hColl->GetXaxis()->SetBinLabel(1, "All");
@@ -341,6 +342,7 @@ struct SlimTablesProducer {
       for (const auto& particle : slicedParticles) {
         if (!particle.isPhysicalPrimary())
           continue;
+        histos.fill(HIST("h_pt_particles"), particle.pt(), eventMCWeight);
         slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
       }
     }
