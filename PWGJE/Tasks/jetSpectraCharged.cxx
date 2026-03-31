@@ -194,6 +194,7 @@ struct JetSpectraCharged {
       if (doprocessSpectraMCPWeighted) {
         registry.add("h2_jet_ptcut_part", "p_{T} cut;p_{T,jet}^{part} (GeV/#it{c});N;entries", {HistType::kTH2F, {{300, 0, 300}, {20, 0, 5}}}, doSumw2);
         registry.add("h_pt_particles", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
+        registry.add("h_pt_particles_v2", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
       }
     }
 
@@ -1117,7 +1118,7 @@ struct JetSpectraCharged {
   void processSpectraMCPWeighted(soa::Filtered<aod::JetMcCollisions>::iterator const& mccollision,
                                  soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
                                  soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents> const& jets,
-                                 aod::JetParticles const&)
+                                 aod::JetParticles const& particles)
   {
     bool mcLevelIsParticleLevel = true;
 
