@@ -297,6 +297,7 @@ struct SlimTablesProducer {
       LOG(info) << "Processing collision with global ID " << collision.globalIndex();
       if (!collision.has_mcCollision()) {
         continue;
+        LOG(info) << "test1 ";
       }
       auto mcColl = collision.mcCollision(); // corresponding MC coll
       histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
