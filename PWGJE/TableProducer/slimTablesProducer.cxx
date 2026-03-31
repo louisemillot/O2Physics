@@ -288,7 +288,7 @@ struct SlimTablesProducer {
   // PROCESS_SWITCH(SlimTablesProducer, processMCP, "process mccollisions and mcparticles for MCD", false);
 
   void processMC(soa::Filtered<aod::JetCollisionsMCD> const& collisions,
-                 soa::SmallGroups<aod::JetMcCollisions> const&,
+                 aod::JetMcCollisions const&, // join the weight
                  soa::Filtered<aod::JetTracksMCD> const& tracks,
                  soa::Filtered<aod::JetParticles> const& particles)
   {
