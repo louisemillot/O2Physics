@@ -279,6 +279,7 @@ struct JetSpectraCharged {
   Filter trackCuts = (aod::jtrack::pt >= trackPtMin && aod::jtrack::pt < trackPtMax && aod::jtrack::eta > trackEtaMin && aod::jtrack::eta < trackEtaMax);
   Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
   Filter mcEventCuts = (nabs(aod::jmccollision::posZ) < vertexZCut);
+  Preslice<aod::JetParticles> perMcCollisionParticles = aod::jmcparticle::mcCollisionId;
 
   template <typename TTracks, typename TJets>
   bool isAcceptedJet(TJets const& jet, bool mcLevelIsParticleLevel = false)
@@ -1189,7 +1190,8 @@ struct JetSpectraCharged {
         registry.fill(HIST("h_pt_particles"), jetConstituent.pt(), eventWeight);
       }
       fillMCPHistograms(jet, eventWeight);
-      for (auto const& particle : particles) {
+      auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mccollision.globalIndex());
+      for (auto const& particle : slicedParticles) {
         if (!particle.isPhysicalPrimary())
           continue;
         registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
