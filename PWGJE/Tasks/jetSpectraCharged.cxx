@@ -195,7 +195,6 @@ struct JetSpectraCharged {
         registry.add("h2_jet_ptcut_part", "p_{T} cut;p_{T,jet}^{part} (GeV/#it{c});N;entries", {HistType::kTH2F, {{300, 0, 300}, {20, 0, 5}}}, doSumw2);
         registry.add("h_pt_particles", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
         registry.add("h_pt_particles_v2", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
-        registry.add("h_nParticles", "N particles per event;N_{particles};counts", kTH1F, {{200, 0, 200}});
       }
     }
 
@@ -857,6 +856,7 @@ struct JetSpectraCharged {
     bool fillHistograms = false;
     bool isWeighted = true;
     float eventWeight = collision.weight();
+    static int nCollisions = 0;
     if (!applyCollisionCuts(collision, fillHistograms, isWeighted, eventWeight)) {
       return;
     }
@@ -873,6 +873,7 @@ struct JetSpectraCharged {
       }
       fillJetHistograms(jet, centrality, eventWeight, pTHat);
     }
+    LOG(info) << " MCD count = " << nCollisions;
   }
   PROCESS_SWITCH(JetSpectraCharged, processSpectraMCDWeighted, "jet finder QA mcd with weighted events", false);
 
@@ -1127,6 +1128,7 @@ struct JetSpectraCharged {
     bool fillHistograms = false;
     bool isWeighted = true;
     float eventWeight = mccollision.weight();
+    static int nMcCollisions = 0;
 
     if (!applyMCCollisionCuts(mccollision, collisions, fillHistograms, isWeighted, eventWeight)) {
       return;
@@ -1152,7 +1154,6 @@ struct JetSpectraCharged {
         continue;
       registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
     }
-    registry.fill(HIST("h_nParticles"), nParticles, eventWeight);
 
     for (auto const& jet : jets) {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
@@ -1170,6 +1171,7 @@ struct JetSpectraCharged {
       }
       fillMCPHistograms(jet, eventWeight);
     }
+    LOG(info) << " MCP count = " << nMcCollisions;
   }
   PROCESS_SWITCH(JetSpectraCharged, processSpectraMCPWeighted, "jet spectra for MC particle level weighted", false);
 

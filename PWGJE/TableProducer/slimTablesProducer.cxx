@@ -297,6 +297,8 @@ struct SlimTablesProducer {
                  soa::Filtered<aod::JetTracksMCD> const& tracks,
                  soa::Filtered<aod::JetParticles> const& particles)
   {
+    int nCollisions = 0;
+    int nMcCollisions = 0;
     for (auto const& collision : collisions) {
       float eventWeight = collision.weight();
       LOG(info) << "Processing collision with global ID " << collision.globalIndex();
@@ -324,6 +326,7 @@ struct SlimTablesProducer {
       LOG(INFO) << "eventMCWeight =" << eventMCWeight;
       LOG(INFO) << "MC collision global ID = " << mcColl.globalIndex()
                 << " coll global ID = " << collision.globalIndex();
+      nCollisions++;
       slimCollisions(collision.posZ(), collision.collisionTime(), eventWeight);
       auto slimCollIndex = slimCollisions.lastIndex();
       auto ts = collision.collisionTime();
@@ -343,6 +346,7 @@ struct SlimTablesProducer {
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
       histos.fill(HIST("h_nTracks"), nTracks, eventWeight);
+      nMcCollisions++;
       slimMcCollisions(mcColl.posZ(), eventMCWeight);
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
@@ -357,6 +361,10 @@ struct SlimTablesProducer {
       }
       histos.fill(HIST("h_nParticles"), nParticles, eventMCWeight);
     }
+    LOG(info) << "====================================";
+    LOG(info) << "Total reco collisions = " << nCollisions;
+    LOG(info) << "Total MC collisions matched = " << nMcCollisions;
+    LOG(info) << "====================================";
   }
   PROCESS_SWITCH(SlimTablesProducer, processMC, "process collisions & tracks, MCcollisions & particles for MC", false);
 };
