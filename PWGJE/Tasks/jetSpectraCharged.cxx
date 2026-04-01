@@ -183,6 +183,7 @@ struct JetSpectraCharged {
       registry.add("h2_jet_pt_jet_corr_pt_rhoareasubtracted", "jet #it{p}_{T,jet} vs. #it{p}_{T,corr}; #it{p}_{T,jet} (GeV/#it{c});  #it{p}_{T,corr} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxis, jetPtAxisRhoAreaSub}}, doSumw2);
       registry.add("h2_jet_pt_track_pt_rhoareasubtracted", "jet #it{p}_{T,jet} vs. #it{p}_{T,track}; #it{p}_{T,jet} (GeV/#it{c});  #it{p}_{T,track} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxisRhoAreaSub, trackPtAxis}}, doSumw2);
       registry.add("h3_jet_pt_jet_eta_jet_phi_rhoareasubtracted", "jet_pt_eta_phi_rhoareasubtracted", {HistType::kTH3F, {jetPtAxisRhoAreaSub, jetEtaAxis, phiAxis}}, doSumw2);
+      registry.add("h_pt_tracks", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
     }
 
     if (doprocessSpectraMCP || doprocessSpectraMCPWeighted) {
@@ -893,7 +894,7 @@ struct JetSpectraCharged {
 
   void processSpectraMCDWeighted(soa::Filtered<aod::JetCollisions>::iterator const& collision,
                                  soa::Join<aod::ChargedMCDetectorLevelJets, aod::ChargedMCDetectorLevelJetConstituents> const& jets,
-                                 aod::JetTracks const&)
+                                 aod::JetTracks const& tracks)
   {
     bool fillHistograms = false;
     bool isWeighted = true;
@@ -904,7 +905,15 @@ struct JetSpectraCharged {
 
     float centrality = -1.0;
     checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
-
+    for (auto const& track : tracks) {
+      if (!jetderiveddatautilities::selectTrack(track, trackSelection))
+        continue;
+      if (track.pt() < trackPtMin || track.pt() > trackPtMax)
+        continue;
+      if (track.eta() < trackEtaMin || track.eta() > trackEtaMax)
+        continue;
+      registry.fill(HIST("h_pt_tracks"), track.pt(), eventWeight);
+    }
     for (auto const& jet : jets) {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;

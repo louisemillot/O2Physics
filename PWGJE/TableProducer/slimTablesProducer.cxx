@@ -135,6 +135,7 @@ struct SlimTablesProducer {
 
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
     histos.add("h_pt_particles", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
+    histos.add("h_pt_tracks", "track pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
     histos.add("h2_centrality_collisions", "event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hColl = histos.get<TH1>(HIST("h_collisions"));
     hColl->GetXaxis()->SetBinLabel(1, "All");
@@ -333,6 +334,7 @@ struct SlimTablesProducer {
         float mass = jetderiveddatautilities::mPion;
         float p = track.pt() * std::cosh(track.eta());
         float energy = std::sqrt(p * p + mass * mass);
+        histos.fill(HIST("h_pt_tracks"), track.pt(), eventMCWeight);
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
       slimMcCollisions(mcColl.posZ(), eventMCWeight);
