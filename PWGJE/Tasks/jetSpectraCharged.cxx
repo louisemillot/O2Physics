@@ -1161,27 +1161,32 @@ struct JetSpectraCharged {
   void processSpectraMCPWeighted(soa::Filtered<aod::JetMcCollisions>::iterator const& mccollision,
                                  soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
                                  soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents> const& jets,
-                                 soa::Filtered<aod::JetParticles> const& particles)
+                                 aod::JetParticles const& particles)
   {
     bool mcLevelIsParticleLevel = true;
 
     bool fillHistograms = false;
     bool isWeighted = true;
     float eventWeight = mccollision.weight();
+
     if (!applyMCCollisionCuts(mccollision, collisions, fillHistograms, isWeighted, eventWeight)) {
       return;
     }
-    // for (auto const& particle : particles) {
-    //   if (!particle.isPhysicalPrimary())
-    //     continue;
-    //   registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
-    // }
+    for (auto const& particle : particles) {
+      if (!particle.isPhysicalPrimary())
+        continue;
+      if (particle.pt() < trackPtMin || particle.pt() > trackPtMax)
+        continue;
+      if (particle.eta() < trackEtaMin || particle.eta() > trackEtaMax)
+        continue;
+      registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
+    }
 
     for (auto const& jet : jets) {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
       }
-      if (!isAcceptedJet<soa::Filtered<aod::JetParticles>>(jet, mcLevelIsParticleLevel)) {
+      if (!isAcceptedJet<aod::JetParticles>(jet, mcLevelIsParticleLevel)) {
         continue;
       }
       double pTHat = 10. / (std::pow(eventWeight, 1.0 / pTHatExponent));
