@@ -1119,7 +1119,7 @@ struct JetSpectraCharged {
   void processSpectraMCPWeighted(soa::Filtered<aod::JetMcCollisions>::iterator const& mccollision,
                                  soa::SmallGroups<aod::JetCollisionsMCD> const& collisions,
                                  soa::Join<aod::ChargedMCParticleLevelJets, aod::ChargedMCParticleLevelJetConstituents> const& jets,
-                                 aod::JetParticles const& particles)
+                                 soa::Filtered<aod::JetParticles> const& particles)
   {
     bool mcLevelIsParticleLevel = true;
 
