@@ -1186,7 +1186,7 @@ struct JetSpectraCharged {
           registry.fill(HIST("h2_jet_ptcut_part"), jet.pt(), N * 0.25, eventWeight);
         }
       }
-      for (auto& jetConstituent : jet.template tracks_as<aod::JetParticles>()) {
+      for (auto& jetConstituent : jet.template tracks_as<soa::Filtered<aod::JetParticles>>()) {
         registry.fill(HIST("h_pt_particles"), jetConstituent.pt(), eventWeight);
       }
       fillMCPHistograms(jet, eventWeight);
