@@ -167,7 +167,6 @@ struct JetSpectraCharged {
       registry.add("h2_jet_pt_jet_ntracks", "jet #it{p}_{T,jet} vs. N_{jet tracks}; #it{p}_{T,jet} (GeV/#it{c}); N_{jet, tracks}", {HistType::kTH2F, {jetPtAxis, {200, -0.5, 199.5}}}, doSumw2);
       registry.add("h2_jet_pt_track_pt", "jet #it{p}_{T,jet} vs. #it{p}_{T,track}; #it{p}_{T,jet} (GeV/#it{c});  #it{p}_{T,track} (GeV/#it{c})", {HistType::kTH2F, {jetPtAxis, trackPtAxis}}, doSumw2);
       registry.add("h3_jet_pt_jet_eta_jet_phi", "jet pt vs. eta vs. phi", {HistType::kTH3F, {jetPtAxis, jetEtaAxis, phiAxis}}, doSumw2);
-      registry.add("h_pt_tracks", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
     }
 
     if (doprocessSpectraAreaSubData || doprocessSpectraAreaSubMCD || doprocessSpectraAreaSubMCDWeighted) {
@@ -196,6 +195,7 @@ struct JetSpectraCharged {
         registry.add("h2_jet_ptcut_part", "p_{T} cut;p_{T,jet}^{part} (GeV/#it{c});N;entries", {HistType::kTH2F, {{300, 0, 300}, {20, 0, 5}}}, doSumw2);
         registry.add("h_pt_particles", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
         registry.add("h_pt_particles_v2", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
+        registry.add("h_nParticles", "N particles per event;N_{particles};counts", kTH1F, {{200, 0, 200}});
       }
     }
 
@@ -863,15 +863,7 @@ struct JetSpectraCharged {
     float pTHat = collision.has_mcCollision() && collision.mcCollision().ptHard() < 999.0f ? collision.mcCollision().ptHard() : simPtRef / (std::pow(eventWeight, 1.0 / pTHatExponent));
     float centrality = -1.0;
     checkCentFT0M ? centrality = collision.centFT0M() : centrality = collision.centFT0C();
-    for (auto const& track : tracks) {
-      if (!jetderiveddatautilities::selectTrack(track, trackSelection))
-        continue;
-      if (track.pt() < trackPtMin || track.pt() > trackPtMax)
-        continue;
-      if (track.eta() < trackEtaMin || track.eta() > trackEtaMax)
-        continue;
-      registry.fill(HIST("h_pt_tracks"), track.pt(), eventWeight);
-    }
+
     for (auto const& jet : jets) {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
@@ -1160,6 +1152,7 @@ struct JetSpectraCharged {
         continue;
       registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
     }
+    registry.fill(HIST("h_nParticles"), nParticles, eventWeight);
 
     for (auto const& jet : jets) {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
