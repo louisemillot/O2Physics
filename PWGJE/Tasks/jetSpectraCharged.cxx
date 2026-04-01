@@ -279,6 +279,7 @@ struct JetSpectraCharged {
   Filter trackCuts = (aod::jtrack::pt >= trackPtMin && aod::jtrack::pt < trackPtMax && aod::jtrack::eta > trackEtaMin && aod::jtrack::eta < trackEtaMax);
   Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut);
   Filter mcEventCuts = (nabs(aod::jmccollision::posZ) < vertexZCut);
+  Filter particleCuts = (aod::jmcparticle::pt >= trackPtMin && aod::jmcparticle::pt < trackPtMax && aod::jmcparticle::eta > trackEtaMin && aod::jmcparticle::eta < trackEtaMax);
 
   template <typename TTracks, typename TJets>
   bool isAcceptedJet(TJets const& jet, bool mcLevelIsParticleLevel = false)
