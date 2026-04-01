@@ -1144,6 +1144,11 @@ struct JetSpectraCharged {
       }
       fillMCPHistograms(jet, eventWeight, pTHat);
     }
+    for (auto const& particle : particles) {
+      if (!particle.isPhysicalPrimary())
+        continue;
+      registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
+    }
   }
   PROCESS_SWITCH(JetSpectraCharged, processSpectraMCPWeighted, "jet spectra for MC particle level weighted", false);
 
