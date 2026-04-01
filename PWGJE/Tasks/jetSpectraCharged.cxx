@@ -901,6 +901,7 @@ struct JetSpectraCharged {
     bool fillHistograms = false;
     bool isWeighted = true;
     float eventWeight = collision.weight();
+    static int nCollisions = 0;
     if (!applyCollisionCuts(collision, fillHistograms, isWeighted, eventWeight)) {
       return;
     }
@@ -919,6 +920,7 @@ struct JetSpectraCharged {
       registry.fill(HIST("h_pt_tracks"), track.pt(), eventWeight);
     }
     registry.fill(HIST("h_nTracks"), nTracks, eventWeight);
+    nCollisions++;
     for (auto const& jet : jets) {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
@@ -928,6 +930,7 @@ struct JetSpectraCharged {
       }
       fillJetHistograms(jet, centrality, eventWeight);
     }
+    LOG(info) << " MCD count = " << nCollisions;
   }
   PROCESS_SWITCH(JetSpectraCharged, processSpectraMCDWeighted, "jet finder QA mcd with weighted events", false);
 
@@ -1182,6 +1185,7 @@ struct JetSpectraCharged {
     bool fillHistograms = false;
     bool isWeighted = true;
     float eventWeight = mccollision.weight();
+    static int nMcCollisions = 0;
 
     if (!applyMCCollisionCuts(mccollision, collisions, fillHistograms, isWeighted, eventWeight)) {
       return;
@@ -1198,7 +1202,7 @@ struct JetSpectraCharged {
       registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
     }
     registry.fill(HIST("h_nParticles"), nParticles, eventWeight);
-
+    nMcCollisions++;
     for (auto const& jet : jets) {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
         continue;
@@ -1215,6 +1219,7 @@ struct JetSpectraCharged {
       }
       fillMCPHistograms(jet, eventWeight);
     }
+    LOG(info) << " MCP count = " << nMcCollisions;
   }
   PROCESS_SWITCH(JetSpectraCharged, processSpectraMCPWeighted, "jet spectra for MC particle level weighted", false);
 
