@@ -1171,11 +1171,11 @@ struct JetSpectraCharged {
     if (!applyMCCollisionCuts(mccollision, collisions, fillHistograms, isWeighted, eventWeight)) {
       return;
     }
-    for (auto const& particle : particles) {
-      if (!particle.isPhysicalPrimary())
-        continue;
-      registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
-    }
+    // for (auto const& particle : particles) {
+    //   if (!particle.isPhysicalPrimary())
+    //     continue;
+    //   registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
+    // }
 
     for (auto const& jet : jets) {
       if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
