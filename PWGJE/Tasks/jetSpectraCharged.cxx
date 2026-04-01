@@ -1171,28 +1171,28 @@ struct JetSpectraCharged {
     if (!applyMCCollisionCuts(mccollision, collisions, fillHistograms, isWeighted, eventWeight)) {
       return;
     }
-
-    for (auto const& jet : jets) {
-      if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
-        continue;
-      }
-      if (!isAcceptedJet<aod::JetParticles>(jet, mcLevelIsParticleLevel)) {
-        continue;
-      }
-      double pTHat = 10. / (std::pow(eventWeight, 1.0 / pTHatExponent));
-      int Nmax = 21;
-      for (int N = 1; N < Nmax; N++) {
-        if (jet.pt() < N * 0.25 * pTHat && jet.r() == round(selectedJetsRadius * 100.0f)) {
-          registry.fill(HIST("h2_jet_ptcut_part"), jet.pt(), N * 0.25, eventWeight);
-        }
-      }
-      fillMCPHistograms(jet, eventWeight);
-    }
     for (auto const& particle : particles) {
       if (!particle.isPhysicalPrimary())
         continue;
       registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
     }
+
+    // for (auto const& jet : jets) {
+    //   if (!jetfindingutilities::isInEtaAcceptance(jet, jetEtaMin, jetEtaMax, trackEtaMin, trackEtaMax)) {
+    //     continue;
+    //   }
+    //   if (!isAcceptedJet<aod::JetParticles>(jet, mcLevelIsParticleLevel)) {
+    //     continue;
+    //   }
+    //   double pTHat = 10. / (std::pow(eventWeight, 1.0 / pTHatExponent));
+    //   int Nmax = 21;
+    //   for (int N = 1; N < Nmax; N++) {
+    //     if (jet.pt() < N * 0.25 * pTHat && jet.r() == round(selectedJetsRadius * 100.0f)) {
+    //       registry.fill(HIST("h2_jet_ptcut_part"), jet.pt(), N * 0.25, eventWeight);
+    //     }
+    //   }
+    //   fillMCPHistograms(jet, eventWeight);
+    // }
   }
   PROCESS_SWITCH(JetSpectraCharged, processSpectraMCPWeighted, "jet spectra for MC particle level weighted", false);
 
