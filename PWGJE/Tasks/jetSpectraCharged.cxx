@@ -1188,12 +1188,12 @@ struct JetSpectraCharged {
       for (auto& jetConstituent : jet.template tracks_as<aod::JetParticles>()) {
         registry.fill(HIST("h_pt_particles"), jetConstituent.pt(), eventWeight);
       }
-      for (auto const& particle : particles) {
-        if (!particle.isPhysicalPrimary())
-          continue;
-        registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
-      }
       fillMCPHistograms(jet, eventWeight);
+    }
+    for (auto const& particle : particles) {
+      if (!particle.isPhysicalPrimary())
+        continue;
+      registry.fill(HIST("h_pt_particles_v2"), particle.pt(), eventWeight);
     }
   }
   PROCESS_SWITCH(JetSpectraCharged, processSpectraMCPWeighted, "jet spectra for MC particle level weighted", false);
