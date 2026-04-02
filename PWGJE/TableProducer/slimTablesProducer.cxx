@@ -301,7 +301,7 @@ struct SlimTablesProducer {
     int nMcCollisions = 0;
     float eventWeightMC = mccollision.weight();
     LOG(info) << "Processing mc-collision with global ID " << mccollision.globalIndex();
-    if (collisions.size() < 1) { // skip the mccollision if it has mre than 1 associated rec collision
+    if (collisions.size() != 1) { // skip the mccollision if it has mre than 1 associated rec collision
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeightMC);
