@@ -105,6 +105,9 @@ using namespace o2::framework::expressions;
 
 struct SlimTablesProducer {
 
+  int nRecoCollisions = 0;
+  int nMcCollisions = 0;
+
   HistogramRegistry histos{"histos", {}, OutputObjHandlingPolicy::AnalysisObject};
   Configurable<bool> checkCentFT0M{"checkCentFT0M", false, "0: centFT0C as default, 1: use centFT0M estimator"};
   Configurable<float> centralityMin{"centralityMin", -999, ""};
@@ -297,11 +300,10 @@ struct SlimTablesProducer {
                  soa::Filtered<aod::JetTracksMCD> const& tracks,
                  soa::Filtered<aod::JetParticles> const& particles)
   {
-    int nCollisions = 0;
-    int nMcCollisions = 0;
     float eventWeightMC = mccollision.weight();
     LOG(info) << "Processing mc-collision with global ID " << mccollision.globalIndex();
     if (collisions.size() != 1) { // skip the mccollision if it has mre than 1 associated rec collision
+      LOG(info) << "Split MC collision with global ID " << mccollision.globalIndex();
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeightMC);
@@ -312,21 +314,21 @@ struct SlimTablesProducer {
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeightMC);
-
+    nMcCollisions++;
     for (auto const& collision : collisions) {
       float eventWeight = collision.weight();
       if (!collision.has_mcCollision()) {
+        LOG(info) << "MC collision not found for collision with global ID " << collision.globalIndex();
         continue;
-        LOG(info) << "test1 ";
       }
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) {
         continue;
       }
+      nRecoCollisions++;
       LOG(INFO) << "eventWeight =" << eventWeight;
       LOG(INFO) << "eventWeightMC =" << eventWeightMC;
       LOG(INFO) << "MC collision global ID = " << mccollision.globalIndex()
                 << " coll global ID = " << collision.globalIndex();
-      nCollisions++;
       slimCollisions(collision.posZ(), collision.collisionTime(), eventWeight);
       auto slimCollIndex = slimCollisions.lastIndex();
       auto ts = collision.collisionTime();
@@ -361,9 +363,13 @@ struct SlimTablesProducer {
       }
       histos.fill(HIST("h_nParticles"), nParticles, eventWeightMC);
     }
+  }
+
+  void endOfStream(EndOfStreamContext&)
+  {
     LOG(info) << "====================================";
-    LOG(info) << "Total reco collisions = " << nCollisions;
-    LOG(info) << "Total MC collisions matched = " << nMcCollisions;
+    LOG(info) << "Total MC collisions = " << nMcCollisions;
+    LOG(info) << "Total reco collisions (matched) = " << nRecoCollisions;
     LOG(info) << "====================================";
   }
   PROCESS_SWITCH(SlimTablesProducer, processMC, "process collisions & tracks, MCcollisions & particles for MC", false);
