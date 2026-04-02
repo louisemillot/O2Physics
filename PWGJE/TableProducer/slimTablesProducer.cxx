@@ -364,6 +364,7 @@ struct SlimTablesProducer {
       histos.fill(HIST("h_nParticles"), nParticles, eventWeightMC);
     }
   }
+  PROCESS_SWITCH(SlimTablesProducer, processMC, "process collisions & tracks, MCcollisions & particles for MC", false);
 
   void endOfStream(EndOfStreamContext&)
   {
@@ -372,7 +373,6 @@ struct SlimTablesProducer {
     LOG(info) << "Total reco collisions (matched) = " << nRecoCollisions;
     LOG(info) << "====================================";
   }
-  PROCESS_SWITCH(SlimTablesProducer, processMC, "process collisions & tracks, MCcollisions & particles for MC", false);
 
   //  void processMCBackup(soa::Filtered<aod::JetCollisionsMCD> const& collisions,
   //                aod::JetMcCollisions const&, // join the weight
