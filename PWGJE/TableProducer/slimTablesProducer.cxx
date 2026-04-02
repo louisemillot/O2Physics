@@ -308,6 +308,7 @@ struct SlimTablesProducer {
     if (std::abs(mccollision.posZ()) > vertexZCut)
       histos.fill(HIST("h_mcCollMCP_counts_weight"), 1.5, eventWeightMC);
     if (!jetderiveddatautilities::selectMcCollision(mccollision, skipMBGapEvents, applyRCTSelections)) {
+      LOG(info) << "selectMcCollision failed for mc-collision with global ID " << mccollision.globalIndex();
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeightMC);
@@ -350,9 +351,9 @@ struct SlimTablesProducer {
       slimMcCollisions(mccollision.posZ(), eventWeightMC);
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
-      auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mccollision.globalIndex()); // particles associated to the mc collision
+      // auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mccollision.globalIndex()); // particles associated to the mc collision
       int nParticles = 0;
-      for (const auto& particle : slicedParticles) {
+      for (const auto& particle : particles) {
         if (!particle.isPhysicalPrimary())
           continue;
         nParticles++;
