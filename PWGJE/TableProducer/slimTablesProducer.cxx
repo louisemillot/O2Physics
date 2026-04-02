@@ -330,9 +330,8 @@ struct SlimTablesProducer {
       slimCollisions(collision.posZ(), collision.collisionTime(), eventWeight);
       auto slimCollIndex = slimCollisions.lastIndex();
       auto ts = collision.collisionTime();
-      LOG(INFO) << "Collision pp globalindex = " << collision.globalIndex();
       LOG(INFO) << "Collision pp slimIndex = " << slimCollisions.lastIndex();
-      LOG(INFO) << "Collision time pp = " << ts;
+      // LOG(INFO) << "Collision time pp = " << ts;
       auto slicedTracks = tracks.sliceBy(perCollisionTracks, collision.globalIndex()); // tracks associated to the rec collision
       int nTracks = 0;
       for (const auto& track : slicedTracks) {
