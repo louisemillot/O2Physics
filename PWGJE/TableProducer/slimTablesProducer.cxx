@@ -127,6 +127,7 @@ struct SlimTablesProducer {
   // Service<o2::framework::O2DatabasePDG> pdgDatabase;
   int trackSelection = -1;
   bool doSumw2 = false;
+  size_t totalParticles = 0;
 
   void init(InitContext&)
   {
@@ -349,7 +350,6 @@ struct SlimTablesProducer {
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
       // auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mccollision.globalIndex()); // particles associated to the mc collision
-      size_t totalParticles = 0;
       for (const auto& particle : particles) {
         if (!particle.isPhysicalPrimary())
           continue;
