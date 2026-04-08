@@ -349,16 +349,17 @@ struct SlimTablesProducer {
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
       // auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mccollision.globalIndex()); // particles associated to the mc collision
-      int nParticles = 0;
+      size_t totalParticles = 0;
       for (const auto& particle : particles) {
         if (!particle.isPhysicalPrimary())
           continue;
-        nParticles++;
+        totalParticles++;
         histos.fill(HIST("h_pt_particles"), particle.pt(), eventWeightMC);
         slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
       }
       // histos.fill(HIST("h_nParticles"), nParticles, eventWeightMC);
-      LOG(info) << "nParticles = " << nParticles;
+
+      LOG(info) << "totalParticles = " << totalParticles;
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMC, "process collisions & tracks, MCcollisions & particles for MC", false);
