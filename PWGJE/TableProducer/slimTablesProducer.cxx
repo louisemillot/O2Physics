@@ -14,8 +14,6 @@
 /// \author Millot Louise <louise.millot@cern.ch>
 
 #include "PWGJE/Core/JetDerivedDataUtilities.h"
-#include "PWGJE/Core/JetFinder.h"
-#include "PWGJE/Core/JetFindingUtilities.h"
 #include "PWGJE/DataModel/Jet.h"
 #include "PWGJE/DataModel/JetReducedData.h"
 
@@ -24,12 +22,12 @@
 #include "Common/DataModel/TrackSelectionTables.h"
 
 #include <Framework/ASoA.h>
+// #include <Framework/O2DatabasePDGPlugin.h>
 #include <Framework/AnalysisDataModel.h>
 #include <Framework/AnalysisHelpers.h>
 #include <Framework/AnalysisTask.h>
 #include <Framework/Configurable.h>
 #include <Framework/InitContext.h>
-#include <Framework/O2DatabasePDGPlugin.h>
 #include <Framework/runDataProcessing.h>
 
 #include <fairlogger/Logger.h>
@@ -123,12 +121,10 @@ struct SlimTablesProducer {
   Configurable<std::string> trackSelections{"trackSelections", "globalTracks", "set track selections; other option: uniformTracks"};
   Configurable<bool> skipMBGapEvents{"skipMBGapEvents", false, "flag to choose to reject min. bias gap events; jet-level rejection can also be applied at the jet finder level for jets only, here rejection is applied for collision and track process functions for the first time, and on jets in case it was set to false at the jet finder level"};
   Configurable<bool> applyRCTSelections{"applyRCTSelections", true, "decide to apply RCT selections"};
-  Configurable<std::string> particleSelections{"particleSelections", "PhysicalPrimary", "set particle selections"};
 
   std::vector<int> eventSelectionBits;
   std::unordered_map<int, int> recoGlobalToSlim;
-  Service<o2::framework::O2DatabasePDG> pdgDatabase;
-
+  // Service<o2::framework::O2DatabasePDG> pdgDatabase;
   int trackSelection = -1;
   bool doSumw2 = false;
   size_t totalParticles = 0;
@@ -354,21 +350,13 @@ struct SlimTablesProducer {
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
       // auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mccollision.globalIndex()); // particles associated to the mc collision
-      // for (const auto& particle : particles) {
-      //   if (!particle.isPhysicalPrimary())
-      //     continue;
-      //   totalParticles++;
-      //   histos.fill(HIST("h_pt_particles"), particle.pt(), eventWeightMC);
-      //   slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
-      // }
-      std::vector<fastjet::PseudoJet> inputParticles;
-      analyseParticles(inputParticles, particleSelection, static_cast<int>(JetType::charged), particles, pdgDatabase);
-
-      for (auto& pj : inputParticles) {
-        slimParticles(slimMcCollIndex, pj.px(), pj.py(), pj.pz(), pj.e());
+      for (const auto& particle : particles) {
+        if (!particle.isPhysicalPrimary())
+          continue;
+        totalParticles++;
+        histos.fill(HIST("h_pt_particles"), particle.pt(), eventWeightMC);
+        slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
       }
-      LOG(INFO) << "MC collision global ID = " << mccollision.globalIndex()
-                << ", nParticles accepted = " << inputParticles.size();
       // histos.fill(HIST("h_nParticles"), nParticles, eventWeightMC);
 
       LOG(info) << "totalParticles = " << totalParticles;
