@@ -27,6 +27,7 @@
 
 #include <Rtypes.h>
 
+#include <iostream>
 #include <vector>
 
 #include <math.h>
@@ -84,12 +85,15 @@ class JetFinder
 
   /// Sets the jet finding parameters
   void setParams();
-
   /// Performs jet finding
   /// \note the input particle and jet lists are passed by reference
   /// \param inputParticles vector of input particles/tracks
   /// \param jets veector of jets to be filled
   /// \return ClusterSequenceArea object needed to access constituents
+
+  // === AJOUT DE PRINT ===
+  std::cout << "Number of input particles: " << inputParticles.size() << std::endl;
+  // =====================
   fastjet::ClusterSequenceArea findJets(std::vector<fastjet::PseudoJet>& inputParticles, std::vector<fastjet::PseudoJet>& jets); // ideally find a way of passing the cluster sequence as a reeference
 
  private:
