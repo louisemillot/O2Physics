@@ -393,8 +393,8 @@ void analyseParticles(std::vector<fastjet::PseudoJet>& inputParticles, const std
     }
     fastjetutilities::fillTracks(particle, inputParticles, particle.globalIndex(), JetConstituentStatus::track, pdgParticle->Mass());
     nAccepted++;
-    totalAcceptedParticles += nAccepted;
   }
+  totalAcceptedParticles += nAccepted;
   LOG(INFO) << "total accepted particles: " << totalAcceptedParticles;
 }
 
