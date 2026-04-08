@@ -21,6 +21,7 @@
 #include <fastjet/PseudoJet.hh>
 #include <fastjet/Selector.hh>
 
+#include <cstdio>
 #include <vector>
 
 /// Sets the jet finding parameters
@@ -57,7 +58,11 @@ void JetFinder::setParams()
 /// \return ClusterSequenceArea object needed to access constituents
 fastjet::ClusterSequenceArea JetFinder::findJets(std::vector<fastjet::PseudoJet>& inputParticles, std::vector<fastjet::PseudoJet>& jets) // ideally find a way of passing the cluster sequence as a reeference
 {
+
   setParams();
+  // ======= DEBUG =======
+  printf("Number of input particles before jet finding: %zu\n", inputParticles.size());
+  // =====================
   jets.clear();
   fastjet::ClusterSequenceArea clusterSeq(inputParticles, jetDef, areaDef);
   jets = clusterSeq.inclusive_jets();

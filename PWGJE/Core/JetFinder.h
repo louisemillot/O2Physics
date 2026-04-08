@@ -91,8 +91,6 @@ class JetFinder
   /// \param jets veector of jets to be filled
   /// \return ClusterSequenceArea object needed to access constituents
 
-  // === AJOUT DE PRINT ===
-  printf("Number of input particles: %zu\n", inputParticles.size());                                                             // =====================
   fastjet::ClusterSequenceArea findJets(std::vector<fastjet::PseudoJet>& inputParticles, std::vector<fastjet::PseudoJet>& jets); // ideally find a way of passing the cluster sequence as a reeference
 
  private:
