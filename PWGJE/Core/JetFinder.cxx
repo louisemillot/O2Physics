@@ -58,11 +58,13 @@ void JetFinder::setParams()
 /// \return ClusterSequenceArea object needed to access constituents
 fastjet::ClusterSequenceArea JetFinder::findJets(std::vector<fastjet::PseudoJet>& inputParticles, std::vector<fastjet::PseudoJet>& jets) // ideally find a way of passing the cluster sequence as a reeference
 {
-
+  static size_t totalParticles = 0;
   setParams();
-  // ======= DEBUG =======
-  printf("Number of input particles before jet finding: %zu\n", inputParticles.size());
-  // =====================
+  size_t nThisEvent = inputParticles.size();
+  totalParticles += nThisEvent;
+
+  printf("Particles this event: %zu | TOTAL so far: %zu\n", nThisEvent, totalParticles);
+
   jets.clear();
   fastjet::ClusterSequenceArea clusterSeq(inputParticles, jetDef, areaDef);
   jets = clusterSeq.inclusive_jets();
