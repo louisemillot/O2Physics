@@ -138,7 +138,11 @@ struct SlimTablesProducer {
     histos.add("h_pt_particles", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
     histos.add("h_pt_tracks", "track pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
     histos.add("h_nTracks", "N tracks per event;N_{tracks};counts", kTH1F, {{200, 0, 200}});
-    histos.add("h_nParticles", "N particles per event;N_{particles};counts", kTH1F, {{200, 0, 200}});
+    histos.add("h_nParticles", "N particles per event;N_{particles};counts", kTH1F, {{4, 0, 4}});
+    auto hnPart = histos.get<TH1>(HIST("h_nParticles"));
+    hnPart->GetXaxis()->SetBinLabel(1, "All");
+    hnPart->GetXaxis()->SetBinLabel(2, "Physical Primary");
+    hnPart->GetXaxis()->SetBinLabel(3, "Remaining Cuts");
 
     histos.add("h2_centrality_collisions", "event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hColl = histos.get<TH1>(HIST("h_collisions"));
@@ -350,6 +354,7 @@ struct SlimTablesProducer {
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
       // auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mccollision.globalIndex()); // particles associated to the mc collision
       int nParticles = 0;
+      histos.fill(HIST("h_nParticles"), 0.5, eventWeightMC);
       for (const auto& particle : particles) {
         if (!particle.isPhysicalPrimary())
           continue;
@@ -357,7 +362,7 @@ struct SlimTablesProducer {
         histos.fill(HIST("h_pt_particles"), particle.pt(), eventWeightMC);
         slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
       }
-      histos.fill(HIST("h_nParticles"), nParticles, eventWeightMC);
+      histos.fill(HIST("h_nParticles"), 1.5, eventWeightMC);
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMC, "process collisions & tracks, MCcollisions & particles for MC", false);
