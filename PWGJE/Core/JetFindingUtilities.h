@@ -97,12 +97,12 @@ bool isTrackSelected(T const& track, int trackSelection, const U* candidate = nu
   if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
     return false;
   }
-    if (candidate != nullptr) {
-      if (jetcandidateutilities::isDaughterTrack(track, *candidate)) {
-        return false;
-      }
+  if (candidate != nullptr) {
+    if (jetcandidateutilities::isDaughterTrack(track, *candidate)) {
+      return false;
     }
-    return true;
+  }
+  return true;
 }
 
 /**
@@ -342,6 +342,7 @@ void findJets(JetFinder& jetFinder, std::vector<fastjet::PseudoJet>& inputPartic
 template <bool checkIsDaughter, typename T, typename U>
 void analyseParticles(std::vector<fastjet::PseudoJet>& inputParticles, const std::string& particleSelection, int jetTypeParticleLevel, T const& particles, o2::framework::Service<o2::framework::O2DatabasePDG> pdgDatabase, const U* candidate = nullptr)
 {
+  int nAccepted = 0;
   for (auto& particle : particles) {
     if (particleSelection == "PhysicalPrimary" && !particle.isPhysicalPrimary()) { // CHECK : Does this exclude the HF hadron?
       continue;
@@ -390,7 +391,9 @@ void analyseParticles(std::vector<fastjet::PseudoJet>& inputParticles, const std
       }
     }
     fastjetutilities::fillTracks(particle, inputParticles, particle.globalIndex(), JetConstituentStatus::track, pdgParticle->Mass());
+    nAccepted++;
   }
+  LOG(INFO) << "analyseParticles: nAccepted = " << nAccepted;
 }
 
 template <typename T>
