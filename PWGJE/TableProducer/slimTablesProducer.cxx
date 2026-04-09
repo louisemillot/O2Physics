@@ -124,7 +124,7 @@ struct SlimTablesProducer {
 
   std::vector<int> eventSelectionBits;
   std::unordered_map<int, int> recoGlobalToSlim;
-  // Service<o2::framework::O2DatabasePDG> pdgDatabase;
+  Service<o2::framework::O2DatabasePDG> pdgDatabase;
   int trackSelection = -1;
   bool doSumw2 = false;
   size_t totalParticles = 0;
@@ -352,6 +352,12 @@ struct SlimTablesProducer {
       // auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mccollision.globalIndex()); // particles associated to the mc collision
       for (const auto& particle : particles) {
         if (!particle.isPhysicalPrimary())
+          continue;
+        if (std::isinf(particle.eta()))
+          continue;
+        auto pdgParticle = pdgDatabase->GetParticle(particle.pdgCode());
+        auto pdgCharge = pdgParticle ? std::abs(pdgParticle->Charge()) : -1.0;
+        if (pdgCharge < 3.0)
           continue;
         totalParticles++;
         histos.fill(HIST("h_pt_particles"), particle.pt(), eventWeightMC);
