@@ -114,8 +114,8 @@ bool isTrackSelected(T const& track, int trackSelection, const U* candidate = nu
  * @param candidate optional HF candidiate
  */
 
-template <typename T, typename U>
 size_t totalAcceptedTracks = 0;
+template <typename T, typename U>
 void analyseTracks(std::vector<fastjet::PseudoJet>& inputParticles, T const& tracks, int trackSelection, const U* candidate = nullptr)
 {
   int nAccepted = 0;
