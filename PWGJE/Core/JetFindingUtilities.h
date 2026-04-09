@@ -115,7 +115,7 @@ bool isTrackSelected(T const& track, int trackSelection, const U* candidate = nu
  */
 
 template <typename T, typename U>
-size_t totalAcceptedTracks = 0;
+// size_t totalAcceptedTracks = 0;
 void analyseTracks(std::vector<fastjet::PseudoJet>& inputParticles, T const& tracks, int trackSelection, const U* candidate = nullptr)
 {
   int nAccepted = 0;
@@ -125,8 +125,8 @@ void analyseTracks(std::vector<fastjet::PseudoJet>& inputParticles, T const& tra
       nAccepted++;
     }
   }
-  totalAcceptedTracks += nAccepted;
-  LOG(INFO) << "total accepted tracks: " << totalAcceptedTracks;
+  // totalAcceptedTracks += nAccepted;
+  // LOG(INFO) << "total accepted tracks: " << totalAcceptedTracks;
 }
 
 /**
