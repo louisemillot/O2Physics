@@ -115,7 +115,7 @@ bool isTrackSelected(T const& track, int trackSelection, const U* candidate = nu
  */
 
 template <typename T, typename U>
-// size_t totalAcceptedTracks = 0;
+size_t totalAcceptedTracks = 0;
 void analyseTracks(std::vector<fastjet::PseudoJet>& inputParticles, T const& tracks, int trackSelection, const U* candidate = nullptr)
 {
   int nAccepted = 0;
@@ -125,8 +125,8 @@ void analyseTracks(std::vector<fastjet::PseudoJet>& inputParticles, T const& tra
       nAccepted++;
     }
   }
-  // totalAcceptedTracks += nAccepted;
-  // LOG(INFO) << "total accepted tracks: " << totalAcceptedTracks;
+  totalAcceptedTracks += nAccepted;
+  LOG(INFO) << "total accepted tracks: " << totalAcceptedTracks;
 }
 
 /**
@@ -345,11 +345,14 @@ void findJets(JetFinder& jetFinder, std::vector<fastjet::PseudoJet>& inputPartic
  * @param candidate optional hf candidiate
  */
 size_t totalAcceptedParticles = 0;
+size_t totalAcceptedParticles_ALL = 0;
 template <bool checkIsDaughter, typename T, typename U>
 void analyseParticles(std::vector<fastjet::PseudoJet>& inputParticles, const std::string& particleSelection, int jetTypeParticleLevel, T const& particles, o2::framework::Service<o2::framework::O2DatabasePDG> pdgDatabase, const U* candidate = nullptr)
 {
   int nAccepted = 0;
+  int nAccepted_ALL = 0;
   for (auto& particle : particles) {
+    nAccepted_ALL++;
     if (particleSelection == "PhysicalPrimary" && !particle.isPhysicalPrimary()) { // CHECK : Does this exclude the HF hadron?
       continue;
     } else if (particleSelection == "HepMCStatus" && particle.getHepMCStatusCode() != 1) { // do we need isPhysicalPrimary as well? Note: Might give unforseen results if the generator isnt PYTHIA
@@ -400,7 +403,9 @@ void analyseParticles(std::vector<fastjet::PseudoJet>& inputParticles, const std
     nAccepted++;
   }
   totalAcceptedParticles += nAccepted;
-  LOG(INFO) << "total accepted particles: " << totalAcceptedParticles;
+  totalAcceptedParticles_ALL += nAccepted_ALL;
+  LOG(INFO) << "totalAcceptedParticles_ALL " << totalAcceptedParticles_ALL;
+  LOG(INFO) << "totalAcceptedParticles " << totalAcceptedParticles;
 }
 
 template <typename T>
