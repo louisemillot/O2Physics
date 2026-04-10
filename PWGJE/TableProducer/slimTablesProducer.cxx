@@ -354,8 +354,9 @@ struct SlimTablesProducer {
         if (!particle.isPhysicalPrimary())
           continue;
         auto pdgParticle = pdgDatabase->GetParticle(particle.pdgCode());
-        auto pdgCharge = pdgParticle ? std::abs(pdgParticle->Charge()) : -1.0;
-        if (pdgCharge < 3.0) // keep charged particles, exclude neutrals
+        if (!pdgParticle)
+          continue;
+        if (pdgParticle->Charge() == 0)
           continue;
         totalParticles++;
         histos.fill(HIST("h_pt_particles"), particle.pt(), eventWeightMC);
