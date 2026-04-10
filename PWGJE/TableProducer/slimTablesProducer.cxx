@@ -30,9 +30,12 @@
 #include <Framework/O2DatabasePDGPlugin.h>
 #include <Framework/runDataProcessing.h>
 
+#include <fairlogger/Logger.h>
+
 #include <Rtypes.h>
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace o2::aod
@@ -59,6 +62,9 @@ using SlMcCollision = SlMcCollisions::iterator;
 namespace slimtracks
 {
 DECLARE_SOA_INDEX_COLUMN(SlimCollision, slimCollision);
+DECLARE_SOA_COLUMN(Pt, pt, float);
+DECLARE_SOA_COLUMN(Eta, eta, float);
+DECLARE_SOA_COLUMN(Phi, phi, float);
 DECLARE_SOA_COLUMN(Px, px, float);
 DECLARE_SOA_COLUMN(Py, py, float);
 DECLARE_SOA_COLUMN(Pz, pz, float);
@@ -75,6 +81,9 @@ using SlimTrack = SlimTracks::iterator;
 namespace slimparticles
 {
 DECLARE_SOA_INDEX_COLUMN(SlMcCollision, slMcCollision);
+DECLARE_SOA_COLUMN(Pt, pt, float);
+DECLARE_SOA_COLUMN(Eta, eta, float);
+DECLARE_SOA_COLUMN(Phi, phi, float);
 DECLARE_SOA_COLUMN(Px, px, float);
 DECLARE_SOA_COLUMN(Py, py, float);
 DECLARE_SOA_COLUMN(Pz, pz, float);
@@ -96,6 +105,9 @@ using namespace o2::framework::expressions;
 
 struct SlimTablesProducer {
 
+  int nRecoCollisions = 0;
+  int nMcCollisions = 0;
+
   HistogramRegistry histos{"histos", {}, OutputObjHandlingPolicy::AnalysisObject};
   Configurable<bool> checkCentFT0M{"checkCentFT0M", false, "0: centFT0C as default, 1: use centFT0M estimator"};
   Configurable<float> centralityMin{"centralityMin", -999, ""};
@@ -111,9 +123,11 @@ struct SlimTablesProducer {
   Configurable<bool> applyRCTSelections{"applyRCTSelections", true, "decide to apply RCT selections"};
 
   std::vector<int> eventSelectionBits;
+  std::unordered_map<int, int> recoGlobalToSlim;
   Service<o2::framework::O2DatabasePDG> pdgDatabase;
   int trackSelection = -1;
   bool doSumw2 = false;
+  size_t totalParticles = 0;
 
   void init(InitContext&)
   {
@@ -122,6 +136,11 @@ struct SlimTablesProducer {
     AxisSpec centralityAxis = {1200, -10., 110., "Centrality"};
 
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
+    histos.add("h_pt_particles", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
+    histos.add("h_pt_tracks", "track pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
+    histos.add("h_nTracks", "N tracks per event;N_{tracks};counts", kTH1F, {{200, 0, 200}});
+    histos.add("h_nParticles", "N particles per event;N_{particles};counts", kTH1F, {{200, 0, 200}});
+
     histos.add("h2_centrality_collisions", "event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hColl = histos.get<TH1>(HIST("h_collisions"));
     hColl->GetXaxis()->SetBinLabel(1, "All");
@@ -169,7 +188,11 @@ struct SlimTablesProducer {
     }
     histos.fill(HIST("h_collisions"), 1.5);
     slimCollisions(collision.posZ(), collision.collisionTime(), 1.0);
+    auto ts = collision.collisionTime();
     auto slimCollIndex = slimCollisions.lastIndex();
+    LOG(INFO) << "Collision PbPB globalindex = " << collision.globalIndex();
+    LOG(INFO) << "Collision PbPb slimIndex = " << slimCollisions.lastIndex();
+    LOG(INFO) << "Collision time PbPb = " << ts;
     for (const auto& track : tracks) {
       if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
         continue;
@@ -188,56 +211,155 @@ struct SlimTablesProducer {
                  soa::Filtered<aod::JetParticles> const& particles)
   {
     float eventWeightMC = mccollision.weight();
+    LOG(info) << "Processing mc-collision with global ID " << mccollision.globalIndex();
     if (collisions.size() != 1) { // skip the mccollision if it has mre than 1 associated rec collision
+      LOG(info) << "Split MC collision with global ID " << mccollision.globalIndex();
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeightMC);
     if (std::abs(mccollision.posZ()) > vertexZCut)
       histos.fill(HIST("h_mcCollMCP_counts_weight"), 1.5, eventWeightMC);
     if (!jetderiveddatautilities::selectMcCollision(mccollision, skipMBGapEvents, applyRCTSelections)) {
+      LOG(info) << "selectMcCollision failed for mc-collision with global ID " << mccollision.globalIndex();
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeightMC);
+    nMcCollisions++;
     for (auto const& collision : collisions) {
       float eventWeight = collision.weight();
       if (!collision.has_mcCollision()) {
+        LOG(info) << "MC collision not found for collision with global ID " << collision.globalIndex();
         continue;
       }
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) {
         continue;
       }
+      nRecoCollisions++;
+      LOG(INFO) << "eventWeight =" << eventWeight;
+      LOG(INFO) << "eventWeightMC =" << eventWeightMC;
+      LOG(INFO) << "MC collision global ID = " << mccollision.globalIndex()
+                << " coll global ID = " << collision.globalIndex();
       slimCollisions(collision.posZ(), collision.collisionTime(), eventWeight);
       auto slimCollIndex = slimCollisions.lastIndex();
+      auto ts = collision.collisionTime();
+      LOG(INFO) << "Collision pp slimIndex = " << slimCollisions.lastIndex();
+      // LOG(INFO) << "Collision time pp = " << ts;
       auto slicedTracks = tracks.sliceBy(perCollisionTracks, collision.globalIndex()); // tracks associated to the rec collision
+      int nTracks = 0;
       for (const auto& track : slicedTracks) {
         if (!jetderiveddatautilities::selectTrack(track, trackSelection))
           continue;
+        nTracks++;
         float mass = jetderiveddatautilities::mPion;
         float p = track.pt() * std::cosh(track.eta());
         float energy = std::sqrt(p * p + mass * mass);
+        histos.fill(HIST("h_pt_tracks"), track.pt(), eventWeight);
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
+      histos.fill(HIST("h_nTracks"), nTracks, eventWeight);
       slimMcCollisions(mccollision.posZ(), eventWeightMC);
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
+      LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
+      // auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mccollision.globalIndex()); // particles associated to the mc collision
       for (const auto& particle : particles) {
         if (!particle.isPhysicalPrimary())
           continue;
         auto pdgParticle = pdgDatabase->GetParticle(particle.pdgCode());
-        // test1
-        auto pdgCharge = pdgParticle ? std::abs(pdgParticle->Charge()) : -1.0;
-        // constexpr float minChargedPdg = 3.0f;
-        if (pdgCharge < 3.0f) // keep charged particles, exclude neutrals
-          continue;
-        // test2
+        // TRY ON CUT 1
         // if (!pdgParticle)
         //   continue;
         // if (pdgParticle->Charge() == 0)
         //   continue;
+        // TRY ON CUT 2
+        auto pdgCharge = pdgParticle ? std::abs(pdgParticle->Charge()) : -1.0;
+        if (pdgCharge < 3.0)
+          continue;
+        totalParticles++;
+        histos.fill(HIST("h_pt_particles"), particle.pt(), eventWeightMC);
         slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
       }
+      // histos.fill(HIST("h_nParticles"), nParticles, eventWeightMC);
+
+      LOG(info) << "totalParticles = " << totalParticles;
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMC, "process collisions & tracks, MCcollisions & particles for MC", false);
+
+  //  void processMCBackup(soa::Filtered<aod::JetCollisionsMCD> const& collisions,
+  //                aod::JetMcCollisions const&, // join the weight
+  //                soa::Filtered<aod::JetTracksMCD> const& tracks,
+  //                soa::Filtered<aod::JetParticles> const& particles)
+  // {
+  //   int nCollisions = 0;
+  //   int nMcCollisions = 0;
+  //   for (auto const& collision : collisions) {
+  //     float eventWeight = collision.weight();
+  //     LOG(info) << "Processing collision with global ID " << collision.globalIndex();
+  //     if (!collision.has_mcCollision()) {
+  //       continue;
+  //       LOG(info) << "test1 ";
+  //     }
+  //     auto mcColl = collision.mcCollision(); // corresponding MC coll
+  //     histos.fill(HIST("h_mcCollMCD_counts_weight"), 0.5, eventWeight);
+  //     histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeight);
+  //     if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) {
+  //       continue;
+  //     }
+  //     // if (!jetderiveddatautilities::selectMcCollision(mcColl, skipMBGapEvents, applyRCTSelections)) {
+  //     //   continue;
+  //     // }
+  //     histos.fill(HIST("h_mcCollMCD_counts_weight"), 1.5, eventWeight);
+  //     histos.fill(HIST("h_mcCollMCP_counts_weight"), 1.5, eventWeight);
+  //     if (std::abs(mcColl.posZ()) > vertexZCut)
+  //       continue;
+  //     histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeight);
+
+  //     float eventMCWeight = mcColl.weight();
+  //     LOG(INFO) << "eventWeight =" << eventWeight;
+  //     LOG(INFO) << "eventMCWeight =" << eventMCWeight;
+  //     LOG(INFO) << "MC collision global ID = " << mcColl.globalIndex()
+  //               << " coll global ID = " << collision.globalIndex();
+  //     nCollisions++;
+  //     slimCollisions(collision.posZ(), collision.collisionTime(), eventWeight);
+  //     auto slimCollIndex = slimCollisions.lastIndex();
+  //     auto ts = collision.collisionTime();
+  //     LOG(INFO) << "Collision pp globalindex = " << collision.globalIndex();
+  //     LOG(INFO) << "Collision pp slimIndex = " << slimCollisions.lastIndex();
+  //     LOG(INFO) << "Collision time pp = " << ts;
+  //     auto slicedTracks = tracks.sliceBy(perCollisionTracks, collision.globalIndex()); // tracks associated to the rec collision
+  //     int nTracks = 0;
+  //     for (const auto& track : slicedTracks) {
+  //       if (!jetderiveddatautilities::selectTrack(track, trackSelection))
+  //         continue;
+  //       nTracks++;
+  //       float mass = jetderiveddatautilities::mPion;
+  //       float p = track.pt() * std::cosh(track.eta());
+  //       float energy = std::sqrt(p * p + mass * mass);
+  //       histos.fill(HIST("h_pt_tracks"), track.pt(), eventWeight);
+  //       slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
+  //     }
+  //     histos.fill(HIST("h_nTracks"), nTracks, eventWeight);
+  //     nMcCollisions++;
+  //     slimMcCollisions(mcColl.posZ(), eventMCWeight);
+  //     auto slimMcCollIndex = slimMcCollisions.lastIndex();
+  //     LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
+  //     auto slicedParticles = particles.sliceBy(perMcCollisionParticles, mcColl.globalIndex()); // particles associated to the mc collision
+  //     int nParticles = 0;
+  //     for (const auto& particle : slicedParticles) {
+  //       if (!particle.isPhysicalPrimary())
+  //         continue;
+  //       nParticles++;
+  //       histos.fill(HIST("h_pt_particles"), particle.pt(), eventMCWeight);
+  //       slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
+  //     }
+  //     histos.fill(HIST("h_nParticles"), nParticles, eventMCWeight);
+  //   }
+  //   LOG(info) << "====================================";
+  //   LOG(info) << "Total reco collisions = " << nCollisions;
+  //   LOG(info) << "Total MC collisions matched = " << nMcCollisions;
+  //   LOG(info) << "====================================";
+  // }
+  // PROCESS_SWITCH(SlimTablesProducer, processMCBackup, "process collisions & tracks, MCcollisions & particles for MC", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc)
