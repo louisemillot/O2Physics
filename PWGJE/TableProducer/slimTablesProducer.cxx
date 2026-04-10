@@ -266,17 +266,17 @@ struct SlimTablesProducer {
           continue;
         auto pdgParticle = pdgDatabase->GetParticle(particle.pdgCode());
         // TRY ON CUT 1
-        // if (!pdgParticle)
-        //   continue;
-        // if (pdgParticle->Charge() == 0)
-        //   continue;
-        // TRY ON CUT 2
-        auto pdgCharge = pdgParticle ? std::abs(pdgParticle->Charge()) : -1.0;
-        if (pdgCharge < 3.0)
+        if (!pdgParticle)
           continue;
-        totalParticles++;
-        histos.fill(HIST("h_pt_particles"), particle.pt(), eventWeightMC);
-        slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
+        if (pdgParticle->Charge() == 0)
+          continue;
+        // TRY ON CUT 2
+        // auto pdgCharge = pdgParticle ? std::abs(pdgParticle->Charge()) : -1.0;
+        // if (pdgCharge < 3.0)
+        //   continue;
+        // totalParticles++;
+        // histos.fill(HIST("h_pt_particles"), particle.pt(), eventWeightMC);
+        // slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
       }
       // histos.fill(HIST("h_nParticles"), nParticles, eventWeightMC);
 
