@@ -274,7 +274,7 @@ struct SlimTablesProducer {
         // auto pdgCharge = pdgParticle ? std::abs(pdgParticle->Charge()) : -1.0;
         // if (pdgCharge < 3.0)
         //   continue;
-        // totalParticles++;
+        totalParticles++;
         // histos.fill(HIST("h_pt_particles"), particle.pt(), eventWeightMC);
         // slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
       }
