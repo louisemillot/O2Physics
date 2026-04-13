@@ -30,7 +30,7 @@
 #include <Framework/O2DatabasePDGPlugin.h>
 #include <Framework/runDataProcessing.h>
 
-#include <TStyle.h>
+#include <TPad.h>
 
 #include <fairlogger/Logger.h>
 
