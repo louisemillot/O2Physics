@@ -280,7 +280,7 @@ struct SlimTablesProducer {
         //   continue;
         totalParticles++;
         // histos.fill(HIST("h_pt_particles"), particle.pt(), eventWeightMC);
-        // slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
+        slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
       }
       // histos.fill(HIST("h_nParticles"), nParticles, eventWeightMC);
 
