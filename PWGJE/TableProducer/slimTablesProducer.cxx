@@ -260,7 +260,7 @@ struct SlimTablesProducer {
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
       LOG(info) << "totalTracks = " << totalTracks;
-      histos.fill(HIST("h_nTracks"), nTracks, eventWeight);
+      // histos.fill(HIST("h_nTracks"), nTracks, eventWeight);
       slimMcCollisions(mccollision.posZ(), eventWeightMC);
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
