@@ -30,6 +30,8 @@
 #include <Framework/O2DatabasePDGPlugin.h>
 #include <Framework/runDataProcessing.h>
 
+#include <TStyle.h>
+
 #include <fairlogger/Logger.h>
 
 #include <Rtypes.h>
@@ -161,6 +163,11 @@ struct SlimTablesProducer {
     hMCP->GetXaxis()->SetBinLabel(2, "mcColl + skipMBGapEvents + applyRCTSelections");
     hMCP->GetXaxis()->SetBinLabel(3, "Zvertex");
 
+    if (gPad) {
+      gPad->SetLogy();
+      gPad->SetLogx();
+    }
+
     eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
     trackSelection = jetderiveddatautilities::initialiseTrackSelection(static_cast<std::string>(trackSelections));
   }
@@ -217,16 +224,16 @@ struct SlimTablesProducer {
                  soa::Filtered<aod::JetParticles> const& particles)
   {
     float eventWeightMC = mccollision.weight();
-    LOG(info) << "Processing mc-collision with global ID " << mccollision.globalIndex();
+    LOG(INFO) << "Processing mc-collision with global ID " << mccollision.globalIndex();
     if (collisions.size() != 1) { // skip the mccollision if it has mre than 1 associated rec collision
-      LOG(info) << "Split MC collision with global ID " << mccollision.globalIndex();
+      LOG(INFO) << "Split MC collision with global ID " << mccollision.globalIndex();
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 0.5, eventWeightMC);
     if (std::abs(mccollision.posZ()) > vertexZCut)
       histos.fill(HIST("h_mcCollMCP_counts_weight"), 1.5, eventWeightMC);
     if (!jetderiveddatautilities::selectMcCollision(mccollision, skipMBGapEvents, applyRCTSelections)) {
-      LOG(info) << "selectMcCollision failed for mc-collision with global ID " << mccollision.globalIndex();
+      LOG(INFO) << "selectMcCollision failed for mc-collision with global ID " << mccollision.globalIndex();
       return;
     }
     histos.fill(HIST("h_mcCollMCP_counts_weight"), 2.5, eventWeightMC);
@@ -234,7 +241,7 @@ struct SlimTablesProducer {
     for (auto const& collision : collisions) {
       float eventWeight = collision.weight();
       if (!collision.has_mcCollision()) {
-        LOG(info) << "MC collision not found for collision with global ID " << collision.globalIndex();
+        LOG(INFO) << "MC collision not found for collision with global ID " << collision.globalIndex();
         continue;
       }
       if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections)) {
@@ -263,7 +270,7 @@ struct SlimTablesProducer {
         histos.fill(HIST("h2_track_eta_track_phi"), track.eta(), track.phi(), eventWeight);
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
-      LOG(info) << "totalTracks = " << totalTracks;
+      LOG(INFO) << "totalTracks = " << totalTracks;
       // histos.fill(HIST("h_nTr  acks"), nTracks, eventWeight);
       slimMcCollisions(mccollision.posZ(), eventWeightMC);
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
@@ -288,7 +295,7 @@ struct SlimTablesProducer {
       }
       // histos.fill(HIST("h_nParticles"), nParticles, eventWeightMC);
 
-      LOG(info) << "totalParticles = " << totalParticles;
+      LOG(INFO) << "totalParticles = " << totalParticles;
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processMC, "process collisions & tracks, MCcollisions & particles for MC", false);
