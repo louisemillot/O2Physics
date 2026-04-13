@@ -128,6 +128,7 @@ struct SlimTablesProducer {
   int trackSelection = -1;
   bool doSumw2 = false;
   size_t totalParticles = 0;
+  size_t totalTracks = 0;
 
   void init(InitContext&)
   {
@@ -251,14 +252,14 @@ struct SlimTablesProducer {
       for (const auto& track : slicedTracks) {
         if (!jetderiveddatautilities::selectTrack(track, trackSelection))
           continue;
-        nTracks++;
+        totalTracks++;
         float mass = jetderiveddatautilities::mPion;
         float p = track.pt() * std::cosh(track.eta());
         float energy = std::sqrt(p * p + mass * mass);
         histos.fill(HIST("h_pt_tracks"), track.pt(), eventWeight);
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
-      LOG(info) << "totalTracks = " << nTracks;
+      LOG(info) << "totalTracks = " << totalTracks;
       histos.fill(HIST("h_nTracks"), nTracks, eventWeight);
       slimMcCollisions(mccollision.posZ(), eventWeightMC);
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
