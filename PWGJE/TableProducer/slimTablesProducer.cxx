@@ -135,12 +135,15 @@ struct SlimTablesProducer {
     doSumw2 = skipMBGapEvents; // true or false : storage of square erros when jet-jet
 
     AxisSpec centralityAxis = {1200, -10., 110., "Centrality"};
+    AxisSpec trackEtaAxis = {200, -1.0, 1.0, "#eta"};
+    AxisSpec phiAxis = {160, -1.0, 7.0, "#varphi"};
 
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
     histos.add("h_pt_particles", "Constituent pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
     histos.add("h_pt_tracks", "track pT; pT (GeV/c); Counts", kTH1F, {{200, 0.0, 200.0}});
     histos.add("h_nTracks", "N tracks per event;N_{tracks};counts", kTH1F, {{200, 0, 200}});
     histos.add("h_nParticles", "N particles per event;N_{particles};counts", kTH1F, {{200, 0, 200}});
+    histos.add("h2_track_eta_track_phi", "track eta vs. track phi; #eta; #phi; counts", {HistType::kTH2F, {trackEtaAxis, phiAxis}}, doSumw2);
 
     histos.add("h2_centrality_collisions", "event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
     auto hColl = histos.get<TH1>(HIST("h_collisions"));
@@ -257,10 +260,11 @@ struct SlimTablesProducer {
         float p = track.pt() * std::cosh(track.eta());
         float energy = std::sqrt(p * p + mass * mass);
         histos.fill(HIST("h_pt_tracks"), track.pt(), eventWeight);
+        histos.fill(HIST("h2_track_eta_track_phi"), track.eta(), track.phi(), eventWeight);
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
       }
       LOG(info) << "totalTracks = " << totalTracks;
-      // histos.fill(HIST("h_nTracks"), nTracks, eventWeight);
+      // histos.fill(HIST("h_nTr  acks"), nTracks, eventWeight);
       slimMcCollisions(mccollision.posZ(), eventWeightMC);
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
       LOG(INFO) << "slimMcCollIndex = " << slimMcCollisions.lastIndex();
