@@ -30,8 +30,6 @@
 #include <Framework/O2DatabasePDGPlugin.h>
 #include <Framework/runDataProcessing.h>
 
-#include <TPad.h>
-
 #include <fairlogger/Logger.h>
 
 #include <Rtypes.h>
@@ -162,11 +160,6 @@ struct SlimTablesProducer {
     hMCP->GetXaxis()->SetBinLabel(1, "All");
     hMCP->GetXaxis()->SetBinLabel(2, "mcColl + skipMBGapEvents + applyRCTSelections");
     hMCP->GetXaxis()->SetBinLabel(3, "Zvertex");
-
-    if (gPad) {
-      gPad->SetLogy();
-      gPad->SetLogx();
-    }
 
     eventSelectionBits = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
     trackSelection = jetderiveddatautilities::initialiseTrackSelection(static_cast<std::string>(trackSelections));
