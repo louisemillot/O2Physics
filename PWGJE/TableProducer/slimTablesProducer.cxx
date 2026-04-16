@@ -62,28 +62,20 @@ using SlMcCollision = SlMcCollisions::iterator;
 namespace slimtracks
 {
 DECLARE_SOA_INDEX_COLUMN(SlimCollision, slimCollision);
-DECLARE_SOA_COLUMN(Pt, pt, float);
-DECLARE_SOA_COLUMN(Eta, eta, float);
-DECLARE_SOA_COLUMN(Phi, phi, float);
 DECLARE_SOA_COLUMN(Px, px, float);
 DECLARE_SOA_COLUMN(Py, py, float);
 DECLARE_SOA_COLUMN(Pz, pz, float);
-DECLARE_SOA_COLUMN(E, e, float);
 } // namespace slimtracks
 DECLARE_SOA_TABLE(SlimTracks, "AOD", "SlimTracks",
                   o2::soa::Index<>,
                   slimtracks::SlimCollisionId,
                   slimtracks::Px,
                   slimtracks::Py,
-                  slimtracks::Pz,
-                  slimtracks::E);
+                  slimtracks::Pz);
 using SlimTrack = SlimTracks::iterator;
 namespace slimparticles
 {
 DECLARE_SOA_INDEX_COLUMN(SlMcCollision, slMcCollision);
-DECLARE_SOA_COLUMN(Pt, pt, float);
-DECLARE_SOA_COLUMN(Eta, eta, float);
-DECLARE_SOA_COLUMN(Phi, phi, float);
 DECLARE_SOA_COLUMN(Px, px, float);
 DECLARE_SOA_COLUMN(Py, py, float);
 DECLARE_SOA_COLUMN(Pz, pz, float);
@@ -203,10 +195,7 @@ struct SlimTablesProducer {
       if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
         continue;
       }
-      float mass = jetderiveddatautilities::mPion;
-      float p = track.pt() * std::cosh(track.eta());
-      float energy = std::sqrt(p * p + mass * mass);
-      slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
+      slimTracks(slimCollIndex, track.px(), track.py(), track.pz());
     }
   }
   PROCESS_SWITCH(SlimTablesProducer, processData, "process collisions and tracks for data", false);
@@ -256,12 +245,9 @@ struct SlimTablesProducer {
         if (!jetderiveddatautilities::selectTrack(track, trackSelection))
           continue;
         totalTracks++;
-        float mass = jetderiveddatautilities::mPion;
-        float p = track.pt() * std::cosh(track.eta());
-        float energy = std::sqrt(p * p + mass * mass);
         histos.fill(HIST("h_pt_tracks"), track.pt(), eventWeight);
         histos.fill(HIST("h2_track_eta_track_phi"), track.eta(), track.phi(), eventWeight);
-        slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
+        slimTracks(slimCollIndex, track.px(), track.py(), track.pz());
       }
       LOG(INFO) << "totalTracks = " << totalTracks;
       // histos.fill(HIST("h_nTr  acks"), nTracks, eventWeight);
