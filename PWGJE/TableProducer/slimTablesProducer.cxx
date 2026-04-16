@@ -204,7 +204,8 @@ struct SlimTablesProducer {
         continue;
       }
       float mass = jetderiveddatautilities::mPion;
-      float energy = std::sqrt(track.px() * track.px() + track.py() * track.py() + track.pz() * track.pz() + mass * mass);
+      float p = track.pt() * std::cosh(track.eta());
+      float energy = std::sqrt(p * p + mass * mass);
       slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
     }
   }
@@ -256,7 +257,8 @@ struct SlimTablesProducer {
           continue;
         totalTracks++;
         float mass = jetderiveddatautilities::mPion;
-        float energy = std::sqrt(track.px() * track.px() + track.py() * track.py() + track.pz() * track.pz() + mass * mass);
+        float p = track.pt() * std::cosh(track.eta());
+        float energy = std::sqrt(p * p + mass * mass);
         histos.fill(HIST("h_pt_tracks"), track.pt(), eventWeight);
         histos.fill(HIST("h2_track_eta_track_phi"), track.eta(), track.phi(), eventWeight);
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz(), energy);
