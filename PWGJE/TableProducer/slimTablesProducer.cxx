@@ -123,6 +123,8 @@ struct SlimTablesProducer {
 
     histos.add("h_collisions", "event status;event status;entries", {HistType::kTH1F, {{4, 0.0, 4.0}}});
     histos.add("h2_centrality_collisions", "event status vs. centrality;entries;centrality", {HistType::kTH2F, {centralityAxis, {4, 0.0, 4.0}}}, doSumw2);
+    histos.add("h_occupancy_raw", "occupancy;occupancy;entries", {HistType::kTH1F, {{200, -10, 10000}}});
+
     auto hColl = histos.get<TH1>(HIST("h_collisions"));
     hColl->GetXaxis()->SetBinLabel(1, "All");
     hColl->GetXaxis()->SetBinLabel(2, "eventSelection");
@@ -218,6 +220,7 @@ struct SlimTablesProducer {
         continue;
       }
       histos.fill(HIST("h_mcCollMCD_counts_weight"), 2.5, eventWeightMC);
+      histos.fill(HIST("h_occupancy_raw"), collision.trackOccupancyInTimeRange()); // <-- ici
       // occupancy cut only applied to the reconstructed (MCD) collision, not to the mcCollision
       if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
         continue;
