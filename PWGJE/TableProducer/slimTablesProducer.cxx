@@ -176,6 +176,7 @@ struct SlimTablesProducer {
       return;
     }
     histos.fill(HIST("h_collisions"), 1.5);
+    histos.fill(HIST("h_occupancy_raw"), collision.trackOccupancyInTimeRange());
     if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
       return;
     }
@@ -220,7 +221,7 @@ struct SlimTablesProducer {
         continue;
       }
       histos.fill(HIST("h_mcCollMCD_counts_weight"), 2.5, eventWeightMC);
-      histos.fill(HIST("h_occupancy_raw"), collision.trackOccupancyInTimeRange()); // <-- ici
+      histos.fill(HIST("h_occupancy_raw"), collision.trackOccupancyInTimeRange());
       // occupancy cut only applied to the reconstructed (MCD) collision, not to the mcCollision
       if (collision.trackOccupancyInTimeRange() < trackOccupancyInTimeRangeMin || trackOccupancyInTimeRangeMax < collision.trackOccupancyInTimeRange()) {
         continue;
