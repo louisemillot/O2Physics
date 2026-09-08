@@ -111,7 +111,7 @@ struct SlimTablesProducer {
   Configurable<int> trackOccupancyInTimeRangeMax{"trackOccupancyInTimeRangeMax", 999999, "maximum track occupancy of tracks in neighbouring collisions in a given time range; only applied to reconstructed collisions (data and mcd jets), not mc collisions (mcp jets)"};
   Configurable<int> trackOccupancyInTimeRangeMin{"trackOccupancyInTimeRangeMin", -999999, "minimum track occupancy of tracks in neighbouring collisions in a given time range; only applied to reconstructed collisions (data and mcd jets), not mc collisions (mcp jets)"};
   std::vector<int> eventSelectionBits;
-  Service<o2::framework::O2DatabasePDG> pdgDatabase;
+  Service<o2::framework::O2DatabasePDG> pdgDatabase{};
   int trackSelection = -1;
   bool doSumw2 = false;
 
@@ -231,21 +231,25 @@ struct SlimTablesProducer {
       auto slimCollIndex = slimCollisions.lastIndex();
       auto slicedTracks = tracks.sliceBy(perCollisionTracks, collision.globalIndex()); // tracks associated to the rec collision
       for (const auto& track : slicedTracks) {
-        if (!jetderiveddatautilities::selectTrack(track, trackSelection))
+        if (!jetderiveddatautilities::selectTrack(track, trackSelection)) {
           continue;
+        }
         histos.fill(HIST("Ntracks_pT"), track.pt(), eventWeight);
         slimTracks(slimCollIndex, track.px(), track.py(), track.pz());
       }
       slimMcCollisions(mccollision.posZ(), eventWeightMC);
       auto slimMcCollIndex = slimMcCollisions.lastIndex();
       for (const auto& particle : particles) {
-        if (!particle.isPhysicalPrimary())
+        if (!particle.isPhysicalPrimary()) {
           continue;
+        }
         auto pdgParticle = pdgDatabase->GetParticle(particle.pdgCode());
-        if (!pdgParticle)
+        if (!pdgParticle) {
           continue;
-        if (pdgParticle->Charge() == 0) // keep charged particles, exclude neutrals
+        }
+        if (pdgParticle->Charge() == 0) { // keep charged particles, exclude neutrals
           continue;
+        }
         histos.fill(HIST("Nparticles_pT"), particle.pt(), eventWeightMC);
         slimParticles(slimMcCollIndex, particle.px(), particle.py(), particle.pz(), particle.energy());
       }
