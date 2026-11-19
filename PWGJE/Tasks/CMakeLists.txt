@@ -553,6 +553,11 @@ if(FastJet_FOUND)
                         REUSE_FROM JetDataModelPCH
                         PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::PWGJECore O2Physics::AnalysisCore
                         COMPONENT_NAME Analysis)
+    o2physics_add_dpl_workflow(embedding-response-purity
+                        SOURCES embeddingResponsePurity.cxx
+                        REUSE_FROM JetDataModelPCH
+                        PUBLIC_LINK_LIBRARIES O2::Framework O2Physics::PWGJECore O2Physics::AnalysisCore
+                        COMPONENT_NAME Analysis)
     o2physics_add_dpl_workflow(baryon-pair-in-jets
                         SOURCES baryonPairInJets.cxx
                         REUSE_FROM JetDataModelPCH
