@@ -85,6 +85,7 @@ constexpr double ThetaGUntaggedFill = -0.005;
 enum Species { SpeciesMCP = 0,
                SpeciesMCD,
                SpeciesHybrid,
+               SpeciesData,
                NSpecies };
 enum Stage { BeforeVeto = 0,
              AfterVeto,
@@ -110,6 +111,8 @@ struct EmbeddingResponsePurityTask {
   Configurable<bool> skipMBGapEvents{"skipMBGapEvents", true, "skip MB gap events (jet finder default)"};
   Configurable<bool> applyRCTSelections{"applyRCTSelections", true, "apply RCT selections"};
   Configurable<float> vertexZCut{"vertexZCut", 10.0, "|z| cut on the Pb-Pb collision"};
+  Configurable<float> centralityMin{"centralityMin", -999.0, "minimum FT0M centrality of the Pb-Pb collision (embedding and data)"};
+  Configurable<float> centralityMax{"centralityMax", 999.0, "maximum FT0M centrality of the Pb-Pb collision (embedding and data)"};
   Configurable<float> trackPtMin{"trackPtMin", 0.15, "minimum track pT (Pb-Pb jets of the overlap veto, track QA)"};
   Configurable<float> trackEtaMax{"trackEtaMax", 0.9, "maximum track |eta| (Pb-Pb jets of the overlap veto, track QA)"};
   Configurable<bool> useWeights{"useWeights", true, "fill with the MC collision weight"};
@@ -255,7 +258,22 @@ struct EmbeddingResponsePurityTask {
     registry.add("h2_fracPP_pt_matched", "matched (unweighted) : pp fraction;p_{T}^{hybrid};pp #it{p}_{T} fraction", HistType::kTH2F, {ptAxis, fracAxis});
 
     // phi control : the 7 pT slices of the macro are the bins of the pT axis (jet pT for jets, track pT for tracks)
-    const std::array<std::string, NSpecies> speciesNames{"mcp", "mcd", "hybrid"};
+    // Pb-Pb data spectrum to unfold (processData), same names as fillPbPbLeadCut.sh
+    //   hPbPbPtThetaZg_all : all jets, untagged jets at (theta_g, z_g) = (-0.005, 0.15) -> input of the unfolding
+    //   hPbPbPtThetaZg     : tagged jets only (theta_g > 0)
+    registry.add("hPbPbPtThetaZg_all", "Pb-Pb jets;p_{T} (GeV/#it{c});#theta_{g};z_{g}", HistType::kTH3D, {ptAxis, thetaAxis, zgAxis}, true);
+    registry.add("hPbPbPtThetaZg", "Pb-Pb jets (tagged);p_{T} (GeV/#it{c});#theta_{g};z_{g}", HistType::kTH3D, {ptAxis, {100, 0., 1., "#theta_{g}"}, zgAxis}, true);
+    registry.add("hPbPbPtTheta_all", "Pb-Pb jets;p_{T} (GeV/#it{c});#theta_{g}", HistType::kTH2D, {ptAxis, thetaAxis}, true);
+    registry.add("hPbPbPtTheta", "Pb-Pb jets (tagged);p_{T} (GeV/#it{c});#theta_{g}", HistType::kTH2D, {ptAxis, {100, 0., 1., "#theta_{g}"}}, true);
+    registry.add("h_data_nEvents", "Pb-Pb data : selected events;;events", HistType::kTH1D, {{1, 0., 1.}});
+    registry.add("h_data_rho", "Pb-Pb data : #rho (estimator-rho);#rho;events", HistType::kTH1F, {{100, 0., 500.}});
+    registry.add("h_data_centrality", "Pb-Pb data : centrality;FT0M centrality (%);events", HistType::kTH1F, {{100, 0., 100.}});
+    registry.add("h_data_leadcut_pt", "Pb-Pb data : jets rejected by the leading track cut;p_{T} jet (GeV/#it{c});counts", HistType::kTH1F, {ptAxis});
+    // raw tracks (before subtraction), track pT slices of fillPbPbLeadCut.sh as bins
+    const AxisSpec ptTrackRangeAxis{std::vector<double>{0.15, 2., 5., 7., 20., 30., 50., 80., 110., 150.}, "#it{p}_{T}^{track} (GeV/#it{c})"};
+    registry.add("h_data_track_pt_eta_phi", "Pb-Pb data : raw tracks;p_{T}^{track};#eta;#varphi", HistType::kTH3F, {ptTrackRangeAxis, etaAxis, phiAxis});
+
+    const std::array<std::string, NSpecies> speciesNames{"mcp", "mcd", "hybrid", "data"};
     const std::array<std::string, NStages> stageNames{"before", "after"};
     for (int isp = 0; isp < NSpecies; isp++) {
       for (int is = 0; is < NStages; is++) {
@@ -302,6 +320,33 @@ struct EmbeddingResponsePurityTask {
     for (auto const& c : constituents) {
       hTrackPtEtaPhi[species][stage]->Fill(c.pt(), c.eta(), c.phi(), w);
     }
+  }
+
+  // Pb-Pb collision selection, identical for the embedding and for the data
+  template <typename C>
+  bool selectPbPbCollision(C const& collision) const
+  {
+    if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents.value, applyRCTSelections.value) || std::abs(collision.posZ()) > vertexZCut.value) {
+      return false;
+    }
+    return collision.centFT0M() >= centralityMin.value && collision.centFT0M() < centralityMax.value;
+  }
+
+  // cuts on the reconstructed (event-wise subtracted) jets, identical for the hybrid jets of the embedding and
+  // for the data jets : leading constituent, then phi dead-zone veto with control histograms before / after.
+  // The |eta| cut is applied by the caller, after the inclusive histograms (as in the macros)
+  template <typename J, typename T>
+  bool passRecoJetCuts(int species, J const& jet, T const& constituents, double w)
+  {
+    if (leadingConstituentPt(constituents) >= leadingTrackPtMax) {
+      return false;
+    }
+    fillPhiControl(species, jet, constituents, w, BeforeVeto);
+    if (hasConstituentInPhiVeto(constituents)) {
+      return false;
+    }
+    fillPhiControl(species, jet, constituents, w, AfterVeto);
+    return true;
   }
 
   // theta_g = R_g / R, untagged jets -> (theta_g, z_g) = (-0.005, 0.15)
@@ -389,7 +434,7 @@ struct EmbeddingResponsePurityTask {
   {
     for (auto const& collision : collisions) {
       registry.fill(HIST("h_eventSelection"), 0.5);
-      if (!jetderiveddatautilities::selectCollision(collision, eventSelectionBits, skipMBGapEvents, applyRCTSelections) || std::abs(collision.posZ()) > vertexZCut) {
+      if (!selectPbPbCollision(collision)) {
         continue;
       }
       registry.fill(HIST("h_eventSelection"), 1.5);
@@ -599,15 +644,10 @@ struct EmbeddingResponsePurityTask {
           continue;
         }
         auto const constituents = jet.tracks_as<aod::JetTracksSub>();
-        if (leadingConstituentPt(constituents) >= leadingTrackPtMax) {
-          continue;
-        }
         // no pT cut on the hybrid jet
-        fillPhiControl(SpeciesHybrid, jet, constituents, weight, BeforeVeto);
-        if (hasConstituentInPhiVeto(constituents)) {
+        if (!passRecoJetCuts(SpeciesHybrid, jet, constituents, weight)) {
           continue;
         }
-        fillPhiControl(SpeciesHybrid, jet, constituents, weight, AfterVeto);
         double thetaG, zG;
         const bool tagged = computeSoftDrop<false>(constituents, thetaG, zG);
         if (tagged) {
@@ -718,6 +758,53 @@ struct EmbeddingResponsePurityTask {
     }
   }
   PROCESS_SWITCH(EmbeddingResponsePurityTask, processEmbedding, "response, purity and efficiency for embedded pp in Pb-Pb", true);
+
+  // Pb-Pb data spectrum to unfold (O2Physics version of fillPbPbLeadCut.sh). Runs on standard Pb-Pb data with
+  // estimator-rho, subtractor-eventwiseconstituent and jet-finder-data-charged (processChargedEvtWiseSubJets) :
+  // same jets, same cuts and same SoftDrop as the hybrid jets of processEmbedding.
+  void processData(soa::Join<aod::JetCollisions, aod::BkgChargedRhos>::iterator const& collision,
+                   SubJets const& jets,
+                   aod::JetTracks const& tracks,
+                   aod::JetTracksSub const&)
+  {
+    if (!selectPbPbCollision(collision)) {
+      return;
+    }
+    registry.fill(HIST("h_data_nEvents"), 0.5);
+    registry.fill(HIST("h_data_rho"), collision.rho());
+    registry.fill(HIST("h_data_centrality"), collision.centFT0M());
+    for (auto const& track : tracks) {
+      if (jetderiveddatautilities::selectTrack(track, trackSelection) && track.pt() >= trackPtMin && std::abs(track.eta()) <= trackEtaMax) {
+        registry.fill(HIST("h_data_track_pt_eta_phi"), track.pt(), track.eta(), track.phi());
+      }
+    }
+
+    for (auto const& jet : jets) {
+      if (jet.r() != jetRInt) {
+        continue;
+      }
+      auto const constituents = jet.tracks_as<aod::JetTracksSub>();
+      if (leadingConstituentPt(constituents) >= leadingTrackPtMax) {
+        registry.fill(HIST("h_data_leadcut_pt"), jet.pt());
+      }
+      // no pT cut on the jet (the reco window is applied in the unfolding)
+      if (!passRecoJetCuts(SpeciesData, jet, constituents, 1.)) {
+        continue;
+      }
+      if (std::abs(jet.eta()) > jetEtaMax) {
+        continue;
+      }
+      double thetaG, zG;
+      computeSoftDrop<false>(constituents, thetaG, zG);
+      registry.fill(HIST("hPbPbPtThetaZg_all"), jet.pt(), thetaG, zG);
+      registry.fill(HIST("hPbPbPtTheta_all"), jet.pt(), thetaG);
+      if (thetaG > 0.) {
+        registry.fill(HIST("hPbPbPtThetaZg"), jet.pt(), thetaG, zG);
+        registry.fill(HIST("hPbPbPtTheta"), jet.pt(), thetaG);
+      }
+    }
+  }
+  PROCESS_SWITCH(EmbeddingResponsePurityTask, processData, "Pb-Pb data spectrum (pT, theta_g, z_g) to unfold", false);
 };
 
 WorkflowSpec defineDataProcessing(ConfigContext const& cfgc) { return WorkflowSpec{adaptAnalysisTask<EmbeddingResponsePurityTask>(cfgc, TaskName{"embedding-response-purity"})}; }
